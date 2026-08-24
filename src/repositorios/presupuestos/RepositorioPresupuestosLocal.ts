@@ -1,15 +1,14 @@
 import { recuperarPresupuestoGuardado, type Presupuesto } from '@/dominio/presupuestos';
+import { CLAVES_ALMACENAMIENTO } from '@/configuracion/clavesAlmacenamiento';
 import type { AlmacenamientoClaveValor } from '@/repositorios/clientes/AlmacenamientoClaveValor';
 import type { RepositorioPresupuestos } from './RepositorioPresupuestos';
-
-const CLAVE_PRESUPUESTOS = 'mallic-tesla:presupuestos:v1';
 
 export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
   // TODO(firebase): sustituir este repositorio por Firestore conservando las copias históricas.
   constructor(private readonly almacenamiento: AlmacenamientoClaveValor) {}
 
   async obtenerTodos(): Promise<Presupuesto[]> {
-    const datosGuardados = await this.almacenamiento.obtener(CLAVE_PRESUPUESTOS);
+    const datosGuardados = await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.presupuestos);
 
     if (datosGuardados === null) {
       return [];
@@ -50,6 +49,9 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
       presupuestos.splice(indicePresupuesto, 1, presupuesto);
     }
 
-    await this.almacenamiento.guardar(CLAVE_PRESUPUESTOS, JSON.stringify(presupuestos));
+    await this.almacenamiento.guardar(
+      CLAVES_ALMACENAMIENTO.presupuestos,
+      JSON.stringify(presupuestos),
+    );
   }
 }

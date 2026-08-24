@@ -15,7 +15,7 @@ Aplicación responsive para crear, calcular, guardar y compartir presupuestos pr
 
 - `src/css/Variables.css`: fuente única de decisiones visuales reutilizables.
 - `src/pages/IndexPage.vue`: pantalla inicial mínima.
-- `src-capacitor/`: proyecto nativo; el identificador Android es `com.mallictesla.presupuestos`.
+- `src-capacitor/`: proyecto nativo; el identificador Android es `com.calculatupresupuesto.app`.
 - `.github/workflows/deploy-pages.yml`: compilación y despliegue de `dist/spa` en GitHub Pages.
 - `Planes/`: planes ejecutables y registro de evolución del proyecto.
 - `C:/Z-Programacion/SolucionesAMedida/Clientes/MallicTesla`: contexto comercial, separado del código.
@@ -34,13 +34,13 @@ npm run dev:android
 npm run build:android
 ```
 
-`npm run build` genera la SPA en `dist/spa` con ruta pública `/MallicTesla/`. Desarrollo y Capacitor mantienen `/` como ruta pública.
+`npm run build` genera la SPA en `dist/spa` con ruta pública `/CalculaTuPresupuesto/`. Desarrollo y Capacitor mantienen `/` como ruta pública.
 
 ## GitHub Pages
 
 El workflow se ejecutará al publicar cambios en `main`. En GitHub se debe seleccionar **Settings > Pages > Build and deployment > GitHub Actions** si la configuración no se activa automáticamente.
 
-El repositorio y `origin` ya existían al comenzar este plan. CH no crea commits ni ejecuta push; Leo decide cuándo versionar y publicar los cambios.
+El repositorio definitivo es `https://github.com/JLeonN/CalculaTuPresupuesto`. CH no crea commits ni ejecuta push; Leo decide cuándo versionar y publicar los cambios.
 
 ## Arquitectura futura aprobada
 
@@ -63,6 +63,8 @@ improvisadamente desde el plan maestro. Orden recomendado:
 
 Ya existen implementaciones locales de clientes, materiales, presupuestos, configuración, PDF y envío por WhatsApp. Los módulos restantes deben continuar mediante planes independientes.
 
-## Compatibilidad técnica pendiente
+## Identidad técnica y almacenamiento
 
-La ruta pública `/MallicTesla/`, las claves locales `mallic-tesla:*`, `package.name` y el identificador Android `com.mallictesla.presupuestos` se conservan temporalmente para no romper instalaciones ni datos existentes. Su posible migración debe resolverse antes de la primera publicación en Play Store mediante un plan específico.
+El paquete npm usa `calcula-tu-presupuesto`, la ruta pública es `/CalculaTuPresupuesto/` y Android usa `com.calculatupresupuesto.app`.
+
+Los repositorios locales escriben bajo claves `calcula-tu-presupuesto:*`. Durante la lectura, un adaptador privado reconoce las claves históricas `mallic-tesla:*`, copia su contenido exacto, verifica la copia y solo entonces elimina la clave anterior.

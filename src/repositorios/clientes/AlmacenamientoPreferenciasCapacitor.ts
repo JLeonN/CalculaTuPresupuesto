@@ -10,4 +10,8 @@ export class AlmacenamientoPreferenciasCapacitor implements AlmacenamientoClaveV
   async guardar(clave: string, valor: string): Promise<void> {
     await Preferences.set({ key: clave, value: valor });
   }
+
+  async eliminar(clave: string): Promise<void> {
+    await Preferences.remove({ key: clave });
+  }
 }

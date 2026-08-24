@@ -1,4 +1,4 @@
-package com.mallictesla.presupuestos;
+package com.calculatupresupuesto.app;
 
 import com.getcapacitor.BridgeActivity;
 

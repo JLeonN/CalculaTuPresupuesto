@@ -1,15 +1,14 @@
 import type { Cliente } from '@/dominio/clientes';
+import { CLAVES_ALMACENAMIENTO } from '@/configuracion/clavesAlmacenamiento';
 import type { AlmacenamientoClaveValor } from './AlmacenamientoClaveValor';
 import type { RepositorioClientes } from './RepositorioClientes';
-
-const CLAVE_CLIENTES = 'mallic-tesla:clientes:v1';
 
 export class RepositorioClientesLocal implements RepositorioClientes {
   // TODO(firebase): sustituir este repositorio por Firestore sin cambiar el contrato ni los identificadores actuales.
   constructor(private readonly almacenamiento: AlmacenamientoClaveValor) {}
 
   async obtenerTodos(): Promise<Cliente[]> {
-    const datosGuardados = await this.almacenamiento.obtener(CLAVE_CLIENTES);
+    const datosGuardados = await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.clientes);
 
     if (datosGuardados === null) {
       return [];
@@ -42,6 +41,6 @@ export class RepositorioClientesLocal implements RepositorioClientes {
   }
 
   private async guardarTodos(clientes: Cliente[]): Promise<void> {
-    await this.almacenamiento.guardar(CLAVE_CLIENTES, JSON.stringify(clientes));
+    await this.almacenamiento.guardar(CLAVES_ALMACENAMIENTO.clientes, JSON.stringify(clientes));
   }
 }

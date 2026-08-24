@@ -9,4 +9,9 @@ export class AlmacenamientoLocalNavegador implements AlmacenamientoClaveValor {
     window.localStorage.setItem(clave, valor);
     return Promise.resolve();
   }
+
+  eliminar(clave: string): Promise<void> {
+    window.localStorage.removeItem(clave);
+    return Promise.resolve();
+  }
 }

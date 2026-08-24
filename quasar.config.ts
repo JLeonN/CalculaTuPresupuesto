@@ -47,7 +47,7 @@ export default defineConfig((ctx) => {
       // filenameBasedRouting: true,
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
-      publicPath: ctx.prod && ctx.mode.spa ? '/MallicTesla/' : '/',
+      publicPath: ctx.prod && ctx.mode.spa ? '/CalculaTuPresupuesto/' : '/',
       // vueRouterBase,
 
       // publicPath: '/',
@@ -221,7 +221,7 @@ export default defineConfig((ctx) => {
       builder: {
         // https://www.electron.build/configuration
 
-        appId: 'mallic-tesla',
+        appId: 'com.calculatupresupuesto.app',
       },
     },
 

@@ -1,6 +1,6 @@
 import { defineCapacitorConfig } from '@quasar/app-vite/capacitor';
 
 export default defineCapacitorConfig({
-  appId: 'com.mallictesla.presupuestos',
+  appId: 'com.calculatupresupuesto.app',
   appName: 'Calcula tu presupuesto',
 });
