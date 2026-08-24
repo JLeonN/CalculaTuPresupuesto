@@ -43,14 +43,6 @@ export const ELEMENTOS_NAVEGACION: readonly ElementoNavegacion[] = [
     prefijosActivos: ['/materiales'],
   },
   {
-    nombre: 'historial',
-    etiqueta: 'Historial',
-    icono: 'history',
-    ruta: '/historial',
-    ubicaciones: ['menu-escritorio', 'pagina-mas'],
-    prefijosActivos: ['/historial'],
-  },
-  {
     nombre: 'configuracion',
     etiqueta: 'Configuración',
     icono: 'settings',
@@ -66,7 +58,7 @@ export const ELEMENTO_MAS: ElementoNavegacion = {
   icono: 'more_horiz',
   ruta: '/mas',
   ubicaciones: ['barra-movil'],
-  prefijosActivos: ['/mas', '/materiales', '/historial', '/configuracion'],
+  prefijosActivos: ['/mas', '/materiales', '/configuracion'],
 };
 
 export function obtenerElementosNavegacion(

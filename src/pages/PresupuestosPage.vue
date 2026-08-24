@@ -149,7 +149,7 @@ function formatearFecha(fecha: string): string {
           {{
             terminoBusqueda
               ? 'Probá buscar por otro cliente, teléfono o fecha.'
-              : 'Creá el primer presupuesto para comenzar el historial de trabajos.'
+              : 'Creá el primer presupuesto para comenzar tu registro de trabajos.'
           }}
         </p>
         <q-btn

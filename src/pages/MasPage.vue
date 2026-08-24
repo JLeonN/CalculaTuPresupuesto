@@ -10,7 +10,7 @@ const opcionesAdicionales = obtenerElementosNavegacion('pagina-mas');
       <header class="encabezado-pagina">
         <p class="etiqueta-seccion">Otras herramientas</p>
         <h1 class="titulo-pagina">Más</h1>
-        <p class="texto-secundario">Accedé a materiales, historial y configuración.</p>
+        <p class="texto-secundario">Accedé a materiales y configuración.</p>
       </header>
 
       <nav class="lista-opciones" aria-label="Otras secciones">

@@ -81,16 +81,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/MaterialDetallePage.vue'),
       },
       {
-        path: 'historial',
-        name: 'historial',
-        component: () => import('@/components/PaginaModuloPendiente.vue'),
-        props: {
-          titulo: 'Historial',
-          descripcion: 'Acá vas a consultar trabajos y presupuestos anteriores.',
-          icono: 'history',
-        },
-      },
-      {
         path: 'configuracion',
         name: 'configuracion',
         component: () => import('@/pages/ConfiguracionPage.vue'),

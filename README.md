@@ -58,8 +58,7 @@ improvisadamente desde el plan maestro. Orden recomendado:
 3. Creación y cálculo de presupuestos.
 4. PDF configurable y envío por WhatsApp.
 5. Adicionales y aceptación del cliente.
-6. Historial y estadísticas.
-7. Persistencia, sincronización, Google Login y seguridad con Firebase.
+6. Persistencia, sincronización, Google Login y seguridad con Firebase.
 
 Ya existen implementaciones locales de clientes, materiales, presupuestos, configuración, PDF y envío por WhatsApp. Los módulos restantes deben continuar mediante planes independientes.
 
