@@ -50,6 +50,12 @@ export default defineConfig((ctx) => {
       publicPath: ctx.prod && ctx.mode.spa ? '/CalculaTuPresupuesto/' : '/',
       // vueRouterBase,
 
+      extendViteConf: () => ({
+        optimizeDeps: {
+          include: ['jspdf', 'html2canvas'],
+        },
+      }),
+
       // publicPath: '/',
       // define: {},
       // defineEnv: {}
