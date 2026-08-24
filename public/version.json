@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "mostrarActualizacion": true,
+  "cambios": {
+    "es-AR": [
+      {
+        "apartado": "Actualizaciones",
+        "novedades": [
+          "Ahora podés personalizar el nombre y el logo de tu empresa en toda la aplicación.",
+          "Tus datos guardados se conservan automáticamente al actualizar la identidad de la aplicación.",
+          "Los presupuestos ahora pueden marcarse como pendientes, aceptados o rechazados.",
+          "Mejoramos la estabilidad al guardar presupuestos y cambiar su estado.",
+          "La generación y exportación de presupuestos en PDF se inicia con mayor fluidez.",
+          "Simplificamos la navegación quitando apartados que todavía no estaban disponibles."
+        ]
+      }
+    ]
+  }
+}
