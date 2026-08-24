@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import LogoMallicTesla from '@/components/LogoMallicTesla.vue';
+import LogoEmpresa from '@/components/LogoEmpresa.vue';
 import { obtenerElementosNavegacion } from '@/configuracion/navegacion';
+import { useIdentidadAplicacion } from '@/composables/useIdentidadAplicacion';
 
 const accesosRapidos = obtenerElementosNavegacion('acceso-inicio');
+const { logoVisible, textoAlternativoLogo } = useIdentidadAplicacion();
 </script>
 
 <template>
@@ -10,7 +12,7 @@ const accesosRapidos = obtenerElementosNavegacion('acceso-inicio');
     <main class="contenedor-principal">
       <section class="presentacion-inicio" aria-labelledby="titulo-principal">
         <div class="presentacion-inicio__contenido">
-          <p class="etiqueta-seccion">Gestión de trabajos eléctricos</p>
+          <p class="etiqueta-seccion">Gestión de presupuestos</p>
           <h1 id="titulo-principal" class="presentacion-inicio__titulo">
             Tu trabajo, bien presupuestado.
           </h1>
@@ -28,8 +30,12 @@ const accesosRapidos = obtenerElementosNavegacion('acceso-inicio');
           />
         </div>
 
-        <div class="presentacion-inicio__marca" aria-hidden="true">
-          <LogoMallicTesla tamano="grande" />
+        <div class="presentacion-inicio__marca">
+          <LogoEmpresa
+            tamano="grande"
+            :origen="logoVisible"
+            :texto-alternativo="textoAlternativoLogo"
+          />
         </div>
       </section>
 

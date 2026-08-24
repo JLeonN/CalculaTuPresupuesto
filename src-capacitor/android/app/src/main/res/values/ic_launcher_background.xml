@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#FFFFFF</color>
+    <!-- Excepción nativa: replica el color de fondo principal porque Android no puede leer CSS. -->
+    <color name="ic_launcher_background">#080B10</color>
 </resources>

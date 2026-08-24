@@ -1,8 +1,8 @@
 {
   "name": "mallic-tesla",
   "version": "0.0.1",
-  "description": "Aplicación responsive de presupuestos para Mallic Tesla",
-  "productName": "Mallic Tesla",
+  "description": "Aplicación responsive para calcular y gestionar presupuestos profesionales",
+  "productName": "Calcula tu presupuesto",
   "author": "Leo",
   "type": "module",
   "private": true,

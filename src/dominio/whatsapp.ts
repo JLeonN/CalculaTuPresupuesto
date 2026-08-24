@@ -43,8 +43,8 @@ export function crearEnlaceWhatsapp(numero: string, mensaje: string): string {
 
 export function crearMensajePresupuestoWhatsapp(datos: DatosMensajePresupuestoWhatsapp): string {
   const nombreCliente = datos.nombreCliente.trim() || 'Cliente';
-  const nombreResponsable = datos.nombreResponsable.trim() || 'Pablo';
-  const nombreEmpresa = datos.nombreEmpresa.trim() || 'Mallic Tesla';
+  const nombreResponsable = datos.nombreResponsable.trim();
+  const nombreEmpresa = datos.nombreEmpresa.trim();
   const fecha = formatearFechaPresupuesto(datos.fechaPresupuesto);
   const totalManoObra = calcularTotalManoObraYTraslado(datos.lineas, datos.moneda);
   const totalMateriales = calcularTotalMateriales(datos.lineas, datos.moneda);
@@ -53,7 +53,7 @@ export function crearMensajePresupuestoWhatsapp(datos: DatosMensajePresupuestoWh
   return [
     `Hola, *${nombreCliente}*`,
     '',
-    `Soy *${nombreResponsable}*, de *${nombreEmpresa}*. Te comparto el presupuesto solicitado, con fecha *${fecha}*.`,
+    crearPresentacionPresupuesto(nombreResponsable, nombreEmpresa, fecha),
     '',
     '*Resumen del presupuesto*',
     '',
@@ -66,6 +66,26 @@ export function crearMensajePresupuestoWhatsapp(datos: DatosMensajePresupuestoWh
     '',
     'Quedo a disposición por cualquier consulta.',
   ].join('\n');
+}
+
+function crearPresentacionPresupuesto(
+  nombreResponsable: string,
+  nombreEmpresa: string,
+  fecha: string,
+): string {
+  if (nombreResponsable && nombreEmpresa) {
+    return `Soy *${nombreResponsable}*, de *${nombreEmpresa}*. Te comparto el presupuesto solicitado, con fecha *${fecha}*.`;
+  }
+
+  if (nombreResponsable) {
+    return `Soy *${nombreResponsable}*. Te comparto el presupuesto solicitado, con fecha *${fecha}*.`;
+  }
+
+  if (nombreEmpresa) {
+    return `Desde *${nombreEmpresa}* te compartimos el presupuesto solicitado, con fecha *${fecha}*.`;
+  }
+
+  return `Te comparto el presupuesto solicitado, con fecha *${fecha}*.`;
 }
 
 function formatearFechaPresupuesto(fecha: string): string {

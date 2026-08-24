@@ -1,19 +1,36 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, type WatchStopHandle } from 'vue';
 import { useRoute } from 'vue-router';
-import LogoMallicTesla from '@/components/LogoMallicTesla.vue';
+import LogoEmpresa from '@/components/LogoEmpresa.vue';
 import {
   ELEMENTO_MAS,
   estaElementoActivo,
   obtenerElementosNavegacion,
   type ElementoNavegacion,
 } from '@/configuracion/navegacion';
+import { SUBTITULO_APLICACION } from '@/configuracion/identidadAplicacion';
+import { useIdentidadAplicacion } from '@/composables/useIdentidadAplicacion';
+import { useConfiguracionStore } from '@/stores/configuracion';
 
 const ruta = useRoute();
+const configuracionStore = useConfiguracionStore();
+const { nombreEmpresaVisible, logoVisible, textoAlternativoLogo, sincronizarFavicon } =
+  useIdentidadAplicacion();
 const elementosMenuEscritorio = obtenerElementosNavegacion('menu-escritorio');
 const elementosBarraMovil = [...obtenerElementosNavegacion('barra-movil'), ELEMENTO_MAS];
+let detenerSincronizacionFavicon: WatchStopHandle | undefined;
 
 const rutaActual = computed(() => ruta.path);
+const etiquetaEnlaceInicio = computed(() => `Ir al inicio de ${nombreEmpresaVisible.value}`);
+
+onMounted(() => {
+  detenerSincronizacionFavicon = sincronizarFavicon();
+  void configuracionStore.asegurarConfiguracionCargada();
+});
+
+onUnmounted(() => {
+  detenerSincronizacionFavicon?.();
+});
 
 function estaActivo(elemento: ElementoNavegacion): boolean {
   return estaElementoActivo(elemento, rutaActual.value);
@@ -21,12 +38,16 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
 </script>
 
 <template>
-  <q-layout view="hHh LpR fFf" class="aplicacion-mallic-tesla">
+  <q-layout view="hHh LpR fFf" class="aplicacion-presupuestos">
     <q-header v-if="$q.screen.lt.md" class="encabezado-movil">
       <q-toolbar class="encabezado-movil__barra">
-        <router-link class="marca-movil" to="/" aria-label="Ir al inicio de Mallic Tesla">
-          <LogoMallicTesla tamano="pequeno" />
-          <span>Mallic Tesla</span>
+        <router-link class="marca-movil" to="/" :aria-label="etiquetaEnlaceInicio">
+          <LogoEmpresa
+            tamano="pequeno"
+            :origen="logoVisible"
+            :texto-alternativo="textoAlternativoLogo"
+          />
+          <span>{{ nombreEmpresaVisible }}</span>
         </router-link>
       </q-toolbar>
     </q-header>
@@ -39,11 +60,15 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
       class="menu-escritorio"
     >
       <aside class="menu-escritorio__contenido" aria-label="Navegación principal">
-        <router-link class="marca-escritorio" to="/" aria-label="Ir al inicio de Mallic Tesla">
-          <LogoMallicTesla tamano="mediano" />
+        <router-link class="marca-escritorio" to="/" :aria-label="etiquetaEnlaceInicio">
+          <LogoEmpresa
+            tamano="mediano"
+            :origen="logoVisible"
+            :texto-alternativo="textoAlternativoLogo"
+          />
           <span class="marca-escritorio__texto">
-            <strong>Mallic Tesla</strong>
-            <small>Presupuestos eléctricos</small>
+            <strong>{{ nombreEmpresaVisible }}</strong>
+            <small>{{ SUBTITULO_APLICACION }}</small>
           </span>
         </router-link>
 

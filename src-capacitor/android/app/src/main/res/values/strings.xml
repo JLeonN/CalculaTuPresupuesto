@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Mallic Tesla</string>
-    <string name="title_activity_main">Mallic Tesla</string>
+    <string name="app_name">Calcula tu presupuesto</string>
+    <string name="title_activity_main">Calcula tu presupuesto</string>
     <string name="package_name">com.mallictesla.presupuestos</string>
     <string name="custom_url_scheme">com.mallictesla.presupuestos</string>
 </resources>

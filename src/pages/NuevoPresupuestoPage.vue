@@ -110,7 +110,7 @@ async function inicializarPantalla(): Promise<void> {
     await Promise.all([
       clientesStore.cargarClientes(),
       materialesStore.cargarMateriales(),
-      configuracionStore.cargarConfiguracion(),
+      configuracionStore.asegurarConfiguracionCargada(),
       esNuevo.value ? Promise.resolve() : presupuestosStore.cargarPresupuestos(),
     ]);
 

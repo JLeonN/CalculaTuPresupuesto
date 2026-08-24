@@ -2,6 +2,7 @@ import {
   crearConfiguracionInicial,
   esConfiguracionGuardada,
   migrarConfiguracionAnterior,
+  migrarMensajeFinalPredeterminado,
   type Configuracion,
 } from '@/dominio/configuracion';
 import type { AlmacenamientoClaveValor } from '@/repositorios/clientes/AlmacenamientoClaveValor';
@@ -20,16 +21,28 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
       return crearConfiguracionInicial();
     }
 
-    try {
-      const configuracion = JSON.parse(datosGuardados) as unknown;
-      if (esConfiguracionGuardada(configuracion)) {
-        return structuredClone(configuracion);
-      }
+    let configuracionGuardada: unknown;
 
-      return migrarConfiguracionAnterior(configuracion) ?? crearConfiguracionInicial();
+    try {
+      configuracionGuardada = JSON.parse(datosGuardados) as unknown;
     } catch {
       return crearConfiguracionInicial();
     }
+
+    const configuracionRecuperada = esConfiguracionGuardada(configuracionGuardada)
+      ? structuredClone(configuracionGuardada)
+      : (migrarConfiguracionAnterior(configuracionGuardada) ?? crearConfiguracionInicial());
+    const configuracionMigrada = migrarMensajeFinalPredeterminado(configuracionRecuperada);
+
+    if (configuracionMigrada !== configuracionRecuperada) {
+      try {
+        await this.guardar(configuracionMigrada);
+      } catch {
+        // La migración sigue disponible en memoria y se volverá a intentar en la próxima carga.
+      }
+    }
+
+    return configuracionMigrada;
   }
 
   async guardar(configuracion: Configuracion): Promise<void> {

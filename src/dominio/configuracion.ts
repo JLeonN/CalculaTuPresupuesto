@@ -1,4 +1,7 @@
 export const MENSAJE_FINAL_PREDETERMINADO =
+  'Gracias por confiar en nosotros. Quedamos a disposición por cualquier consulta.';
+
+const MENSAJE_FINAL_PREDETERMINADO_ANTERIOR =
   'Gracias por confiar en Mallic Tesla. Quedamos a disposición por cualquier consulta.';
 
 export const REDES_SOCIALES_DISPONIBLES = [
@@ -206,6 +209,17 @@ export function migrarConfiguracionAnterior(valor: unknown): Configuracion | nul
       : [crearRedSocialConfiguracion()],
     fechaActualizacion:
       typeof valor.fechaActualizacion === 'string' ? valor.fechaActualizacion : null,
+  };
+}
+
+export function migrarMensajeFinalPredeterminado(configuracion: Configuracion): Configuracion {
+  if (configuracion.mensajeFinal !== MENSAJE_FINAL_PREDETERMINADO_ANTERIOR) {
+    return configuracion;
+  }
+
+  return {
+    ...configuracion,
+    mensajeFinal: MENSAJE_FINAL_PREDETERMINADO,
   };
 }
 

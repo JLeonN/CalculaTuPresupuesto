@@ -1,6 +1,6 @@
-# Mallic Tesla
+# Calcula tu presupuesto
 
-Base técnica responsive para crear y gestionar presupuestos de trabajos eléctricos desde navegador y Android. Este repositorio contiene solamente la inicialización técnica; las funciones comerciales se implementarán mediante planes independientes.
+Aplicación responsive para crear, calcular, guardar y compartir presupuestos profesionales desde navegador y Android. El nombre y el logo de cada empresa se configuran dentro de la aplicación.
 
 ## Stack
 
@@ -17,10 +17,10 @@ Base técnica responsive para crear y gestionar presupuestos de trabajos eléctr
 - `src/pages/IndexPage.vue`: pantalla inicial mínima.
 - `src-capacitor/`: proyecto nativo; el identificador Android es `com.mallictesla.presupuestos`.
 - `.github/workflows/deploy-pages.yml`: compilación y despliegue de `dist/spa` en GitHub Pages.
-- `PlanMaestroMallicTesla.md`: alcance y validaciones de la inicialización.
+- `Planes/`: planes ejecutables y registro de evolución del proyecto.
 - `C:/Z-Programacion/SolucionesAMedida/Clientes/MallicTesla`: contexto comercial, separado del código.
 
-El archivo `src/assets/LogoMallicTeslaOriginal.jpg` es una copia intacta de referencia. No es todavía el ícono definitivo y requiere un plan visual posterior.
+`src/assets/LogoCalculaTuPresupuesto.png` es el logo predeterminado del producto. `src/assets/LogoMallicTeslaOriginal.jpg` se conserva únicamente como referencia histórica y no forma parte de la identidad visible.
 
 ## Comandos
 
@@ -44,11 +44,11 @@ El repositorio y `origin` ya existían al comenzar este plan. CH no crea commits
 
 ## Arquitectura futura aprobada
 
-Firebase se incorporará únicamente en su propio plan. La arquitectura prevista incluye Google Login con Firebase Authentication, Cloud Firestore compartido entre Android y web, persistencia offline, sincronización al recuperar conexión y reglas cerradas a la identidad autorizada de Pablo. Firebase todavía no está instalado.
+Firebase se incorporará únicamente en su propio plan. La arquitectura prevista incluye Google Login con Firebase Authentication, Cloud Firestore compartido entre Android y web, persistencia offline, sincronización al recuperar conexión y aislamiento de los datos por cuenta autenticada. Firebase todavía no está instalado.
 
-La tipografía y los tres colores definitivos están pendientes de Pablo. Hasta recibirlos se utilizan valores oscuros provisionales centralizados en `Variables.css`.
+La identidad visual reutilizable se mantiene centralizada en `src/css/Variables.css`.
 
-## Planes derivados pendientes
+## Evolución funcional
 
 Cada módulo tendrá un plan ejecutable propio y no debe implementarse
 improvisadamente desde el plan maestro. Orden recomendado:
@@ -61,4 +61,8 @@ improvisadamente desde el plan maestro. Orden recomendado:
 6. Historial y estadísticas.
 7. Persistencia, sincronización, Google Login y seguridad con Firebase.
 
-No existen todavía implementaciones parciales de clientes, materiales, presupuestos, PDF, WhatsApp, adicionales, estadísticas ni Firebase.
+Ya existen implementaciones locales de clientes, materiales, presupuestos, configuración, PDF y envío por WhatsApp. Los módulos restantes deben continuar mediante planes independientes.
+
+## Compatibilidad técnica pendiente
+
+La ruta pública `/MallicTesla/`, las claves locales `mallic-tesla:*`, `package.name` y el identificador Android `com.mallictesla.presupuestos` se conservan temporalmente para no romper instalaciones ni datos existentes. Su posible migración debe resolverse antes de la primera publicación en Play Store mediante un plan específico.

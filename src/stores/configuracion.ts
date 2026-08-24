@@ -12,10 +12,12 @@ const repositorioConfiguracion = crearRepositorioConfiguracion();
 
 export const useConfiguracionStore = defineStore('configuracion', () => {
   const configuracion = ref<Configuracion>(crearConfiguracionInicial());
+  const configuracionCargada = ref(false);
   const cargando = ref(false);
   const guardando = ref(false);
   const guardadoCorrectamente = ref(false);
   const error = ref<string | null>(null);
+  let promesaCarga: Promise<void> | null = null;
 
   async function cargarConfiguracion(): Promise<void> {
     cargando.value = true;
@@ -24,11 +26,28 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
 
     try {
       configuracion.value = await repositorioConfiguracion.obtener();
+      configuracionCargada.value = true;
     } catch {
+      configuracionCargada.value = false;
       error.value = 'No se pudo cargar la configuración guardada.';
     } finally {
       cargando.value = false;
     }
+  }
+
+  function asegurarConfiguracionCargada(): Promise<void> {
+    if (configuracionCargada.value) {
+      return Promise.resolve();
+    }
+
+    if (promesaCarga) {
+      return promesaCarga;
+    }
+
+    promesaCarga = cargarConfiguracion().finally(() => {
+      promesaCarga = null;
+    });
+    return promesaCarga;
   }
 
   async function guardarConfiguracion(datos: DatosConfiguracion): Promise<Configuracion> {
@@ -40,6 +59,7 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
       const configuracionActualizada = actualizarConfiguracion(datos);
       await repositorioConfiguracion.guardar(configuracionActualizada);
       configuracion.value = configuracionActualizada;
+      configuracionCargada.value = true;
       guardadoCorrectamente.value = true;
       return configuracionActualizada;
     } catch (errorCapturado) {
@@ -59,11 +79,13 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
 
   return {
     configuracion,
+    configuracionCargada,
     cargando,
     guardando,
     guardadoCorrectamente,
     error,
     cargarConfiguracion,
+    asegurarConfiguracionCargada,
     guardarConfiguracion,
     limpiarEstadoGuardado,
   };

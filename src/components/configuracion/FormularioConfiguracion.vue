@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
 import {
   crearMetodoPagoConfiguracion,
   crearRedSocialConfiguracion,
@@ -39,6 +40,10 @@ const mensajeFinal = ref('');
 const metodosPago = ref<MetodoPagoConfiguracion[]>([]);
 const redesSociales = ref<RedSocialConfiguracion[]>([]);
 const errorLogo = ref('');
+const logoVistaPrevia = computed(() => logo.value?.datosUrl || LOGO_PREDETERMINADO);
+const textoAlternativoLogo = computed(() =>
+  logo.value ? `Logo ${logo.value.nombre}` : `Logo de ${NOMBRE_APLICACION}`,
+);
 
 watch(
   () => props.configuracion,
@@ -226,7 +231,7 @@ function guardarConfiguracion(): void {
             <p class="etiqueta-seccion">Identidad y contacto</p>
             <h2 id="titulo-empresa-configuracion" class="titulo-seccion">Empresa y responsable</h2>
             <p class="texto-secundario texto-ayuda-formulario">
-              Guardá la información profesional y de contacto de Mallic Tesla.
+              Guardá la información profesional y de contacto de tu empresa.
             </p>
           </div>
         </div>
@@ -265,14 +270,15 @@ function guardarConfiguracion(): void {
 
         <div class="selector-logo-configuracion">
           <div class="selector-logo-configuracion__vista">
-            <img v-if="logo" :src="logo.datosUrl" :alt="`Logo ${logo.nombre}`" />
-            <q-icon v-else name="image" aria-hidden="true" />
+            <img :src="logoVistaPrevia" :alt="textoAlternativoLogo" />
           </div>
           <div class="selector-logo-configuracion__acciones">
             <div>
               <strong>Logo de la empresa</strong>
               <p class="texto-secundario">Imagen JPG, PNG o WebP de hasta 1 MB.</p>
-              <span v-if="logo" class="selector-logo-configuracion__nombre">{{ logo.nombre }}</span>
+              <span class="selector-logo-configuracion__nombre">
+                {{ logo ? logo.nombre : 'Usando el logo predeterminado de la aplicación' }}
+              </span>
               <span v-if="errorLogo" class="selector-logo-configuracion__error" role="alert">
                 {{ errorLogo }}
               </span>

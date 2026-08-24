@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import logoMallicTesla from '@/assets/LogoMallicTeslaOriginal.jpg';
+import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
 import { formatearImporte } from '@/dominio/materiales';
 import {
   calcularSubtotalLinea,
@@ -19,8 +19,8 @@ const props = defineProps<{
 }>();
 
 const elementoDocumento = ref<HTMLElement | null>(null);
-const nombreEmpresa = computed(() => props.configuracion.nombreEmpresa.trim() || 'Mallic Tesla');
-const logoEmpresa = computed(() => props.configuracion.logo?.datosUrl || logoMallicTesla);
+const nombreEmpresa = computed(() => props.configuracion.nombreEmpresa.trim() || NOMBRE_APLICACION);
+const logoEmpresa = computed(() => props.configuracion.logo?.datosUrl || LOGO_PREDETERMINADO);
 const lineasMateriales = computed(() =>
   props.datos.lineas.filter((linea) => linea.tipo === 'material'),
 );

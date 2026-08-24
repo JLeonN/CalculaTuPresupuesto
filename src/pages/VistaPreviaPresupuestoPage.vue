@@ -73,7 +73,7 @@ async function cargarVistaPrevia(): Promise<void> {
   presupuestoNoEncontrado.value = false;
 
   try {
-    await configuracionStore.cargarConfiguracion();
+    await configuracionStore.asegurarConfiguracionCargada();
 
     if (borrador.value) {
       datosPresupuesto.value = normalizarDatosPresupuesto(borrador.value.datos);

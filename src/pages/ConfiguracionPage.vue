@@ -9,7 +9,7 @@ const $q = useQuasar();
 const configuracionStore = useConfiguracionStore();
 
 onMounted(() => {
-  void configuracionStore.cargarConfiguracion();
+  void configuracionStore.asegurarConfiguracionCargada();
 });
 
 async function guardarConfiguracion(datos: DatosConfiguracion): Promise<void> {
@@ -32,9 +32,7 @@ async function guardarConfiguracion(datos: DatosConfiguracion): Promise<void> {
       <header class="encabezado-configuracion">
         <p class="etiqueta-seccion">Preferencias generales</p>
         <h1 class="titulo-pagina">Configuración</h1>
-        <p class="texto-secundario">
-          Administrá los datos de Mallic Tesla y sus valores habituales.
-        </p>
+        <p class="texto-secundario">Administrá los datos de tu empresa y sus valores habituales.</p>
       </header>
 
       <q-banner v-if="configuracionStore.error" class="aviso-error" rounded>
