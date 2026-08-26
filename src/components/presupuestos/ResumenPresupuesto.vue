@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { formatearImporte, MONEDAS, type Moneda } from '@/dominio/materiales';
+import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
+import { crearOpcionesMonedaOperacion, formatearImporte, type Moneda } from '@/dominio/monedas';
 import {
   calcularTotalMateriales,
   calcularTotalPresupuesto,
@@ -12,6 +13,7 @@ import {
 
 const props = defineProps<{
   lineas: LineaPresupuesto[];
+  monedaPrincipal: Moneda;
   soloLectura?: boolean;
 }>();
 
@@ -28,25 +30,22 @@ const cantidadIncompatibles = computed(
 const cantidadPendientes = computed(
   () => props.lineas.filter((linea) => lineaTienePrecioPendiente(linea)).length,
 );
+const opcionesMonedaPresupuesto = computed(() =>
+  crearOpcionesMonedaOperacion(props.monedaPrincipal, moneda.value),
+);
 </script>
 
 <template>
   <footer class="resumen-presupuesto" aria-live="polite">
     <div class="resumen-presupuesto__controles">
-      <div
-        class="selector-moneda-presupuesto selector-moneda-precio__opciones"
-        role="radiogroup"
-        aria-label="Moneda del presupuesto"
-      >
-        <q-radio
-          v-for="opcionMoneda in MONEDAS"
-          :key="opcionMoneda"
-          v-model="moneda"
-          :val="opcionMoneda"
-          :label="opcionMoneda"
-          :disable="soloLectura"
-        />
-      </div>
+      <SelectorMoneda
+        v-model="moneda"
+        class="selector-moneda-presupuesto"
+        :opciones="opcionesMonedaPresupuesto"
+        etiqueta="Moneda del presupuesto"
+        :deshabilitado="soloLectura"
+        denso
+      />
 
       <div class="resumen-presupuesto__estado">
         <span>{{ lineas.length }} conceptos</span>

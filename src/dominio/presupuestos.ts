@@ -4,9 +4,9 @@ import {
   obtenerPrecioPredeterminado,
   obtenerUnidadMedida,
   type Material,
-  type Moneda,
   type PrecioMaterial,
 } from '@/dominio/materiales';
+import { esMoneda, MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
 import type {
   Configuracion,
   LogoConfiguracion,
@@ -85,7 +85,7 @@ export interface Presupuesto extends DatosPresupuesto {
 }
 
 export function crearLineasInicialesPresupuesto(
-  moneda: Moneda = 'UYU',
+  moneda: Moneda = MONEDA_INICIAL,
   valores: ValoresInicialesPresupuesto = {},
 ): LineaPresupuesto[] {
   return [
@@ -157,7 +157,7 @@ export function normalizarDatosPresupuesto(datos: DatosPresupuesto): DatosPresup
       telefono: datos.destinatario.telefono.trim(),
     },
     fechaPresupuesto: datos.fechaPresupuesto.trim(),
-    moneda: datos.moneda === 'USD' ? 'USD' : 'UYU',
+    moneda: esMoneda(datos.moneda) ? datos.moneda : MONEDA_INICIAL,
     lineas: datos.lineas.map(normalizarLineaPresupuesto),
     configuracionDocumento: datos.configuracionDocumento
       ? clonarConfiguracionDocumento(datos.configuracionDocumento)
@@ -208,7 +208,7 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     id: valor.id,
     destinatario,
     fechaPresupuesto: obtenerTexto(valor.fechaPresupuesto),
-    moneda: valor.moneda === 'USD' ? 'USD' : 'UYU',
+    moneda: esMoneda(valor.moneda) ? valor.moneda : MONEDA_INICIAL,
     lineas,
     configuracionDocumento: recuperarConfiguracionDocumento(valor.configuracionDocumento),
     estado,
@@ -226,7 +226,7 @@ export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
   return (
     typeof valor.id === 'string' &&
     typeof valor.fechaPresupuesto === 'string' &&
-    (valor.moneda === 'UYU' || valor.moneda === 'USD') &&
+    esMoneda(valor.moneda) &&
     esDestinatarioGuardado(valor.destinatario) &&
     Array.isArray(valor.lineas) &&
     valor.lineas.every(esLineaPresupuestoGuardada) &&
@@ -240,7 +240,10 @@ export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
   );
 }
 
-export function crearLineaMaterialManual(nombre: string, moneda: Moneda = 'UYU'): LineaPresupuesto {
+export function crearLineaMaterialManual(
+  nombre: string,
+  moneda: Moneda = MONEDA_INICIAL,
+): LineaPresupuesto {
   return {
     id: crearIdentificadorMaterial(),
     tipo: 'material',
@@ -255,14 +258,17 @@ export function crearLineaMaterialManual(nombre: string, moneda: Moneda = 'UYU')
   };
 }
 
-export function crearLineaManoObra(moneda: Moneda = 'UYU'): LineaPresupuesto {
+export function crearLineaManoObra(moneda: Moneda = MONEDA_INICIAL): LineaPresupuesto {
   return {
     ...crearLineaPredefinida('manoObra', '', 'Hora', 0, moneda),
     origen: 'manual',
   };
 }
 
-export function crearLineaDesdeMaterial(material: Material): LineaPresupuesto {
+export function crearLineaDesdeMaterial(
+  material: Material,
+  monedaPredeterminada: Moneda = MONEDA_INICIAL,
+): LineaPresupuesto {
   const precio = obtenerPrecioPredeterminado(material);
   const opcionesUnidad = precio ? crearOpcionesUnidad(precio) : [];
   const opcionPredeterminada = precio
@@ -279,7 +285,20 @@ export function crearLineaDesdeMaterial(material: Material): LineaPresupuesto {
     unidad: opcionPredeterminada?.unidad ?? 'Unidad',
     opcionesUnidad,
     precioUnitario: opcionPredeterminada?.precioUnitario ?? null,
-    moneda: precio?.moneda ?? 'UYU',
+    moneda: precio?.moneda ?? monedaPredeterminada,
+  };
+}
+
+export function confirmarConversionManualLinea(
+  linea: LineaPresupuesto,
+  monedaDestino: Moneda,
+): LineaPresupuesto {
+  return {
+    ...linea,
+    origen: linea.origen === 'catalogo' ? 'manual' : linea.origen,
+    idMaterial: linea.origen === 'catalogo' ? null : linea.idMaterial,
+    opcionesUnidad: [],
+    moneda: monedaDestino,
   };
 }
 
@@ -569,7 +588,7 @@ function recuperarLineaPresupuesto(valor: unknown): LineaPresupuesto | null {
     unidad: obtenerTexto(valor.unidad).trim() || 'Unidad',
     opcionesUnidad,
     precioUnitario: normalizarNumeroEditable(valor.precioUnitario, null),
-    moneda: valor.moneda === 'USD' ? 'USD' : 'UYU',
+    moneda: esMoneda(valor.moneda) ? valor.moneda : MONEDA_INICIAL,
   };
 }
 
@@ -624,7 +643,7 @@ function esLineaPresupuestoGuardada(valor: unknown): valor is LineaPresupuesto {
     typeof valor.unidad === 'string' &&
     Array.isArray(valor.opcionesUnidad) &&
     esNumeroOpcional(valor.precioUnitario) &&
-    (valor.moneda === 'UYU' || valor.moneda === 'USD')
+    esMoneda(valor.moneda)
   );
 }
 

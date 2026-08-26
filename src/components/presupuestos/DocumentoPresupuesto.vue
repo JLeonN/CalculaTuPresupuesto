@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
-import { formatearImporte } from '@/dominio/materiales';
+import { formatearImporte, formatearNumero } from '@/dominio/monedas';
 import {
   calcularSubtotalLinea,
   calcularTotalManoObraYTraslado,
@@ -67,7 +67,7 @@ function formatearFecha(fecha: string): string {
 }
 
 function formatearCantidad(cantidad: number | null): string {
-  return new Intl.NumberFormat('es-UY', { maximumFractionDigits: 2 }).format(cantidad ?? 0);
+  return formatearNumero(cantidad ?? 0);
 }
 
 defineExpose({ obtenerElemento });

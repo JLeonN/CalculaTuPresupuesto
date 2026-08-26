@@ -81,6 +81,8 @@
   --ancho-columna-acciones: 8.5rem;
   --ancho-columna-accion-material: 9.5rem;
   --ancho-fecha-ticket: 10rem;
+  --ancho-selector-moneda: 22rem;
+  --ancho-selector-moneda-denso: 15rem;
   --columnas-tabla-materiales: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr)
     var(--ancho-columna-accion-material);
   --columnas-tabla-presupuestos: minmax(0, 1.3fr) minmax(0, 0.65fr) minmax(0, 0.75fr)

@@ -2,6 +2,7 @@ import {
   crearConfiguracionInicial,
   esConfiguracionGuardada,
   migrarConfiguracionAnterior,
+  migrarConfiguracionSinMonedaPrincipal,
   migrarMensajeFinalPredeterminado,
   type Configuracion,
 } from '@/dominio/configuracion';
@@ -28,12 +29,27 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
       return crearConfiguracionInicial();
     }
 
-    const configuracionRecuperada = esConfiguracionGuardada(configuracionGuardada)
-      ? structuredClone(configuracionGuardada)
-      : (migrarConfiguracionAnterior(configuracionGuardada) ?? crearConfiguracionInicial());
+    let configuracionRecuperada: Configuracion;
+    let configuracionNecesitaMigracion = false;
+
+    if (esConfiguracionGuardada(configuracionGuardada)) {
+      configuracionRecuperada = structuredClone(configuracionGuardada);
+    } else {
+      const configuracionModernaMigrada =
+        migrarConfiguracionSinMonedaPrincipal(configuracionGuardada);
+      const configuracionAnteriorMigrada = configuracionModernaMigrada
+        ? null
+        : migrarConfiguracionAnterior(configuracionGuardada);
+
+      configuracionNecesitaMigracion =
+        configuracionModernaMigrada !== null || configuracionAnteriorMigrada !== null;
+      configuracionRecuperada =
+        configuracionModernaMigrada ?? configuracionAnteriorMigrada ?? crearConfiguracionInicial();
+    }
+
     const configuracionMigrada = migrarMensajeFinalPredeterminado(configuracionRecuperada);
 
-    if (configuracionMigrada !== configuracionRecuperada) {
+    if (configuracionNecesitaMigracion || configuracionMigrada !== configuracionRecuperada) {
       try {
         await this.guardar(configuracionMigrada);
       } catch {

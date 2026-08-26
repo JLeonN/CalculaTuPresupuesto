@@ -8,13 +8,13 @@ import {
   type Material,
 } from '@/dominio/materiales';
 import { crearRepositorioMateriales } from '@/repositorios/materiales/crearRepositorioMateriales';
+import { compararMonedas } from '@/dominio/monedas';
 import { defineStore } from 'pinia';
 
 export type CriterioOrdenMaterial = 'nombre' | 'precio' | 'local';
 export type DireccionOrden = 'ascendente' | 'descendente';
 
 const repositorioMateriales = crearRepositorioMateriales();
-const ORDEN_MONEDAS = { UYU: 0, USD: 1 } as const;
 
 export const useMaterialesStore = defineStore('materiales', () => {
   const materiales = ref<Material[]>([]);
@@ -144,7 +144,7 @@ function compararMateriales(
   const precioB = obtenerPrecioPredeterminado(materialB);
 
   if (criterio === 'precio' && precioA && precioB) {
-    const diferenciaMoneda = ORDEN_MONEDAS[precioA.moneda] - ORDEN_MONEDAS[precioB.moneda];
+    const diferenciaMoneda = compararMonedas(precioA.moneda, precioB.moneda);
     if (diferenciaMoneda !== 0) {
       return diferenciaMoneda;
     }

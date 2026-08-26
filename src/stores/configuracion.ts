@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import {
   actualizarConfiguracion,
   crearConfiguracionInicial,
@@ -17,6 +17,7 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
   const guardando = ref(false);
   const guardadoCorrectamente = ref(false);
   const error = ref<string | null>(null);
+  const monedaPrincipal = computed(() => configuracion.value.monedaPrincipal);
   let promesaCarga: Promise<void> | null = null;
 
   async function cargarConfiguracion(): Promise<void> {
@@ -84,6 +85,7 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
     guardando,
     guardadoCorrectamente,
     error,
+    monedaPrincipal,
     cargarConfiguracion,
     asegurarConfiguracionCargada,
     guardarConfiguracion,

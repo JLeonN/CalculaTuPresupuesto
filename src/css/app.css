@@ -554,6 +554,11 @@ input[type='number']::-webkit-outer-spin-button {
   background: var(--color-error);
 }
 
+.aviso-advertencia {
+  color: var(--color-accion-contraste);
+  background: var(--color-advertencia);
+}
+
 .notificacion-exito {
   color: var(--color-accion-contraste);
   background: var(--color-exito);
@@ -1372,6 +1377,18 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: var(--tamano-texto-secundario);
 }
 
+.fila-presupuesto__aviso-moneda {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaciado-mediano);
+}
+
+.fila-presupuesto__confirmar-moneda {
+  flex: 0 0 auto;
+  color: var(--color-error);
+}
+
 .ticket-presupuesto__vacio {
   display: grid;
   justify-items: center;
@@ -1411,6 +1428,16 @@ input[type='number']::-webkit-outer-spin-button {
 
 .selector-moneda-presupuesto {
   flex: 0 0 auto;
+}
+
+.selector-moneda {
+  width: 100%;
+  max-width: var(--ancho-selector-moneda);
+  min-width: 0;
+}
+
+.selector-moneda--denso {
+  max-width: var(--ancho-selector-moneda-denso);
 }
 
 .resumen-presupuesto__estado {
@@ -2394,19 +2421,13 @@ input[type='number']::-webkit-outer-spin-button {
 
 .grupo-precio-moneda {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--ancho-selector-moneda-denso));
   align-items: start;
   gap: var(--espaciado-mediano);
 }
 
 .selector-moneda-precio {
-  min-width: max-content;
-}
-
-.selector-moneda-precio__opciones {
-  display: flex;
-  align-items: center;
-  gap: var(--espaciado-pequeno);
+  min-width: 0;
 }
 
 .selector-modalidad-precio {
@@ -2559,6 +2580,23 @@ input[type='number']::-webkit-outer-spin-button {
 
   .selector-moneda-precio {
     min-width: 0;
+  }
+
+  .selector-moneda,
+  .selector-moneda--denso,
+  .selector-moneda-presupuesto {
+    width: 100%;
+    max-width: none;
+  }
+
+  .resumen-presupuesto__controles,
+  .fila-presupuesto__aviso-moneda {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fila-presupuesto__confirmar-moneda {
+    width: 100%;
   }
 
   .formulario-material__contenedor,

@@ -4,13 +4,13 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import {
   calcularCostoUnitario,
-  formatearImporte,
   formatearPrecioVisible,
   obtenerPresentacion,
   obtenerUnidadMedida,
   type Material,
   type PrecioMaterial,
 } from '@/dominio/materiales';
+import { formatearImporte } from '@/dominio/monedas';
 import { useMaterialesStore } from '@/stores/materiales';
 
 const ruta = useRoute();

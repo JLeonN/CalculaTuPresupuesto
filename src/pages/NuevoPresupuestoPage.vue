@@ -9,9 +9,11 @@ import DocumentoPresupuesto from '@/components/presupuestos/DocumentoPresupuesto
 import FilaPresupuesto from '@/components/presupuestos/FilaPresupuesto.vue';
 import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue';
 import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorDestinatarioPresupuesto.vue';
-import type { Material, Moneda } from '@/dominio/materiales';
+import type { Material } from '@/dominio/materiales';
+import { MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
 import {
   clonarLineasPresupuesto,
+  confirmarConversionManualLinea,
   crearConfiguracionDocumento,
   crearLineaDesdeMaterial,
   crearLineaManoObra,
@@ -51,7 +53,7 @@ const idCliente = ref<string | null>(null);
 const nombreDestinatario = ref('');
 const telefonoDestinatario = ref('');
 const fechaPresupuesto = ref(obtenerFechaActualLocal());
-const monedaPresupuesto = ref<Moneda>('UYU');
+const monedaPresupuesto = ref<Moneda>(MONEDA_INICIAL);
 const lineas = ref<LineaPresupuesto[]>([]);
 const presupuesto = ref<Presupuesto>();
 const cargandoPagina = ref(true);
@@ -152,6 +154,7 @@ async function inicializarPantalla(): Promise<void> {
 
 function restablecerFormularioNuevo(): void {
   const primeraTarifa = configuracionStore.configuracion.tarifasManoObra[0];
+  const monedaPrincipal = configuracionStore.monedaPrincipal;
 
   presupuesto.value = undefined;
   tipoDestinatario.value = 'potencial';
@@ -159,8 +162,8 @@ function restablecerFormularioNuevo(): void {
   nombreDestinatario.value = '';
   telefonoDestinatario.value = '';
   fechaPresupuesto.value = obtenerFechaActualLocal();
-  monedaPresupuesto.value = 'UYU';
-  lineas.value = crearLineasInicialesPresupuesto('UYU', {
+  monedaPresupuesto.value = monedaPrincipal;
+  lineas.value = crearLineasInicialesPresupuesto(monedaPrincipal, {
     nombreManoObra: primeraTarifa?.nombre,
     precioManoObraHora: primeraTarifa?.precioHora,
     precioTrasladoKilometro: configuracionStore.configuracion.precioTrasladoKilometro,
@@ -213,7 +216,7 @@ function serializarDatosFormulario(): string {
 }
 
 function agregarMaterial(material: Material): void {
-  lineas.value.push(crearLineaDesdeMaterial(material));
+  lineas.value.push(crearLineaDesdeMaterial(material, configuracionStore.monedaPrincipal));
 }
 
 function agregarMaterialManual(nombre: string): void {
@@ -230,6 +233,20 @@ function agregarManoObra(): void {
 
 function eliminarLinea(idLinea: string): void {
   lineas.value = lineas.value.filter((linea) => linea.id !== idLinea);
+}
+
+function confirmarConversionLinea(indiceLinea: number): void {
+  const linea = lineas.value[indiceLinea];
+
+  if (!linea) {
+    return;
+  }
+
+  lineas.value.splice(
+    indiceLinea,
+    1,
+    confirmarConversionManualLinea(linea, monedaPresupuesto.value),
+  );
 }
 
 function abrirVistaPrevia(): void {
@@ -545,6 +562,7 @@ function restablecerFechaPresupuesto(): void {
               :tarifas-mano-obra="configuracionStore.configuracion.tarifasManoObra"
               :solo-lectura="soloLectura"
               @eliminar="eliminarLinea(linea.id)"
+              @confirmar-conversion="confirmarConversionLinea(indice)"
             />
           </div>
 
@@ -559,6 +577,7 @@ function restablecerFechaPresupuesto(): void {
           <ResumenPresupuesto
             v-model:moneda="monedaPresupuesto"
             :lineas="lineas"
+            :moneda-principal="configuracionStore.monedaPrincipal"
             :solo-lectura="soloLectura"
           />
         </section>

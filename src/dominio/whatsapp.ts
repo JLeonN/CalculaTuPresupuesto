@@ -1,4 +1,4 @@
-import { formatearImporte, type Moneda } from '@/dominio/materiales';
+import { formatearImporte, type Moneda } from '@/dominio/monedas';
 import {
   calcularTotalManoObraYTraslado,
   calcularTotalMateriales,

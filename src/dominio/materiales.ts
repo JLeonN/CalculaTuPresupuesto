@@ -1,8 +1,8 @@
-export const MONEDAS = ['UYU', 'USD'] as const;
+import { formatearImporte, MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
+
 export const UNIDADES_MEDIDA = ['Unidad', 'Metro', 'Kilogramo', 'Litro', 'Rollo', 'Otro'] as const;
 export const PRESENTACIONES = ['Caja', 'Paquete', 'Rollo', 'Bolsa', 'Bobina', 'Otro'] as const;
 
-export type Moneda = (typeof MONEDAS)[number];
 export type UnidadMedida = (typeof UNIDADES_MEDIDA)[number];
 export type Presentacion = (typeof PRESENTACIONES)[number];
 export type ModalidadPrecio = 'directo' | 'presentacion';
@@ -45,11 +45,11 @@ export function crearIdentificadorMaterial(): string {
   return crypto.randomUUID();
 }
 
-export function crearPrecioMaterial(): DatosPrecioMaterial {
+export function crearPrecioMaterial(moneda: Moneda = MONEDA_INICIAL): DatosPrecioMaterial {
   return {
     id: crearIdentificadorMaterial(),
     comercio: '',
-    moneda: 'UYU',
+    moneda,
     modalidad: 'directo',
     importe: null,
     unidadMedida: 'Unidad',
@@ -102,15 +102,6 @@ export function obtenerPresentacion(precio: DatosPrecioMaterial): string {
   return precio.presentacion === 'Otro'
     ? precio.presentacionPersonalizada.trim() || 'presentación'
     : precio.presentacion;
-}
-
-export function formatearImporte(importe: number, moneda: Moneda): string {
-  const importeFormateado = new Intl.NumberFormat('es-UY', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(importe);
-
-  return `${moneda} ${importeFormateado}`;
 }
 
 export function formatearPrecioVisible(precio: DatosPrecioMaterial): string {

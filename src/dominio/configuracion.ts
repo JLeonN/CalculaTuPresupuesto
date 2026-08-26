@@ -1,3 +1,5 @@
+import { esMoneda, MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
+
 export const MENSAJE_FINAL_PREDETERMINADO =
   'Gracias por confiar en nosotros. Quedamos a disposición por cualquier consulta.';
 
@@ -48,6 +50,7 @@ export interface DatosConfiguracion {
   logo: LogoConfiguracion | null;
   tarifasManoObra: TarifaManoObraConfiguracion[];
   precioTrasladoKilometro: number | null;
+  monedaPrincipal: Moneda;
   mensajeFinal: string;
   metodosPago: MetodoPagoConfiguracion[];
   redesSociales: RedSocialConfiguracion[];
@@ -56,6 +59,11 @@ export interface DatosConfiguracion {
 export interface Configuracion extends DatosConfiguracion {
   fechaActualizacion: string | null;
 }
+
+type ConfiguracionSinMonedaPrincipal = Omit<Configuracion, 'monedaPrincipal'>;
+type ConfiguracionModernaRecuperable = ConfiguracionSinMonedaPrincipal & {
+  monedaPrincipal?: unknown;
+};
 
 export function crearConfiguracionInicial(): Configuracion {
   return {
@@ -68,6 +76,7 @@ export function crearConfiguracionInicial(): Configuracion {
     logo: null,
     tarifasManoObra: [crearTarifaManoObraConfiguracion()],
     precioTrasladoKilometro: null,
+    monedaPrincipal: MONEDA_INICIAL,
     mensajeFinal: MENSAJE_FINAL_PREDETERMINADO,
     metodosPago: [crearMetodoPagoConfiguracion()],
     redesSociales: [crearRedSocialConfiguracion()],
@@ -119,6 +128,7 @@ export function normalizarDatosConfiguracion(datos: DatosConfiguracion): DatosCo
     logo: datos.logo ? { ...datos.logo, nombre: datos.logo.nombre.trim() } : null,
     tarifasManoObra: datos.tarifasManoObra.map(normalizarTarifaManoObra),
     precioTrasladoKilometro: normalizarPrecio(datos.precioTrasladoKilometro),
+    monedaPrincipal: esMoneda(datos.monedaPrincipal) ? datos.monedaPrincipal : MONEDA_INICIAL,
     mensajeFinal: normalizarTextoMultilinea(datos.mensajeFinal),
     metodosPago: datos.metodosPago
       .map((metodo) => ({
@@ -138,29 +148,18 @@ export function normalizarDatosConfiguracion(datos: DatosConfiguracion): DatosCo
 }
 
 export function esConfiguracionGuardada(valor: unknown): valor is Configuracion {
-  if (!esRegistro(valor)) {
-    return false;
+  return esEstructuraConfiguracionComun(valor) && esMoneda(valor.monedaPrincipal);
+}
+
+export function migrarConfiguracionSinMonedaPrincipal(valor: unknown): Configuracion | null {
+  if (!esConfiguracionGuardadaSinMonedaPrincipal(valor)) {
+    return null;
   }
 
-  const camposTexto = [
-    'nombreEmpresa',
-    'nombreResponsable',
-    'telefono',
-    'correo',
-    'direccion',
-    'rut',
-    'mensajeFinal',
-  ];
-
-  return (
-    camposTexto.every((campo) => typeof valor[campo] === 'string') &&
-    esListaTarifasManoObra(valor.tarifasManoObra) &&
-    esPrecioGuardado(valor.precioTrasladoKilometro) &&
-    esLogoGuardado(valor.logo) &&
-    esListaMetodosPago(valor.metodosPago) &&
-    esListaRedesSociales(valor.redesSociales) &&
-    (valor.fechaActualizacion === null || typeof valor.fechaActualizacion === 'string')
-  );
+  return {
+    ...structuredClone(valor),
+    monedaPrincipal: MONEDA_INICIAL,
+  };
 }
 
 export function migrarConfiguracionAnterior(valor: unknown): Configuracion | null {
@@ -265,6 +264,38 @@ function normalizarTextoMultilinea(valor: string): string {
 
 function esRegistro(valor: unknown): valor is Record<string, unknown> {
   return typeof valor === 'object' && valor !== null;
+}
+
+function esEstructuraConfiguracionComun(valor: unknown): valor is Record<string, unknown> {
+  if (!esRegistro(valor)) {
+    return false;
+  }
+
+  const camposTexto = [
+    'nombreEmpresa',
+    'nombreResponsable',
+    'telefono',
+    'correo',
+    'direccion',
+    'rut',
+    'mensajeFinal',
+  ];
+
+  return (
+    camposTexto.every((campo) => typeof valor[campo] === 'string') &&
+    esListaTarifasManoObra(valor.tarifasManoObra) &&
+    esPrecioGuardado(valor.precioTrasladoKilometro) &&
+    esLogoGuardado(valor.logo) &&
+    esListaMetodosPago(valor.metodosPago) &&
+    esListaRedesSociales(valor.redesSociales) &&
+    (valor.fechaActualizacion === null || typeof valor.fechaActualizacion === 'string')
+  );
+}
+
+function esConfiguracionGuardadaSinMonedaPrincipal(
+  valor: unknown,
+): valor is ConfiguracionModernaRecuperable {
+  return esEstructuraConfiguracionComun(valor) && !esMoneda(valor.monedaPrincipal);
 }
 
 function esPrecioGuardado(valor: unknown): valor is number | null {

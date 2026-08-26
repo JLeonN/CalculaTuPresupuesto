@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
 import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
 import {
   crearMetodoPagoConfiguracion,
@@ -13,6 +14,7 @@ import {
   type RedSocialConfiguracion,
   type TarifaManoObraConfiguracion,
 } from '@/dominio/configuracion';
+import { MONEDA_INICIAL, obtenerOpcionesMonedasDisponibles, type Moneda } from '@/dominio/monedas';
 
 const TAMANO_MAXIMO_LOGO_BYTES = 1024 * 1024;
 const TIPOS_LOGO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
@@ -36,10 +38,16 @@ const rut = ref('');
 const logo = ref<LogoConfiguracion | null>(null);
 const tarifasManoObra = ref<TarifaManoObraConfiguracion[]>([]);
 const precioTrasladoKilometro = ref<number | null>(null);
+const monedaPrincipal = ref<Moneda>(MONEDA_INICIAL);
+const monedaPrincipalCargada = ref<Moneda>(MONEDA_INICIAL);
 const mensajeFinal = ref('');
 const metodosPago = ref<MetodoPagoConfiguracion[]>([]);
 const redesSociales = ref<RedSocialConfiguracion[]>([]);
 const errorLogo = ref('');
+const opcionesMonedas = obtenerOpcionesMonedasDisponibles();
+const monedaPrincipalCambio = computed(
+  () => monedaPrincipal.value !== monedaPrincipalCargada.value,
+);
 const logoVistaPrevia = computed(() => logo.value?.datosUrl || LOGO_PREDETERMINADO);
 const textoAlternativoLogo = computed(() =>
   logo.value ? `Logo ${logo.value.nombre}` : `Logo de ${NOMBRE_APLICACION}`,
@@ -69,6 +77,8 @@ watch(
       ? tarifasGuardadas.map((tarifa) => ({ ...tarifa }))
       : [crearTarifaManoObraConfiguracion()];
     precioTrasladoKilometro.value = configuracion.precioTrasladoKilometro;
+    monedaPrincipal.value = configuracion.monedaPrincipal;
+    monedaPrincipalCargada.value = configuracion.monedaPrincipal;
     mensajeFinal.value = configuracion.mensajeFinal;
     metodosPago.value = metodosGuardados.length
       ? metodosGuardados.map((metodo) => ({ ...metodo }))
@@ -215,6 +225,7 @@ function guardarConfiguracion(): void {
     logo: logo.value ? { ...logo.value } : null,
     tarifasManoObra: tarifasManoObra.value.map((tarifa) => ({ ...tarifa })),
     precioTrasladoKilometro: precioTrasladoKilometro.value,
+    monedaPrincipal: monedaPrincipal.value,
     mensajeFinal: mensajeFinal.value,
     metodosPago: metodosPago.value.map((metodo) => ({ ...metodo })),
     redesSociales: redesSociales.value.map((redSocial) => ({ ...redSocial })),
@@ -354,6 +365,7 @@ function guardarConfiguracion(): void {
                 min="0"
                 step="0.01"
                 label="Precio"
+                :prefix="monedaPrincipal"
                 suffix="por hora"
                 :rules="[validarPrecioObligatorio]"
               />
@@ -392,9 +404,39 @@ function guardarConfiguracion(): void {
             min="0"
             step="0.01"
             label="Precio de traslado"
+            :prefix="monedaPrincipal"
             suffix="por kilómetro"
             :rules="[validarPrecio]"
           />
+        </div>
+      </section>
+
+      <section class="seccion-formulario" aria-labelledby="titulo-moneda-configuracion">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Preferencias de importes</p>
+            <h2 id="titulo-moneda-configuracion" class="titulo-seccion">Moneda principal</h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Se usará por defecto en materiales y presupuestos nuevos. Cambiar la moneda no
+              convierte materiales ni presupuestos guardados.
+            </p>
+          </div>
+        </div>
+
+        <div class="grilla-configuracion grilla-configuracion--un-campo">
+          <SelectorMoneda
+            v-model="monedaPrincipal"
+            :opciones="opcionesMonedas"
+            etiqueta="Moneda principal"
+            ayuda="Se usará por defecto en materiales y presupuestos nuevos."
+            buscable
+          />
+
+          <q-banner v-if="monedaPrincipalCambio" class="aviso-advertencia" rounded>
+            <template #avatar><q-icon name="warning_amber" /></template>
+            Los importes de mano de obra y traslado no se convierten. Revisalos manualmente antes de
+            guardar.
+          </q-banner>
         </div>
       </section>
 

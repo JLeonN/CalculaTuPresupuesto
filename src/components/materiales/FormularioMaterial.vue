@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
 import {
   calcularCostoUnitario,
   crearPrecioMaterial,
-  formatearImporte,
-  MONEDAS,
   obtenerUnidadMedida,
   PRESENTACIONES,
   UNIDADES_MEDIDA,
@@ -12,10 +11,12 @@ import {
   type DatosPrecioMaterial,
   type Material,
 } from '@/dominio/materiales';
+import { crearOpcionesMonedaOperacion, formatearImporte, type Moneda } from '@/dominio/monedas';
 
 const props = defineProps<{
   material: Material | undefined;
   guardando: boolean;
+  monedaPrincipal: Moneda;
 }>();
 
 const emitir = defineEmits<{
@@ -51,12 +52,12 @@ function cargarDatosMaterial(material: Material | undefined): void {
         precioCantidadParcial: precio.precioCantidadParcial ?? null,
         valorVisible: precio.valorVisible,
       }))
-    : [crearPrecioMaterial()];
+    : [crearPrecioMaterial(props.monedaPrincipal)];
   idPrecioPredeterminado.value = material?.idPrecioPredeterminado ?? precios.value[0]?.id ?? '';
 }
 
 function agregarPrecio(): void {
-  const precio = crearPrecioMaterial();
+  const precio = crearPrecioMaterial(props.monedaPrincipal);
   precios.value.push(precio);
   idPrecioPredeterminado.value ||= precio.id;
 }
@@ -102,6 +103,10 @@ function opcionesValorVisible(precio: DatosPrecioMaterial) {
       value: 'unitario',
     },
   ];
+}
+
+function opcionesMonedaPrecio(precio: DatosPrecioMaterial) {
+  return crearOpcionesMonedaOperacion(props.monedaPrincipal, precio.moneda);
 }
 
 function validarPositivo(valor: unknown, mensaje: string): true | string {
@@ -208,28 +213,13 @@ function guardarMaterial(): void {
                       (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
                     ]"
                   />
-                  <q-field
-                    :model-value="precio.moneda"
+                  <SelectorMoneda
+                    v-model="precio.moneda"
                     class="selector-moneda-precio"
-                    dark
-                    outlined
-                  >
-                    <template #control>
-                      <div
-                        class="selector-moneda-precio__opciones"
-                        role="radiogroup"
-                        aria-label="Moneda"
-                      >
-                        <q-radio
-                          v-for="moneda in MONEDAS"
-                          :key="moneda"
-                          v-model="precio.moneda"
-                          :val="moneda"
-                          :label="moneda"
-                        />
-                      </div>
-                    </template>
-                  </q-field>
+                    :opciones="opcionesMonedaPrecio(precio)"
+                    etiqueta="Moneda"
+                    denso
+                  />
                 </div>
                 <q-select
                   v-model="precio.unidadMedida"
@@ -285,28 +275,13 @@ function guardarMaterial(): void {
                       (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
                     ]"
                   />
-                  <q-field
-                    :model-value="precio.moneda"
+                  <SelectorMoneda
+                    v-model="precio.moneda"
                     class="selector-moneda-precio"
-                    dark
-                    outlined
-                  >
-                    <template #control>
-                      <div
-                        class="selector-moneda-precio__opciones"
-                        role="radiogroup"
-                        aria-label="Moneda"
-                      >
-                        <q-radio
-                          v-for="moneda in MONEDAS"
-                          :key="moneda"
-                          v-model="precio.moneda"
-                          :val="moneda"
-                          :label="moneda"
-                        />
-                      </div>
-                    </template>
-                  </q-field>
+                    :opciones="opcionesMonedaPrecio(precio)"
+                    etiqueta="Moneda"
+                    denso
+                  />
                 </div>
 
                 <div class="grilla-campos-precio">

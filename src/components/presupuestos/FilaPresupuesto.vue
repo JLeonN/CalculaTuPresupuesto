@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { formatearImporte, UNIDADES_MEDIDA, type Moneda } from '@/dominio/materiales';
+import { UNIDADES_MEDIDA } from '@/dominio/materiales';
+import { formatearImporte, type Moneda } from '@/dominio/monedas';
 import type { TarifaManoObraConfiguracion } from '@/dominio/configuracion';
 import {
   calcularSubtotalLinea,
@@ -18,6 +19,7 @@ const linea = defineModel<LineaPresupuesto>({ required: true });
 
 const emitir = defineEmits<{
   eliminar: [];
+  confirmarConversion: [];
 }>();
 
 const esMaterial = computed(() => linea.value.tipo === 'material');
@@ -251,9 +253,24 @@ function seleccionarContenidoNumerico(evento: Event): void {
       />
     </div>
 
-    <p v-if="!monedaCompatible" class="fila-presupuesto__aviso" role="alert">
-      Esta línea está en {{ linea.moneda }} y no se incluye en el total {{ monedaPresupuesto }}.
-      Elegí la misma moneda en el resumen o eliminá el material.
-    </p>
+    <div v-if="!monedaCompatible" class="fila-presupuesto__aviso-moneda" role="alert">
+      <p class="fila-presupuesto__aviso">
+        <template v-if="soloLectura">
+          Esta línea está en {{ linea.moneda }} y no se incluye en el total {{ monedaPresupuesto }}.
+        </template>
+        <template v-else>
+          Convertí manualmente el importe de {{ linea.moneda }} a {{ monedaPresupuesto }} y confirmá
+          la conversión.
+        </template>
+      </p>
+      <q-btn
+        v-if="!soloLectura"
+        class="boton-secundario fila-presupuesto__confirmar-moneda"
+        flat
+        no-caps
+        :label="`Confirmar conversión a ${monedaPresupuesto}`"
+        @click="emitir('confirmarConversion')"
+      />
+    </div>
   </article>
 </template>

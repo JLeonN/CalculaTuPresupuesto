@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import BuscadorListado from '@/components/BuscadorListado.vue';
 import InsigniaEstadoPresupuesto from '@/components/presupuestos/InsigniaEstadoPresupuesto.vue';
 import { calcularTotalPresupuesto } from '@/dominio/presupuestos';
-import { formatearImporte } from '@/dominio/materiales';
+import { formatearImporte } from '@/dominio/monedas';
 import { usePresupuestosStore } from '@/stores/presupuestos';
 
 const presupuestosStore = usePresupuestosStore();

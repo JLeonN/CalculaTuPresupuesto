@@ -5,23 +5,28 @@ import { useRoute, useRouter } from 'vue-router';
 import FormularioMaterial from '@/components/materiales/FormularioMaterial.vue';
 import type { DatosMaterial, Material } from '@/dominio/materiales';
 import { useMaterialesStore } from '@/stores/materiales';
+import { useConfiguracionStore } from '@/stores/configuracion';
 
 const ruta = useRoute();
 const router = useRouter();
 const $q = useQuasar();
 const materialesStore = useMaterialesStore();
+const configuracionStore = useConfiguracionStore();
 const material = ref<Material>();
 const materialNoEncontrado = ref(false);
-const cargandoMaterial = ref(false);
+const cargandoPagina = ref(true);
 const esEdicion = computed(() => typeof ruta.params.idMaterial === 'string');
 
 onMounted(async () => {
-  cargandoMaterial.value = esEdicion.value;
+  cargandoPagina.value = true;
 
   try {
-    if (materialesStore.materiales.length === 0) {
-      await materialesStore.cargarMateriales();
-    }
+    await Promise.all([
+      configuracionStore.asegurarConfiguracionCargada(),
+      materialesStore.materiales.length === 0
+        ? materialesStore.cargarMateriales()
+        : Promise.resolve(),
+    ]);
 
     if (!esEdicion.value) {
       return;
@@ -30,7 +35,7 @@ onMounted(async () => {
     material.value = materialesStore.obtenerMaterialPorId(String(ruta.params.idMaterial));
     materialNoEncontrado.value = material.value === undefined;
   } finally {
-    cargandoMaterial.value = false;
+    cargandoPagina.value = false;
   }
 });
 
@@ -85,12 +90,16 @@ function cancelar(): void {
         </p>
       </header>
 
-      <q-banner v-if="materialesStore.error" class="aviso-error" rounded>
+      <q-banner
+        v-if="materialesStore.error || configuracionStore.error"
+        class="aviso-error"
+        rounded
+      >
         <template #avatar><q-icon name="error_outline" /></template>
-        {{ materialesStore.error }}
+        {{ materialesStore.error || configuracionStore.error }}
       </q-banner>
 
-      <div v-if="cargandoMaterial" class="estado-materiales">
+      <div v-if="cargandoPagina" class="estado-materiales">
         <q-spinner class="indicador-carga" size="2rem" />
         <span>Cargando datos del material…</span>
       </div>
@@ -115,6 +124,7 @@ function cancelar(): void {
         :key="material?.id ?? 'nuevo-material'"
         :material="material"
         :guardando="materialesStore.guardando"
+        :moneda-principal="configuracionStore.monedaPrincipal"
         @guardar="guardarMaterial"
         @cancelar="cancelar"
       />
