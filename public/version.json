@@ -1,17 +1,17 @@
 {
-  "version": "0.0.2",
+  "version": "0.0.3",
   "mostrarActualizacion": true,
   "cambios": {
     "es-AR": [
       {
         "apartado": "Actualizaciones",
         "novedades": [
-          "Ahora podés personalizar el nombre y el logo de tu empresa en toda la aplicación.",
-          "Tus datos guardados se conservan automáticamente al actualizar la identidad de la aplicación.",
-          "Los presupuestos ahora pueden marcarse como pendientes, aceptados o rechazados.",
-          "Mejoramos la estabilidad al guardar presupuestos y cambiar su estado.",
-          "La generación y exportación de presupuestos en PDF se inicia con mayor fluidez.",
-          "Simplificamos la navegación quitando apartados que todavía no estaban disponibles."
+          "Ahora podés elegir la moneda principal que usás en materiales y presupuestos.",
+          "Los importes conservan su moneda original y la aplicación te avisa antes de mezclar monedas diferentes.",
+          "Incorporamos un acceso privado mediante un candado discreto en la pantalla de inicio.",
+          "Podés mantener la sesión iniciada y cerrarla cuando termines de trabajar.",
+          "En el modo de prueba podés recorrer toda la aplicación, pero necesitás iniciar sesión para descargar, imprimir o enviar presupuestos.",
+          "Los presupuestos muestran una marca de agua mientras utilizás la aplicación sin iniciar sesión."
         ]
       }
     ]
