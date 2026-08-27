@@ -5,6 +5,7 @@ node_modules
 # .env files
 .env*
 !.env.example
+!.env.local
 
 # Archivos temporales de inicialización
 /_generacion-quasar

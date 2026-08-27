@@ -32,7 +32,7 @@
 
 ## Seguridad y Git
 
-- Nunca escribir secretos, tokens, credenciales o datos reales de clientes en archivos versionados.
+- Nunca escribir secretos, tokens, credenciales o datos reales de clientes en archivos versionados. Solo si Leo autoriza
 - Usar `.env.example` solo como contrato sin valores reales.
 - No ejecutar `git add`, crear commits ni hacer push salvo solicitud explícita de Leo.
 - No cambiar `com.calculatupresupuesto.app` después de publicar Android sin un plan explícito de migración.
