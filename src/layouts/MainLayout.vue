@@ -10,9 +10,11 @@ import {
 } from '@/configuracion/navegacion';
 import { SUBTITULO_APLICACION } from '@/configuracion/identidadAplicacion';
 import { useIdentidadAplicacion } from '@/composables/useIdentidadAplicacion';
+import { useAutenticacionStore } from '@/stores/autenticacion';
 import { useConfiguracionStore } from '@/stores/configuracion';
 
 const ruta = useRoute();
+const autenticacionStore = useAutenticacionStore();
 const configuracionStore = useConfiguracionStore();
 const { nombreEmpresaVisible, logoVisible, textoAlternativoLogo, sincronizarFavicon } =
   useIdentidadAplicacion();
@@ -38,7 +40,13 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
 </script>
 
 <template>
-  <q-layout view="hHh LpR fFf" class="aplicacion-presupuestos">
+  <q-layout
+    view="hHh LpR fFf"
+    class="aplicacion-presupuestos"
+    :class="{
+      'aplicacion-presupuestos--modo-prueba': !autenticacionStore.estaAutenticado,
+    }"
+  >
     <q-header v-if="$q.screen.lt.md" class="encabezado-movil">
       <q-toolbar class="encabezado-movil__barra">
         <router-link class="marca-movil" to="/" :aria-label="etiquetaEnlaceInicio">

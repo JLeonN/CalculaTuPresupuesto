@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BotonSesion from '@/components/autenticacion/BotonSesion.vue';
 import LogoEmpresa from '@/components/LogoEmpresa.vue';
 import { obtenerElementosNavegacion } from '@/configuracion/navegacion';
 import { useIdentidadAplicacion } from '@/composables/useIdentidadAplicacion';
@@ -11,6 +12,8 @@ const { logoVisible, textoAlternativoLogo } = useIdentidadAplicacion();
   <q-page class="pagina-contenido pagina-inicio">
     <main class="contenedor-principal">
       <section class="presentacion-inicio" aria-labelledby="titulo-principal">
+        <BotonSesion />
+
         <div class="presentacion-inicio__contenido">
           <p class="etiqueta-seccion">Gestión de presupuestos</p>
           <h1 id="titulo-principal" class="presentacion-inicio__titulo">

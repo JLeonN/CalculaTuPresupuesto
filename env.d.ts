@@ -12,4 +12,7 @@
  *   readonly MY_OTHER_VAR: string;
  * }
  */
-interface ImportMetaEnv {}
+interface ImportMetaEnv {
+  readonly QCLI_USUARIO_PRUEBA?: string;
+  readonly QCLI_CONTRASENA_PRUEBA?: string;
+}

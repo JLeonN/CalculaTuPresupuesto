@@ -12,11 +12,18 @@ import {
   type DatosPresupuesto,
 } from '@/dominio/presupuestos';
 
-const props = defineProps<{
-  datos: DatosPresupuesto;
-  configuracion: ConfiguracionDocumentoPresupuesto;
-  oculto?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    datos: DatosPresupuesto;
+    configuracion: ConfiguracionDocumentoPresupuesto;
+    oculto?: boolean;
+    modoPrueba?: boolean;
+  }>(),
+  {
+    oculto: false,
+    modoPrueba: false,
+  },
+);
 
 const elementoDocumento = ref<HTMLElement | null>(null);
 const nombreEmpresa = computed(() => props.configuracion.nombreEmpresa.trim() || NOMBRE_APLICACION);
@@ -77,11 +84,18 @@ defineExpose({ obtenerElemento });
   <article
     ref="elementoDocumento"
     class="documento-presupuesto"
-    :class="{ 'documento-presupuesto--oculto': oculto }"
+    :class="{
+      'documento-presupuesto--oculto': oculto,
+      'documento-presupuesto--modo-prueba': modoPrueba,
+    }"
     :aria-hidden="oculto || undefined"
     :inert="oculto || undefined"
     :aria-label="oculto ? undefined : 'Presupuesto listo para imprimir'"
   >
+    <span v-if="modoPrueba" class="documento-presupuesto__marca-prueba" aria-hidden="true">
+      VERSIÓN DE PRUEBA
+    </span>
+
     <header class="documento-presupuesto__encabezado">
       <div class="documento-presupuesto__marca">
         <img :src="logoEmpresa" :alt="`Logo de ${nombreEmpresa}`" />

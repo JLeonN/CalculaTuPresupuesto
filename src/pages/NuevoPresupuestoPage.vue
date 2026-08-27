@@ -27,6 +27,7 @@ import {
   type TipoDestinatario,
 } from '@/dominio/presupuestos';
 import { useClientesStore } from '@/stores/clientes';
+import { useAutenticacionStore } from '@/stores/autenticacion';
 import { useConfiguracionStore } from '@/stores/configuracion';
 import { useMaterialesStore } from '@/stores/materiales';
 import { usePresupuestosStore } from '@/stores/presupuestos';
@@ -43,6 +44,7 @@ type DocumentoPresupuestoExpuesto = {
 const ruta = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const autenticacionStore = useAutenticacionStore();
 const clientesStore = useClientesStore();
 const configuracionStore = useConfiguracionStore();
 const materialesStore = useMaterialesStore();
@@ -365,10 +367,20 @@ function obtenerMensajeErrorGuardado(errorCapturado: unknown): string {
 }
 
 function descargarPresupuesto(): void {
+  if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
+    autenticacionStore.solicitarInicioSesion();
+    return;
+  }
+
   void ejecutarAccionDocumento('descargar');
 }
 
 function enviarPresupuesto(): void {
+  if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
+    autenticacionStore.solicitarInicioSesion();
+    return;
+  }
+
   void ejecutarAccionDocumento('enviar');
 }
 
@@ -386,6 +398,7 @@ async function ejecutarAccionDocumento(accion: AccionDocumentoPresupuesto): Prom
       datos,
       configuracion: configuracionDocumentoEfectiva.value,
       obtenerElemento: () => documentoPresupuesto.value?.obtenerElemento() ?? null,
+      permitirSalida: autenticacionStore.puedeGenerarSalidaPresupuesto,
       antesDeGenerar: async () => {
         if (esNuevo.value && !presupuesto.value) {
           presupuesto.value = await presupuestosStore.agregarPresupuesto(datos);
@@ -663,6 +676,12 @@ function restablecerFechaPresupuesto(): void {
               no-caps
               icon="download"
               label="Descargar PDF"
+              :icon-right="autenticacionStore.puedeGenerarSalidaPresupuesto ? undefined : 'lock'"
+              :aria-label="
+                autenticacionStore.puedeGenerarSalidaPresupuesto
+                  ? 'Descargar PDF'
+                  : 'Descargar PDF, requiere iniciar sesión'
+              "
               :loading="accionDocumento === 'descargar'"
               :disable="presupuestosStore.guardando || accionDocumento !== null"
               @click="descargarPresupuesto"
@@ -674,6 +693,12 @@ function restablecerFechaPresupuesto(): void {
               no-caps
               :icon="mdiWhatsapp"
               label="Enviar"
+              :icon-right="autenticacionStore.puedeGenerarSalidaPresupuesto ? undefined : 'lock'"
+              :aria-label="
+                autenticacionStore.puedeGenerarSalidaPresupuesto
+                  ? 'Enviar presupuesto'
+                  : 'Enviar presupuesto, requiere iniciar sesión'
+              "
               :loading="accionDocumento === 'enviar'"
               :disable="
                 presupuestosStore.guardando ||
@@ -699,6 +724,7 @@ function restablecerFechaPresupuesto(): void {
           ref="documentoPresupuesto"
           :datos="datosDocumento"
           :configuracion="configuracionDocumentoEfectiva"
+          :modo-prueba="!autenticacionStore.estaAutenticado"
           oculto
         />
       </div>

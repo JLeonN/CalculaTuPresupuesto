@@ -10,6 +10,7 @@ import {
   type DatosPresupuesto,
 } from '@/dominio/presupuestos';
 import { normalizarNumeroWhatsapp } from '@/dominio/whatsapp';
+import { useAutenticacionStore } from '@/stores/autenticacion';
 import { useConfiguracionStore } from '@/stores/configuracion';
 import { usePresupuestosStore } from '@/stores/presupuestos';
 import {
@@ -24,6 +25,7 @@ type DocumentoPresupuestoExpuesto = {
 const ruta = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const autenticacionStore = useAutenticacionStore();
 const configuracionStore = useConfiguracionStore();
 const presupuestosStore = usePresupuestosStore();
 
@@ -99,10 +101,20 @@ function volver(): void {
 }
 
 function imprimir(): void {
+  if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
+    autenticacionStore.solicitarInicioSesion();
+    return;
+  }
+
   window.print();
 }
 
 async function descargar(): Promise<void> {
+  if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
+    autenticacionStore.solicitarInicioSesion();
+    return;
+  }
+
   if (
     !datosPresupuesto.value ||
     !documentoPresupuesto.value?.obtenerElemento() ||
@@ -119,6 +131,7 @@ async function descargar(): Promise<void> {
       datos: datosPresupuesto.value,
       configuracion: configuracionDocumento.value,
       obtenerElemento: () => documentoPresupuesto.value?.obtenerElemento() ?? null,
+      permitirSalida: autenticacionStore.puedeGenerarSalidaPresupuesto,
       antesDeGenerar: async () => {
         await guardarCambiosPendientes();
         await nextTick();
@@ -140,6 +153,11 @@ async function descargar(): Promise<void> {
 }
 
 async function enviarPorWhatsapp(): Promise<void> {
+  if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
+    autenticacionStore.solicitarInicioSesion();
+    return;
+  }
+
   if (
     numeroWhatsapp.value === '' ||
     nombreClienteWhatsapp.value === '' ||
@@ -158,6 +176,7 @@ async function enviarPorWhatsapp(): Promise<void> {
       datos: datosPresupuesto.value,
       configuracion: configuracionDocumento.value,
       obtenerElemento: () => documentoPresupuesto.value?.obtenerElemento() ?? null,
+      permitirSalida: autenticacionStore.puedeGenerarSalidaPresupuesto,
       antesDeGenerar: async () => {
         await guardarCambiosPendientes();
         await nextTick();
@@ -239,6 +258,12 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             no-caps
             icon="download"
             label="Descargar"
+            :icon-right="autenticacionStore.puedeGenerarSalidaPresupuesto ? undefined : 'lock'"
+            :aria-label="
+              autenticacionStore.puedeGenerarSalidaPresupuesto
+                ? 'Descargar presupuesto'
+                : 'Descargar presupuesto, requiere iniciar sesión'
+            "
             :disable="datosPresupuesto === null || accionDocumento !== null"
             :loading="accionDocumento === 'descargar'"
             @click="descargar"
@@ -249,6 +274,12 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             no-caps
             icon="print"
             label="Imprimir"
+            :icon-right="autenticacionStore.puedeGenerarSalidaPresupuesto ? undefined : 'lock'"
+            :aria-label="
+              autenticacionStore.puedeGenerarSalidaPresupuesto
+                ? 'Imprimir presupuesto'
+                : 'Imprimir presupuesto, requiere iniciar sesión'
+            "
             :disable="datosPresupuesto === null || accionDocumento !== null"
             @click="imprimir"
           />
@@ -258,6 +289,12 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             no-caps
             :icon="mdiWhatsapp"
             label="Enviar"
+            :icon-right="autenticacionStore.puedeGenerarSalidaPresupuesto ? undefined : 'lock'"
+            :aria-label="
+              autenticacionStore.puedeGenerarSalidaPresupuesto
+                ? 'Enviar presupuesto'
+                : 'Enviar presupuesto, requiere iniciar sesión'
+            "
             :disable="
               numeroWhatsapp === '' ||
               nombreClienteWhatsapp === '' ||
@@ -274,6 +311,10 @@ function obtenerMensajeError(errorCapturado: unknown): string {
         <template #avatar><q-icon name="error_outline" /></template>
         {{ errorCarga }}
       </q-banner>
+
+      <aside class="aviso-impresion-restringida">
+        Iniciá sesión para imprimir este presupuesto.
+      </aside>
 
       <div v-if="cargando" class="estado-presupuestos">
         <q-spinner class="indicador-carga" size="2rem" />
@@ -292,6 +333,7 @@ function obtenerMensajeError(errorCapturado: unknown): string {
           ref="documentoPresupuesto"
           :datos="datosPresupuesto"
           :configuracion="configuracionDocumento"
+          :modo-prueba="!autenticacionStore.estaAutenticado"
         />
       </div>
     </main>

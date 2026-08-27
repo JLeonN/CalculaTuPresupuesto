@@ -99,6 +99,10 @@
   --tamano-logo-mediano: 4rem;
   --tamano-logo-configuracion: 9rem;
   --tamano-logo-grande: 12rem;
+  --tamano-boton-sesion: 2.75rem;
+  --tamano-marca-prueba: 3.25rem;
+  --opacidad-marca-prueba: 0.16;
+  --rotacion-marca-prueba: -24deg;
   --sombra-principal: 0 1.5rem 4rem var(--color-sombra);
   --sombra-control: 0 0.75rem 2rem rgb(0 0 0 / 22%);
   --duracion-transicion: 160ms;

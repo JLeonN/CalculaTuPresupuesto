@@ -1,3 +1,4 @@
+import { ErrorSalidaPresupuestoRestringida } from '@/dominio/autenticacion';
 import type { ConfiguracionDocumentoPresupuesto, DatosPresupuesto } from '@/dominio/presupuestos';
 import {
   crearEnlaceWhatsapp,
@@ -16,12 +17,14 @@ export interface OpcionesAccionDocumentoPresupuesto {
   datos: DatosPresupuesto;
   configuracion: ConfiguracionDocumentoPresupuesto;
   obtenerElemento: () => HTMLElement | null;
+  permitirSalida: boolean;
   antesDeGenerar?: () => Promise<void>;
 }
 
 export async function descargarDocumentoPresupuesto(
   opciones: OpcionesAccionDocumentoPresupuesto,
 ): Promise<'nativo' | 'web'> {
+  validarPermisoSalida(opciones);
   const { pdf, nombreArchivo } = await prepararDocumento(opciones);
   await descargarPdfPresupuesto(pdf, nombreArchivo);
   return esPlataformaNativa() ? 'nativo' : 'web';
@@ -30,6 +33,7 @@ export async function descargarDocumentoPresupuesto(
 export async function enviarDocumentoPresupuesto(
   opciones: OpcionesAccionDocumentoPresupuesto,
 ): Promise<'nativo' | 'web'> {
+  validarPermisoSalida(opciones);
   const numeroWhatsapp = normalizarNumeroWhatsapp(opciones.datos.destinatario.telefono);
   const nombreCliente = opciones.datos.destinatario.nombre.trim();
 
@@ -70,6 +74,12 @@ export async function enviarDocumentoPresupuesto(
   } catch (errorCapturado) {
     ventanaWhatsapp?.close();
     throw errorCapturado;
+  }
+}
+
+function validarPermisoSalida(opciones: OpcionesAccionDocumentoPresupuesto): void {
+  if (!opciones.permitirSalida) {
+    throw new ErrorSalidaPresupuestoRestringida();
   }
 }
 

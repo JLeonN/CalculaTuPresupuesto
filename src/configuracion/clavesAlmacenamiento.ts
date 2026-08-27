@@ -4,6 +4,7 @@ export const CLAVES_ALMACENAMIENTO = {
   materiales: 'calcula-tu-presupuesto:materiales:v1',
   presupuestos: 'calcula-tu-presupuesto:presupuestos:v1',
   actualizacionVista: 'calcula-tu-presupuesto:actualizacion-vista:v1',
+  sesionPrueba: 'calcula-tu-presupuesto:sesion-prueba:v1',
 } as const;
 
 const CLAVES_ALMACENAMIENTO_ANTERIORES: Readonly<Record<string, string>> = {

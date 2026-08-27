@@ -74,29 +74,29 @@ Esta etapa no instalará ni utilizará Firebase. Las credenciales de prueba ser�
 
 ## Mapa de cambios
 
-| Archivo | Acción | Símbolos principales | Propósito |
-| --- | --- | --- | --- |
-| `.env.example` | Modificar | `QCLI_USUARIO_PRUEBA`, `QCLI_CONTRASENA_PRUEBA` | Documentar el contrato sin valores. |
-| `env.d.ts` | Modificar | `ImportMetaEnv` | Tipar las variables provisionales. |
-| `src/configuracion/clavesAlmacenamiento.ts` | Modificar | `CLAVES_ALMACENAMIENTO.sesionPrueba` | Persistir únicamente el estado de sesión. |
-| `src/dominio/autenticacion.ts` | Crear | `CredencialesAcceso`, `UsuarioAutenticado`, `ErrorAccesoProvisional` | Definir contratos de dominio y errores previsibles. |
-| `src/servicios/autenticacion/ServicioAutenticacion.ts` | Crear | `ServicioAutenticacion` | Aislar el proveedor de autenticación. |
-| `src/servicios/autenticacion/ServicioAutenticacionPrueba.ts` | Crear | `ServicioAutenticacionPrueba` | Validar credenciales de entorno y persistir la sesión local. |
-| `src/servicios/autenticacion/crearServicioAutenticacion.ts` | Crear | `crearServicioAutenticacion` | Seleccionar el proveedor actual y marcar el futuro reemplazo por Firebase. |
-| `src/stores/autenticacion.ts` | Crear | `useAutenticacionStore` | Centralizar sesión, permiso de salida y apertura del modal. |
-| `src/boot/autenticacion.ts` | Crear | boot de autenticación | Restaurar la sesión antes de montar la interfaz. |
-| `quasar.config.ts` | Modificar | `boot` | Registrar la inicialización de autenticación. |
-| `src/components/autenticacion/ModalInicioSesion.vue` | Crear | formulario de acceso | Permitir iniciar sesión sin abandonar la pantalla actual. |
-| `src/components/autenticacion/BotonSesion.vue` | Crear | control de sesión | Mostrar candado cerrado/abierto y permitir cerrar sesión. |
-| `src/App.vue` | Modificar | `ModalInicioSesion` | Montar un único modal global reutilizable. |
-| `src/pages/IndexPage.vue` | Modificar | `BotonSesion` | Ubicar el acceso discreto en la tarjeta principal. |
-| `src/components/presupuestos/DocumentoPresupuesto.vue` | Modificar | prop `modoPrueba` | Renderizar la marca de agua sin acoplar el documento al store. |
-| `src/pages/NuevoPresupuestoPage.vue` | Modificar | acciones `descargar` y `enviar` | Exigir sesión antes de iniciar salidas o efectos secundarios. |
-| `src/pages/VistaPreviaPresupuestoPage.vue` | Modificar | `imprimir`, `descargar`, `enviarPorWhatsapp` | Restringir las tres salidas y aplicar la marca de agua. |
-| `src/servicios/documentos/accionesPresupuesto.ts` | Modificar | `OpcionesAccionDocumentoPresupuesto`, validación de permiso | Evitar generar una salida si un consumidor omite la validación visual. |
-| `src/css/Variables.css` | Modificar | variables semánticas nuevas | Centralizar tamaño, opacidad y posición del acceso y la marca. |
-| `src/css/app.css` | Modificar | estilos de autenticación, documento y `@media print` | Resolver diseño responsive y bloqueo de impresión directa. |
-| `README.md` | Modificar | arquitectura provisional | Documentar alcance, configuración local y limitaciones. |
+| Archivo                                                      | Acción    | Símbolos principales                                                 | Propósito                                                                  |
+| ------------------------------------------------------------ | --------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `.env.example`                                               | Modificar | `QCLI_USUARIO_PRUEBA`, `QCLI_CONTRASENA_PRUEBA`                      | Documentar el contrato sin valores.                                        |
+| `env.d.ts`                                                   | Modificar | `ImportMetaEnv`                                                      | Tipar las variables provisionales.                                         |
+| `src/configuracion/clavesAlmacenamiento.ts`                  | Modificar | `CLAVES_ALMACENAMIENTO.sesionPrueba`                                 | Persistir únicamente el estado de sesión.                                  |
+| `src/dominio/autenticacion.ts`                               | Crear     | `CredencialesAcceso`, `UsuarioAutenticado`, `ErrorAccesoProvisional` | Definir contratos de dominio y errores previsibles.                        |
+| `src/servicios/autenticacion/ServicioAutenticacion.ts`       | Crear     | `ServicioAutenticacion`                                              | Aislar el proveedor de autenticación.                                      |
+| `src/servicios/autenticacion/ServicioAutenticacionPrueba.ts` | Crear     | `ServicioAutenticacionPrueba`                                        | Validar credenciales de entorno y persistir la sesión local.               |
+| `src/servicios/autenticacion/crearServicioAutenticacion.ts`  | Crear     | `crearServicioAutenticacion`                                         | Seleccionar el proveedor actual y marcar el futuro reemplazo por Firebase. |
+| `src/stores/autenticacion.ts`                                | Crear     | `useAutenticacionStore`                                              | Centralizar sesión, permiso de salida y apertura del modal.                |
+| `src/boot/autenticacion.ts`                                  | Crear     | boot de autenticación                                                | Restaurar la sesión antes de montar la interfaz.                           |
+| `quasar.config.ts`                                           | Modificar | `boot`                                                               | Registrar la inicialización de autenticación.                              |
+| `src/components/autenticacion/ModalInicioSesion.vue`         | Crear     | formulario de acceso                                                 | Permitir iniciar sesión sin abandonar la pantalla actual.                  |
+| `src/components/autenticacion/BotonSesion.vue`               | Crear     | control de sesión                                                    | Mostrar candado cerrado/abierto y permitir cerrar sesión.                  |
+| `src/App.vue`                                                | Modificar | `ModalInicioSesion`                                                  | Montar un único modal global reutilizable.                                 |
+| `src/pages/IndexPage.vue`                                    | Modificar | `BotonSesion`                                                        | Ubicar el acceso discreto en la tarjeta principal.                         |
+| `src/components/presupuestos/DocumentoPresupuesto.vue`       | Modificar | prop `modoPrueba`                                                    | Renderizar la marca de agua sin acoplar el documento al store.             |
+| `src/pages/NuevoPresupuestoPage.vue`                         | Modificar | acciones `descargar` y `enviar`                                      | Exigir sesión antes de iniciar salidas o efectos secundarios.              |
+| `src/pages/VistaPreviaPresupuestoPage.vue`                   | Modificar | `imprimir`, `descargar`, `enviarPorWhatsapp`                         | Restringir las tres salidas y aplicar la marca de agua.                    |
+| `src/servicios/documentos/accionesPresupuesto.ts`            | Modificar | `OpcionesAccionDocumentoPresupuesto`, validación de permiso          | Evitar generar una salida si un consumidor omite la validación visual.     |
+| `src/css/Variables.css`                                      | Modificar | variables semánticas nuevas                                          | Centralizar tamaño, opacidad y posición del acceso y la marca.             |
+| `src/css/app.css`                                            | Modificar | estilos de autenticación, documento y `@media print`                 | Resolver diseño responsive y bloqueo de impresión directa.                 |
+| `README.md`                                                  | Modificar | arquitectura provisional                                             | Documentar alcance, configuración local y limitaciones.                    |
 
 ## FASE 1: Definir autenticación provisional y configuración segura
 
@@ -115,29 +115,29 @@ Crear un proveedor local reemplazable, sin credenciales versionadas y sin instal
 
 ### Pasos de ejecución
 
-- [ ] Actualizar `.env.example` para declarar, sin valores, `QCLI_USUARIO_PRUEBA` y `QCLI_CONTRASENA_PRUEBA`.
+- [x] Actualizar `.env.example` para declarar, sin valores, `QCLI_USUARIO_PRUEBA` y `QCLI_CONTRASENA_PRUEBA`.
   - Explicar mediante comentarios que los valores reales deben colocarse únicamente en `.env.local`.
   - Advertir que las variables se incorporan a la aplicación cliente y sirven solo durante las pruebas.
   - No incluir ejemplos que reproduzcan las credenciales elegidas por Leo.
-- [ ] Ampliar `ImportMetaEnv` en `env.d.ts` con ambas propiedades `readonly` de tipo `string`.
-- [ ] Crear `src/dominio/autenticacion.ts` como fuente de tipos independientes de Firebase.
+- [x] Ampliar `ImportMetaEnv` en `env.d.ts` con ambas propiedades `readonly` de tipo `string`.
+- [x] Crear `src/dominio/autenticacion.ts` como fuente de tipos independientes de Firebase.
   - Definir `CredencialesAcceso` con `usuario: string` y `contrasena: string`.
   - Definir `UsuarioAutenticado` con `id: string`, `nombre: string` y `proveedor: 'prueba'`.
   - Definir `ErrorAccesoProvisional` con códigos discriminables para `credenciales-invalidas` y `configuracion-ausente`.
   - Mantener mensajes genéricos que no revelen cuál campo fue incorrecto ni los valores configurados.
-- [ ] Crear `ServicioAutenticacion` con una API asíncrona reemplazable.
+- [x] Crear `ServicioAutenticacion` con una API asíncrona reemplazable.
   - `obtenerUsuarioActual(): Promise<UsuarioAutenticado | null>`.
   - `iniciarSesion(credenciales: CredencialesAcceso): Promise<UsuarioAutenticado>`.
   - `cerrarSesion(): Promise<void>`.
   - No incorporar tipos, imports ni conceptos propios de Firebase al contrato.
-- [ ] Crear `ServicioAutenticacionPrueba` e inyectarle `AlmacenamientoClaveValor`, usuario configurado y contraseña configurada.
+- [x] Crear `ServicioAutenticacionPrueba` e inyectarle `AlmacenamientoClaveValor`, usuario configurado y contraseña configurada.
   - Normalizar solamente el usuario con `trim()` y comparación insensible a mayúsculas/minúsculas.
   - Comparar la contraseña exactamente, sin recortarla ni transformarla.
   - Fallar de forma cerrada con `configuracion-ausente` si cualquiera de las variables está vacía.
   - No registrar credenciales en consola, errores, almacenamiento ni notificaciones.
   - Persistir únicamente un objeto de sesión mínimo que pueda validarse al recuperar; nunca persistir la contraseña.
   - Usar un identificador estable de prueba que no dependa del nombre visible y permita migrar luego el contrato a un `uid` remoto.
-- [ ] Crear `crearServicioAutenticacion()` reutilizando `crearAlmacenamientoAplicacion()` y leyendo `import.meta.env.QCLI_USUARIO_PRUEBA` e `import.meta.env.QCLI_CONTRASENA_PRUEBA`.
+- [x] Crear `crearServicioAutenticacion()` reutilizando `crearAlmacenamientoAplicacion()` y leyendo `import.meta.env.QCLI_USUARIO_PRUEBA` e `import.meta.env.QCLI_CONTRASENA_PRUEBA`.
   - Mantener en esta fábrica el único punto de selección del proveedor.
   - Agregar un `TODO(firebase)` concreto que indique sustituir la implementación, no el contrato ni los consumidores.
   - No instalar dependencias nuevas.
@@ -157,10 +157,10 @@ Restaurar la sesión en SPA y Android antes de que la interfaz decida permisos, 
 
 ### Pasos de ejecución
 
-- [ ] Agregar `sesionPrueba: 'calcula-tu-presupuesto:sesion-prueba:v1'` a `CLAVES_ALMACENAMIENTO`.
+- [x] Agregar `sesionPrueba: 'calcula-tu-presupuesto:sesion-prueba:v1'` a `CLAVES_ALMACENAMIENTO`.
   - No crear una clave histórica porque este estado no existe en versiones anteriores.
   - No mezclar la sesión con clientes, materiales, presupuestos o configuración.
-- [ ] Crear `useAutenticacionStore` con estado y acciones tipadas.
+- [x] Crear `useAutenticacionStore` con estado y acciones tipadas.
   - Estado: `usuario`, `cargando`, `inicializada`, `error` y `modalInicioSesionVisible`.
   - Computed `estaAutenticado` basado en la existencia de `usuario`.
   - Computed `puedeGenerarSalidaPresupuesto` como permiso único para descargar, imprimir y enviar.
@@ -169,11 +169,11 @@ Restaurar la sesión en SPA y Android antes de que la interfaz decida permisos, 
   - Acción `cerrarSesion()` que elimine solo la sesión y conserve todos los datos funcionales.
   - Acciones `solicitarInicioSesion()` y `cerrarModalInicioSesion()` para que cualquier pantalla invoque el único modal global.
   - Convertir errores técnicos en mensajes naturales sin revelar datos configurados.
-- [ ] Crear `src/boot/autenticacion.ts` mediante el helper de boot de Quasar.
+- [x] Crear `src/boot/autenticacion.ts` mediante el helper de boot de Quasar.
   - Obtener `useAutenticacionStore(store)` usando la instancia Pinia provista por Quasar.
   - Esperar `inicializarSesion()` antes de continuar el montaje.
   - Si la recuperación local falla, continuar como visitante y mantener un mensaje controlado; no bloquear el arranque completo.
-- [ ] Registrar `autenticacion` en el arreglo `boot` de `quasar.config.ts`.
+- [x] Registrar `autenticacion` en el arreglo `boot` de `quasar.config.ts`.
   - Comprobar que no aparezca un parpadeo de botones habilitados mientras se restaura la sesión.
 
 ## FASE 3: Crear el acceso discreto y el modal reutilizable
@@ -192,7 +192,7 @@ Incorporar el acceso visual acordado en Inicio y un único modal que pueda abrir
 
 ### Pasos de ejecución
 
-- [ ] Crear `ModalInicioSesion.vue` con responsabilidad exclusiva sobre el formulario de acceso.
+- [x] Crear `ModalInicioSesion.vue` con responsabilidad exclusiva sobre el formulario de acceso.
   - Consumir `useAutenticacionStore` y enlazar su apertura a `modalInicioSesionVisible`.
   - Usar `q-dialog`, `q-card` y `q-form` con campos `Usuario` y `Contraseña`.
   - Mostrar `key` como icono principal del modal.
@@ -203,22 +203,22 @@ Incorporar el acceso visual acordado en Inicio y un único modal que pueda abrir
   - Mantener el usuario escrito después de un error para facilitar la corrección.
   - Enfocar el campo de usuario al abrir y permitir enviar con Enter.
   - Mostrar un único error genérico para credenciales inválidas y uno específico de configuración solo cuando falten variables.
-- [ ] Crear `BotonSesion.vue` para representar el estado en la portada.
+- [x] Crear `BotonSesion.vue` para representar el estado en la portada.
   - Sin sesión: botón pequeño, plano y de bajo contraste con icono `lock` y etiqueta accesible `Iniciar sesión`.
   - Al pulsarlo, llamar `solicitarInicioSesion()`.
   - Con sesión: usar `lock_open` y etiqueta accesible que identifique la sesión activa.
   - Al pulsarlo autenticado, abrir un `q-menu` con el nombre del usuario y la acción `Cerrar sesión`.
   - Confirmar visualmente el cierre mediante `Notify`, sin borrar información local ni navegar fuera de Inicio.
-- [ ] Montar `ModalInicioSesion` una sola vez en `src/App.vue`, junto a `ModalActualizacion`.
+- [x] Montar `ModalInicioSesion` una sola vez en `src/App.vue`, junto a `ModalActualizacion`.
   - Evitar duplicar formularios o estados en las páginas que restringen acciones.
-- [ ] Integrar `BotonSesion` en `IndexPage.vue` dentro de `.presentacion-inicio`.
+- [x] Integrar `BotonSesion` en `IndexPage.vue` dentro de `.presentacion-inicio`.
   - Ubicarlo en la esquina superior derecha del recuadro, en el área señalada por Leo.
   - Mantener el logo en su posición actual y evitar que el botón altere la grilla o el ancho del contenido.
   - Conservar orden de tabulación, foco visible y área táctil suficiente aunque el icono sea visualmente discreto.
-- [ ] Agregar variables semánticas necesarias en `Variables.css` para tamaño visual, separación y opacidad del acceso.
+- [x] Agregar variables semánticas necesarias en `Variables.css` para tamaño visual, separación y opacidad del acceso.
   - Reutilizar colores, radios, duraciones y alturas táctiles existentes siempre que alcancen.
   - No codificar colores ni medidas repetibles directamente en el componente.
-- [ ] Agregar estilos en `app.css` para escritorio, `1023px`, `767px` y teléfonos estrechos.
+- [x] Agregar estilos en `app.css` para escritorio, `1023px`, `767px` y teléfonos estrechos.
   - Impedir superposición con el logo o el título.
   - Mantener el candado en la esquina superior derecha tanto en la grilla de escritorio como cuando el logo pasa a la primera fila en móvil.
   - Hacer que el modal use el ancho disponible sin producir desplazamiento horizontal.
@@ -237,28 +237,28 @@ Evitar que una acción restringida genere, guarde como efecto secundario, descar
 
 ### Pasos de ejecución
 
-- [ ] Ampliar `OpcionesAccionDocumentoPresupuesto` con `permitirSalida: boolean` obligatorio.
+- [x] Ampliar `OpcionesAccionDocumentoPresupuesto` con `permitirSalida: boolean` obligatorio.
   - Validar el permiso al comienzo de `descargarDocumentoPresupuesto()` y `enviarDocumentoPresupuesto()`.
   - Lanzar un error de acceso distinguible antes de abrir WhatsApp, ejecutar `antesDeGenerar`, guardar cambios pendientes o generar el PDF.
   - Mantener la verificación aunque las pantallas también protejan los botones, para evitar omisiones de futuros consumidores.
   - Actualizar todos los consumidores detectados por búsqueda global; no asignar un valor predeterminado permisivo.
-- [ ] Integrar `useAutenticacionStore` en `NuevoPresupuestoPage.vue`.
+- [x] Integrar `useAutenticacionStore` en `NuevoPresupuestoPage.vue`.
   - Antes de `descargarPresupuesto()` o `enviarPresupuesto()`, comprobar `puedeGenerarSalidaPresupuesto`.
   - Sin permiso, abrir el modal y terminar la función sin guardar automáticamente el presupuesto ni crear PDF.
   - Con permiso, pasar `permitirSalida: true` desde el computed del store a la capa de servicio.
   - Mantener los botones visibles para visitantes y agregar una señal de candado sin quitar los iconos funcionales existentes.
   - No bloquear guardar, editar, cambiar estado ni abrir la vista previa.
-- [ ] Integrar el mismo store en `VistaPreviaPresupuestoPage.vue`.
+- [x] Integrar el mismo store en `VistaPreviaPresupuestoPage.vue`.
   - Aplicar la comprobación a `descargar()`, `imprimir()` y `enviarPorWhatsapp()`.
   - Sin permiso, abrir el modal y no ejecutar `window.print()`, generación de PDF, guardado pendiente ni apertura externa.
   - Con permiso, conservar exactamente los flujos web y Android actuales.
   - Mantener `Volver` y la vista previa disponibles para visitantes.
-- [ ] Diferenciar visualmente las acciones restringidas sin presentarlas como deshabilitadas permanentemente.
+- [x] Diferenciar visualmente las acciones restringidas sin presentarlas como deshabilitadas permanentemente.
   - Permitir pulsarlas para abrir el modal.
   - No usar `disable` por falta de sesión, porque impediría comunicar el motivo; conservar `disable` para carga, datos faltantes y condiciones funcionales actuales.
   - Agregar etiquetas accesibles que indiquen que la acción requiere iniciar sesión.
-- [ ] Confirmar mediante búsqueda global que no existan otros consumidores capaces de llamar descarga, impresión o envío de presupuestos sin validar el permiso.
-- [ ] No modificar `EnlaceWhatsapp.vue`, `ClientesPage.vue` ni `ClienteDetallePage.vue`; esos enlaces permanecen públicos según la decisión funcional.
+- [x] Confirmar mediante búsqueda global que no existan otros consumidores capaces de llamar descarga, impresión o envío de presupuestos sin validar el permiso.
+- [x] No modificar `EnlaceWhatsapp.vue`, `ClientesPage.vue` ni `ClienteDetallePage.vue`; esos enlaces permanecen públicos según la decisión funcional.
 
 ## FASE 5: Aplicar marca de agua y proteger la impresión directa
 
@@ -276,24 +276,24 @@ Permitir que el visitante evalúe el documento completo sin obtener una salida l
 
 ### Pasos de ejecución
 
-- [ ] Agregar a `DocumentoPresupuesto.vue` la prop opcional `modoPrueba?: boolean` con valor predeterminado `false`.
+- [x] Agregar a `DocumentoPresupuesto.vue` la prop opcional `modoPrueba?: boolean` con valor predeterminado `false`.
   - Mantener el componente independiente de Pinia y de cualquier proveedor de autenticación.
   - Aplicar una clase modificadora cuando la prop sea verdadera.
   - Renderizar una marca semántica con texto `VERSIÓN DE PRUEBA`, marcada como decorativa para lectores de pantalla si no aporta información operativa.
   - Colocar la marca por encima del fondo pero sin bloquear selección, desplazamiento ni interacción mediante `pointer-events: none`.
-- [ ] Pasar `:modo-prueba="!autenticacionStore.estaAutenticado"` desde la vista previa y desde cualquier instancia usada para generar salidas.
+- [x] Pasar `:modo-prueba="!autenticacionStore.estaAutenticado"` desde la vista previa y desde cualquier instancia usada para generar salidas.
   - Un usuario autenticado debe obtener un documento sin marca.
   - Un visitante nunca debe generar un documento limpio aunque un flujo visual futuro omita el bloqueo.
-- [ ] Agregar en `MainLayout.vue` una clase modificadora derivada de la sesión, por ejemplo `aplicacion-presupuestos--modo-prueba`.
+- [x] Agregar en `MainLayout.vue` una clase modificadora derivada de la sesión, por ejemplo `aplicacion-presupuestos--modo-prueba`.
   - Usarla como contexto CSS para impresión sin mutar manualmente clases globales de `document`.
-- [ ] Agregar en `VistaPreviaPresupuestoPage.vue` un aviso específico para impresión restringida.
+- [x] Agregar en `VistaPreviaPresupuestoPage.vue` un aviso específico para impresión restringida.
   - Permanecer oculto en pantalla.
   - Mostrar al imprimir sin sesión un mensaje que indique que debe iniciar sesión para imprimir el presupuesto.
-- [ ] Ajustar `@media print` en `app.css` para cubrir `Ctrl+P` y la impresión desde el menú del navegador.
+- [x] Ajustar `@media print` en `app.css` para cubrir `Ctrl+P` y la impresión desde el menú del navegador.
   - En modo prueba, ocultar el documento y mostrar únicamente el aviso de acceso requerido.
   - Con sesión, conservar las reglas A4 actuales sin alterar márgenes, tablas ni saltos.
   - No depender exclusivamente del manejador `imprimir()` porque el navegador permite iniciar impresión externamente.
-- [ ] Centralizar en `Variables.css` la opacidad, tamaño y rotación reutilizables de la marca.
+- [x] Centralizar en `Variables.css` la opacidad, tamaño y rotación reutilizables de la marca.
   - Garantizar contraste visible sobre el documento claro sin volver ilegibles los datos.
   - Mantener la marca centrada y adaptada a escritorio, móvil y papel A4.
 
@@ -311,16 +311,16 @@ Dejar instrucciones suficientes para ejecutar pruebas sin filtrar credenciales y
 
 ### Pasos de ejecución
 
-- [ ] Agregar al `README.md` una sección breve de acceso provisional.
+- [x] Agregar al `README.md` una sección breve de acceso provisional.
   - Indicar que Leo debe crear manualmente `C:/Z-Programacion/Quasar/MallicTesla/.env.local`.
   - Mostrar únicamente los nombres vacíos de las variables, nunca sus valores.
   - Indicar que debe reiniciarse el servidor de desarrollo o recompilar la aplicación después de cambiar variables.
   - Explicar que el usuario no autenticado puede trabajar localmente, pero no producir salidas de presupuestos.
   - Advertir que la autenticación cliente es descubrible y debe sustituirse por Firebase antes de comercializar la aplicación.
-- [ ] Documentar que Firebase sustituirá `ServicioAutenticacionPrueba` mediante `crearServicioAutenticacion()`.
+- [x] Documentar que Firebase sustituirá `ServicioAutenticacionPrueba` mediante `crearServicioAutenticacion()`.
   - Mantener `useAutenticacionStore`, modal, botón y consumidores basados en el contrato común.
   - Reservar para el plan de Firebase el registro de cuentas, estado activo, aislamiento por `uid`, reglas remotas y revocación de acceso.
-- [ ] Verificar que `git status` nunca muestre `.env.local` y que ninguna búsqueda del repositorio encuentre los valores elegidos por Leo.
+- [x] Verificar que `git status` nunca muestre `.env.local` y que ninguna búsqueda del repositorio encuentre los valores elegidos por Leo.
 
 ## FASE TESTING
 
@@ -332,17 +332,17 @@ Validar el acceso provisional, la persistencia, las restricciones de salida, la 
 
 - [ ] Crear manualmente `.env.local` con las dos variables requeridas y los valores suministrados por Leo, sin agregarlas a Git.
 - [ ] Reiniciar el servidor de desarrollo después de crear o cambiar `.env.local`.
-- [ ] Ejecutar `git check-ignore .env.local` y comprobar que Git lo ignora.
-- [ ] Ejecutar una búsqueda de las credenciales de prueba en archivos versionados y confirmar que no aparecen.
+- [x] Ejecutar `git check-ignore .env.local` y comprobar que Git lo ignora.
+- [x] Ejecutar una búsqueda de las credenciales de prueba en archivos versionados y confirmar que no aparecen.
 - [ ] Probar el arranque con variables ausentes y comprobar que la app funciona como visitante, muestra un error de configuración controlado al intentar entrar y no concede permisos.
 
 ### Pruebas automatizadas
 
-- [ ] Ejecutar `npm run lint` y corregir cualquier problema de formato o ESLint.
-- [ ] Ejecutar `npm run typecheck` y comprobar que contratos, props y variables de entorno cumplen TypeScript estricto.
-- [ ] Ejecutar `npm run build` con variables de prueba configuradas y comprobar la compilación SPA.
-- [ ] Ejecutar `npm run build:android` con las mismas variables y comprobar la compilación Capacitor.
-- [ ] Ejecutar búsquedas globales de `descargarDocumentoPresupuesto`, `enviarDocumentoPresupuesto`, `window.print` y `generarPdfPresupuesto` para verificar que todos los puntos de salida están cubiertos.
+- [x] Ejecutar `npm run lint` y corregir cualquier problema de formato o ESLint.
+- [x] Ejecutar `npm run typecheck` y comprobar que contratos, props y variables de entorno cumplen TypeScript estricto.
+- [x] Ejecutar `npm run build` con variables de prueba configuradas y comprobar la compilación SPA.
+- [x] Ejecutar `npm run build:android` con las mismas variables y comprobar la compilación Capacitor.
+- [x] Ejecutar búsquedas globales de `descargarDocumentoPresupuesto`, `enviarDocumentoPresupuesto`, `window.print` y `generarPdfPresupuesto` para verificar que todos los puntos de salida están cubiertos.
 
 ### Pruebas manuales como visitante
 
@@ -383,14 +383,14 @@ Validar el acceso provisional, la persistencia, las restricciones de salida, la 
 
 ## Progreso del plan
 
-- [ ] Fase 1: Definir autenticación provisional y configuración segura
-- [ ] Fase 2: Persistir e inicializar la sesión global
-- [ ] Fase 3: Crear el acceso discreto y el modal reutilizable
-- [ ] Fase 4: Centralizar el permiso de salida de presupuestos
-- [ ] Fase 5: Aplicar marca de agua y proteger la impresión directa
-- [ ] Fase 6: Documentar operación provisional y futura migración
+- [x] Fase 1: Definir autenticación provisional y configuración segura
+- [x] Fase 2: Persistir e inicializar la sesión global
+- [x] Fase 3: Crear el acceso discreto y el modal reutilizable
+- [x] Fase 4: Centralizar el permiso de salida de presupuestos
+- [x] Fase 5: Aplicar marca de agua y proteger la impresión directa
+- [x] Fase 6: Documentar operación provisional y futura migración
 - [ ] Fase Testing
 
 Fecha de creación: 26 de Agosto 2026
 Fecha de última actualización: 26 de Agosto 2026
-Estado: BORRADOR
+Estado: EN PROCESO

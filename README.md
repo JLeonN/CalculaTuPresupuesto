@@ -48,6 +48,21 @@ Firebase se incorporará únicamente en su propio plan. La arquitectura prevista
 
 La identidad visual reutilizable se mantiene centralizada en `src/css/Variables.css`.
 
+## Acceso provisional de pruebas
+
+Durante la etapa de pruebas, toda persona puede usar los módulos y guardar datos localmente. La descarga, impresión y entrega de presupuestos requieren iniciar sesión. Sin sesión, la vista previa muestra la marca `VERSIÓN DE PRUEBA`.
+
+Leo debe crear manualmente el archivo local `C:/Z-Programacion/Quasar/MallicTesla/.env.local` con este contrato:
+
+```env
+QCLI_USUARIO_PRUEBA=
+QCLI_CONTRASENA_PRUEBA=
+```
+
+Los valores no deben escribirse en `.env.example` ni en otro archivo versionado. Después de modificarlos es necesario reiniciar el servidor de desarrollo o recompilar la SPA y Android.
+
+Este acceso es provisional: Quasar incorpora las variables al código cliente, por lo que no constituyen secretos ni seguridad apta para producción. La futura integración con Firebase sustituirá `ServicioAutenticacionPrueba` desde `crearServicioAutenticacion()` y conservará el store y la interfaz actuales. Firebase deberá resolver cuentas, revocación, aislamiento por `uid` y reglas remotas antes de comercializar la aplicación.
+
 ## Evolución funcional
 
 Cada módulo tendrá un plan ejecutable propio y no debe implementarse
