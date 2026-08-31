@@ -52,7 +52,7 @@ La identidad visual reutilizable se mantiene centralizada en `src/css/Variables.
 
 Durante la etapa de pruebas, toda persona puede usar los módulos y guardar datos localmente. La descarga, impresión y entrega de presupuestos requieren iniciar sesión. Sin sesión, la vista previa muestra la marca `VERSIÓN DE PRUEBA`.
 
-Leo debe crear manualmente el archivo local `C:/Z-Programacion/Quasar/MallicTesla/.env.local` con este contrato:
+Leo debe crear manualmente el archivo local `C:/Z-Programacion/Quasar/CalculaTuPresupuesto/.env.local` con este contrato:
 
 ```env
 QCLI_USUARIO_PRUEBA=
