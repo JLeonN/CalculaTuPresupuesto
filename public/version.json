@@ -1,17 +1,12 @@
 {
-  "version": "0.0.3",
+  "version": "0.0.4",
   "mostrarActualizacion": true,
   "cambios": {
     "es-AR": [
       {
         "apartado": "Actualizaciones",
         "novedades": [
-          "Ahora podés elegir la moneda principal que usás en materiales y presupuestos.",
-          "Los importes conservan su moneda original y la aplicación te avisa antes de mezclar monedas diferentes.",
-          "Incorporamos un acceso privado mediante un candado discreto en la pantalla de inicio.",
-          "Podés mantener la sesión iniciada y cerrarla cuando termines de trabajar.",
-          "En el modo de prueba podés recorrer toda la aplicación, pero necesitás iniciar sesión para descargar, imprimir o enviar presupuestos.",
-          "Los presupuestos muestran una marca de agua mientras utilizás la aplicación sin iniciar sesión."
+          "Actualizamos información de configuración para mantener la aplicación preparada para las próximas mejoras."
         ]
       }
     ]
