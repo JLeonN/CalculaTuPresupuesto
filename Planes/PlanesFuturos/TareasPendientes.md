@@ -17,6 +17,7 @@ Las tareas más difíciles siempre van arriba.
 ### Dificultad 5/10
 
 - **Numeración automática de presupuestos:** Resolver desde el módulo de presupuestos una numeración consecutiva automática, evitando que Pablo tenga que definir manualmente el número inicial desde Configuración.
+- **Elegir el precio de un material dentro del presupuesto:** Al agregar un material, usar inicialmente su precio predeterminado. Si el material tiene varios precios, mostrar un selector en su línea para que Pablo pueda cambiar de tienda después de agregarlo. Identificar cada opción con el nombre de la tienda, el importe, la moneda y la unidad o presentación; al elegirla, actualizar el costo y los datos correspondientes solo en esa línea, sin modificar el catálogo ni los presupuestos ya guardados. Si hay un único precio, no mostrar el selector.
 
 ### Dificultad 3/10
 
