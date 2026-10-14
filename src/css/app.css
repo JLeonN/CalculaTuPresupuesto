@@ -1436,6 +1436,14 @@ input[type='number']::-webkit-outer-spin-button {
   gap: var(--espaciado-pequeno);
 }
 
+.fila-presupuesto__principal--con-selector-precio {
+  grid-template-columns: var(--columnas-linea-presupuesto-con-precio);
+}
+
+.fila-presupuesto__selector-precio {
+  min-width: 0;
+}
+
 .fila-presupuesto__principal--importe-unico {
   grid-template-columns:
     minmax(11rem, 1.7fr) minmax(5.5rem, 0.55fr) minmax(8rem, 0.75fr)
@@ -1947,6 +1955,10 @@ input[type='number']::-webkit-outer-spin-button {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .fila-presupuesto__principal--con-selector-precio {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .fila-presupuesto__principal--importe-unico {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2036,7 +2048,8 @@ input[type='number']::-webkit-outer-spin-button {
   .campos-destinatario-presupuesto,
   .agregador-material__controles,
   .fila-presupuesto__principal,
-  .fila-presupuesto__principal--importe-unico {
+  .fila-presupuesto__principal--importe-unico,
+  .fila-presupuesto__principal--con-selector-precio {
     grid-template-columns: minmax(0, 1fr);
   }
 

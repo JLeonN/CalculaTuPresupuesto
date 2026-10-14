@@ -29,6 +29,14 @@ export interface OpcionUnidadPresupuesto {
   precioUnitario: number | null;
 }
 
+export interface OpcionPrecioPresupuesto {
+  id: string;
+  moneda: Moneda;
+  unidad: string;
+  precioUnitario: number | null;
+  opcionesUnidad: OpcionUnidadPresupuesto[];
+}
+
 export interface LineaPresupuesto {
   id: string;
   tipo: TipoConceptoPresupuesto;
@@ -38,6 +46,8 @@ export interface LineaPresupuesto {
   cantidad: number | null;
   unidad: string;
   opcionesUnidad: OpcionUnidadPresupuesto[];
+  opcionesPrecio: OpcionPrecioPresupuesto[];
+  idPrecioSeleccionado: string | null;
   precioUnitario: number | null;
   moneda: Moneda;
 }
@@ -186,6 +196,10 @@ export function clonarLineasPresupuesto(lineas: readonly LineaPresupuesto[]): Li
   return lineas.map((linea) => ({
     ...linea,
     opcionesUnidad: linea.opcionesUnidad.map((opcion) => ({ ...opcion })),
+    opcionesPrecio: linea.opcionesPrecio.map((opcion) => ({
+      ...opcion,
+      opcionesUnidad: opcion.opcionesUnidad.map((unidad) => ({ ...unidad })),
+    })),
   }));
 }
 
@@ -253,6 +267,8 @@ export function crearLineaMaterialManual(
     cantidad: 1,
     unidad: 'Unidad',
     opcionesUnidad: [],
+    opcionesPrecio: [],
+    idPrecioSeleccionado: null,
     precioUnitario: null,
     moneda,
   };
@@ -274,6 +290,17 @@ export function crearLineaDesdeMaterial(
   const opcionPredeterminada = precio
     ? obtenerOpcionPredeterminada(precio, opcionesUnidad)
     : undefined;
+  const opcionesPrecio = material.precios.map((opcionPrecio) => {
+    const unidades = crearOpcionesUnidad(opcionPrecio);
+    const opcionVisible = obtenerOpcionPredeterminada(opcionPrecio, unidades);
+    return {
+      id: opcionPrecio.id,
+      moneda: opcionPrecio.moneda,
+      unidad: opcionVisible?.unidad ?? 'Unidad',
+      precioUnitario: opcionVisible?.precioUnitario ?? null,
+      opcionesUnidad: unidades,
+    };
+  });
 
   return {
     id: crearIdentificadorMaterial(),
@@ -284,6 +311,8 @@ export function crearLineaDesdeMaterial(
     cantidad: 1,
     unidad: opcionPredeterminada?.unidad ?? 'Unidad',
     opcionesUnidad,
+    opcionesPrecio,
+    idPrecioSeleccionado: precio?.id ?? null,
     precioUnitario: opcionPredeterminada?.precioUnitario ?? null,
     moneda: precio?.moneda ?? monedaPredeterminada,
   };
@@ -298,6 +327,8 @@ export function confirmarConversionManualLinea(
     origen: linea.origen === 'catalogo' ? 'manual' : linea.origen,
     idMaterial: linea.origen === 'catalogo' ? null : linea.idMaterial,
     opcionesUnidad: [],
+    opcionesPrecio: [],
+    idPrecioSeleccionado: null,
     moneda: monedaDestino,
   };
 }
@@ -361,6 +392,8 @@ function crearLineaPredefinida(
     cantidad: 0,
     unidad,
     opcionesUnidad: [],
+    opcionesPrecio: [],
+    idPrecioSeleccionado: null,
     precioUnitario: precioUnitario ?? 0,
     moneda,
   };
@@ -437,6 +470,14 @@ function normalizarLineaPresupuesto(linea: LineaPresupuesto): LineaPresupuesto {
     opcionesUnidad: linea.opcionesUnidad.map((opcion) => ({
       unidad: opcion.unidad.trim(),
       precioUnitario: normalizarNumeroEditable(opcion.precioUnitario, null),
+    })),
+    opcionesPrecio: linea.opcionesPrecio.map((opcion) => ({
+      ...opcion,
+      precioUnitario: normalizarNumeroEditable(opcion.precioUnitario, null),
+      opcionesUnidad: opcion.opcionesUnidad.map((unidad) => ({
+        unidad: unidad.unidad.trim(),
+        precioUnitario: normalizarNumeroEditable(unidad.precioUnitario, null),
+      })),
     })),
   };
 }
@@ -577,6 +618,11 @@ function recuperarLineaPresupuesto(valor: unknown): LineaPresupuesto | null {
   const opcionesUnidad = Array.isArray(valor.opcionesUnidad)
     ? valor.opcionesUnidad.map(recuperarOpcionUnidad).filter(esOpcionRecuperada)
     : [];
+  const opcionesPrecio = Array.isArray(valor.opcionesPrecio)
+    ? valor.opcionesPrecio
+        .map(recuperarOpcionPrecio)
+        .filter((opcion): opcion is OpcionPrecioPresupuesto => opcion !== null)
+    : [];
 
   return {
     id: typeof valor.id === 'string' ? valor.id : crearIdentificadorMaterial(),
@@ -587,6 +633,9 @@ function recuperarLineaPresupuesto(valor: unknown): LineaPresupuesto | null {
     cantidad: normalizarNumeroEditable(valor.cantidad, 0),
     unidad: obtenerTexto(valor.unidad).trim() || 'Unidad',
     opcionesUnidad,
+    opcionesPrecio,
+    idPrecioSeleccionado:
+      typeof valor.idPrecioSeleccionado === 'string' ? valor.idPrecioSeleccionado : null,
     precioUnitario: normalizarNumeroEditable(valor.precioUnitario, null),
     moneda: esMoneda(valor.moneda) ? valor.moneda : MONEDA_INICIAL,
   };
@@ -605,6 +654,24 @@ function recuperarOpcionUnidad(valor: unknown): OpcionUnidadPresupuesto | null {
   return {
     unidad,
     precioUnitario: normalizarNumeroEditable(valor.precioUnitario, null),
+  };
+}
+
+function recuperarOpcionPrecio(valor: unknown): OpcionPrecioPresupuesto | null {
+  if (!esRegistro(valor) || typeof valor.id !== 'string' || !esMoneda(valor.moneda)) {
+    return null;
+  }
+
+  const opcionesUnidad = Array.isArray(valor.opcionesUnidad)
+    ? valor.opcionesUnidad.map(recuperarOpcionUnidad).filter(esOpcionRecuperada)
+    : [];
+
+  return {
+    id: valor.id,
+    moneda: valor.moneda,
+    unidad: obtenerTexto(valor.unidad).trim() || 'Unidad',
+    precioUnitario: normalizarNumeroEditable(valor.precioUnitario, null),
+    opcionesUnidad,
   };
 }
 

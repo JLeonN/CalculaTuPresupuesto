@@ -89,6 +89,8 @@
     minmax(0, 0.7fr) minmax(0, 0.9fr);
   --columnas-linea-presupuesto: minmax(11rem, 1.7fr) minmax(5.5rem, 0.55fr) minmax(5.5rem, 0.55fr)
     minmax(8rem, 0.75fr) minmax(8rem, 0.8fr) auto;
+  --columnas-linea-presupuesto-con-precio: minmax(11rem, 1.7fr) minmax(5rem, 0.5fr)
+    minmax(5rem, 0.5fr) minmax(7rem, 0.7fr) minmax(7rem, 0.7fr) minmax(8rem, 0.8fr) auto;
   --altura-control: 3rem;
   --altura-encabezado-movil: 4rem;
   --altura-navegacion-movil: 4.5rem;

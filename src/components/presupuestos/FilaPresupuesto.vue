@@ -7,6 +7,7 @@ import {
   calcularSubtotalLinea,
   lineaTieneMonedaCompatible,
   type LineaPresupuesto,
+  type OpcionPrecioPresupuesto,
 } from '@/dominio/presupuestos';
 
 const props = defineProps<{
@@ -64,6 +65,15 @@ const mostrarSelectorUnidad = computed(
     esMaterial.value &&
     (linea.value.origen !== 'catalogo' || linea.value.opcionesUnidad.length > 1),
 );
+const mostrarSelectorPrecio = computed(
+  () => esMaterial.value && !props.soloLectura && linea.value.opcionesPrecio.length > 1,
+);
+const opcionesPrecio = computed(() =>
+  linea.value.opcionesPrecio.map((opcion) => ({
+    label: etiquetaOpcionPrecio(opcion),
+    value: opcion.id,
+  })),
+);
 
 watch(
   [() => linea.value.nombre, () => props.tarifasManoObra],
@@ -84,6 +94,24 @@ function actualizarPrecioPorUnidad(unidad: string): void {
   if (opcion !== undefined) {
     linea.value.precioUnitario = opcion.precioUnitario;
   }
+}
+
+function etiquetaOpcionPrecio(opcion: OpcionPrecioPresupuesto): string {
+  return opcion.precioUnitario === null
+    ? `Sin precio · ${opcion.unidad}`
+    : `${formatearImporte(opcion.precioUnitario, opcion.moneda)} / ${opcion.unidad}`;
+}
+
+function seleccionarPrecio(idPrecio: string): void {
+  const opcion = linea.value.opcionesPrecio.find((precio) => precio.id === idPrecio);
+  if (!opcion) {
+    return;
+  }
+
+  linea.value.precioUnitario = opcion.precioUnitario;
+  linea.value.moneda = opcion.moneda;
+  linea.value.unidad = opcion.unidad;
+  linea.value.opcionesUnidad = opcion.opcionesUnidad.map((unidad) => ({ ...unidad }));
 }
 
 function etiquetaManoObra(opcion: TarifaManoObraConfiguracion | string): string {
@@ -143,7 +171,10 @@ function seleccionarContenidoNumerico(evento: Event): void {
   >
     <div
       class="fila-presupuesto__principal"
-      :class="{ 'fila-presupuesto__principal--importe-unico': !esMaterial }"
+      :class="{
+        'fila-presupuesto__principal--importe-unico': !esMaterial,
+        'fila-presupuesto__principal--con-selector-precio': mostrarSelectorPrecio,
+      }"
     >
       <q-select
         v-if="esManoObra && !soloLectura"
@@ -234,6 +265,20 @@ function seleccionarContenidoNumerico(evento: Event): void {
         :label="etiquetaPrecio"
         :readonly="soloLectura"
         @focus="seleccionarContenidoNumerico"
+      />
+
+      <q-select
+        v-if="mostrarSelectorPrecio"
+        v-model="linea.idPrecioSeleccionado"
+        class="fila-presupuesto__selector-precio"
+        dark
+        outlined
+        dense
+        emit-value
+        map-options
+        label="Elegir precio"
+        :options="opcionesPrecio"
+        @update:model-value="seleccionarPrecio"
       />
 
       <div class="fila-presupuesto__subtotal">
