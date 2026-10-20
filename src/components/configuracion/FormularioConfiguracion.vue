@@ -460,7 +460,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
             <div class="grilla-configuracion grilla-configuracion--un-campo">
               <q-input
                 v-model="porcentajeAdicionalMaterialesEntrada"
-                class="campo-porcentaje-configuracion"
+                class="campo-porcentaje"
                 :style="{ '--caracteres-porcentaje': caracteresPorcentaje }"
                 dark
                 outlined

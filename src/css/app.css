@@ -2338,13 +2338,13 @@ input[type='number']::-webkit-outer-spin-button {
   max-width: var(--ancho-texto-secundario);
 }
 
-.campo-porcentaje-configuracion .q-field__native {
+.campo-porcentaje .q-field__native {
   flex: none;
   width: calc(var(--caracteres-porcentaje) * 1ch + var(--espaciado-pequeno));
   max-width: calc(100% - var(--espaciado-extra-grande));
 }
 
-.campo-porcentaje-configuracion .q-field__suffix {
+.campo-porcentaje .q-field__suffix {
   margin-left: var(--espaciado-minimo);
 }
 

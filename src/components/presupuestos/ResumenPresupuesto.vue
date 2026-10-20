@@ -27,11 +27,20 @@ const porcentajeAdicionalMateriales = computed(
   () =>
     convertirEntradaPorcentajeAdicionalMateriales(porcentajeAdicionalMaterialesEntrada.value) ?? 0,
 );
+const caracteresPorcentaje = computed(() =>
+  Math.max(String(porcentajeAdicionalMaterialesEntrada.value ?? '').length, 1),
+);
 
 function validarPorcentajeAdicionalMaterialesEntrada(valor: unknown): true | string {
   return (
     convertirEntradaPorcentajeAdicionalMateriales(valor) !== null || 'Ingresá un porcentaje válido.'
   );
+}
+
+function seleccionarContenidoPorcentaje(evento: Event): void {
+  if (evento.target instanceof HTMLInputElement) {
+    evento.target.select();
+  }
 }
 
 const totalManoObraYTraslado = computed(() =>
@@ -60,17 +69,20 @@ const opcionesMonedaPresupuesto = computed(() =>
       <div class="resumen-presupuesto__campo-porcentaje">
         <q-input
           v-model="porcentajeAdicionalMaterialesEntrada"
+          class="campo-porcentaje"
+          :style="{ '--caracteres-porcentaje': caracteresPorcentaje }"
           dark
           outlined
           dense
-          type="number"
-          min="0"
-          step="0.01"
+          type="text"
+          inputmode="decimal"
           suffix="%"
-          label="Porcentaje adicional sobre materiales"
+          label="Porcentaje adicional"
           hint="Se aplica solo a los materiales de este presupuesto."
           :rules="[validarPorcentajeAdicionalMaterialesEntrada]"
           :readonly="soloLectura"
+          @focus="seleccionarContenidoPorcentaje"
+          @click="seleccionarContenidoPorcentaje"
         />
       </div>
       <div class="resumen-presupuesto__controles">
