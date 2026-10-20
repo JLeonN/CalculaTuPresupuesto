@@ -413,94 +413,96 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
           </div>
         </section>
 
-        <section class="seccion-formulario" aria-labelledby="titulo-traslado-configuracion">
-          <div class="encabezado-seccion-formulario">
-            <div>
-              <p class="etiqueta-seccion">Valores habituales</p>
-              <h2 id="titulo-traslado-configuracion" class="titulo-seccion">Traslado</h2>
-              <p class="texto-secundario texto-ayuda-formulario">
-                Guardá un único precio de referencia por kilómetro.
-              </p>
+        <div class="grupo-configuracion__columna">
+          <section class="seccion-formulario" aria-labelledby="titulo-traslado-configuracion">
+            <div class="encabezado-seccion-formulario">
+              <div>
+                <p class="etiqueta-seccion">Valores habituales</p>
+                <h2 id="titulo-traslado-configuracion" class="titulo-seccion">Traslado</h2>
+                <p class="texto-secundario texto-ayuda-formulario">
+                  Guardá un único precio de referencia por kilómetro.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div class="grilla-configuracion grilla-configuracion--un-campo">
-            <q-input
-              v-model.number="precioTrasladoKilometro"
-              dark
-              outlined
-              type="number"
-              min="0"
-              step="0.01"
-              label="Precio de traslado"
-              :prefix="monedaPrincipal"
-              suffix="por kilómetro"
-              :rules="[validarPrecio]"
-            />
-          </div>
-        </section>
-
-        <section
-          class="seccion-formulario"
-          aria-labelledby="titulo-porcentaje-materiales-configuracion"
-        >
-          <div class="encabezado-seccion-formulario">
-            <div>
-              <p class="etiqueta-seccion">Valores habituales</p>
-              <h2 id="titulo-porcentaje-materiales-configuracion" class="titulo-seccion">
-                Porcentaje adicional sobre materiales
-              </h2>
-              <p class="texto-secundario texto-ayuda-formulario">
-                Se usará en los presupuestos nuevos; podés cambiarlo en cada ticket.
-              </p>
+            <div class="grilla-configuracion grilla-configuracion--un-campo">
+              <q-input
+                v-model.number="precioTrasladoKilometro"
+                dark
+                outlined
+                type="number"
+                min="0"
+                step="0.01"
+                label="Precio de traslado"
+                :prefix="monedaPrincipal"
+                suffix="por kilómetro"
+                :rules="[validarPrecio]"
+              />
             </div>
-          </div>
+          </section>
 
-          <div class="grilla-configuracion grilla-configuracion--un-campo">
-            <q-input
-              v-model="porcentajeAdicionalMaterialesEntrada"
-              class="campo-porcentaje-configuracion"
-              :style="{ '--caracteres-porcentaje': caracteresPorcentaje }"
-              dark
-              outlined
-              type="text"
-              inputmode="decimal"
-              label="Porcentaje adicional"
-              suffix="%"
-              :rules="[validarPorcentajeAdicionalMaterialesEntrada]"
-              @focus="seleccionarContenidoPorcentaje"
-              @click="seleccionarContenidoPorcentaje"
-            />
-          </div>
-        </section>
-
-        <section class="seccion-formulario" aria-labelledby="titulo-moneda-configuracion">
-          <div class="encabezado-seccion-formulario">
-            <div>
-              <p class="etiqueta-seccion">Preferencias de importes</p>
-              <h2 id="titulo-moneda-configuracion" class="titulo-seccion">Moneda principal</h2>
-              <p class="texto-secundario texto-ayuda-formulario">
-                Se usará por defecto en materiales y presupuestos nuevos. Cambiar la moneda no
-                convierte materiales ni presupuestos guardados.
-              </p>
+          <section
+            class="seccion-formulario"
+            aria-labelledby="titulo-porcentaje-materiales-configuracion"
+          >
+            <div class="encabezado-seccion-formulario">
+              <div>
+                <p class="etiqueta-seccion">Valores habituales</p>
+                <h2 id="titulo-porcentaje-materiales-configuracion" class="titulo-seccion">
+                  Porcentaje adicional sobre materiales
+                </h2>
+                <p class="texto-secundario texto-ayuda-formulario">
+                  Se usará en los presupuestos nuevos; podés cambiarlo en cada ticket.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div class="grilla-configuracion grilla-configuracion--un-campo">
-            <SelectorMoneda
-              v-model="monedaPrincipal"
-              :opciones="opcionesMonedas"
-              etiqueta="Moneda principal"
-              buscable
-            />
+            <div class="grilla-configuracion grilla-configuracion--un-campo">
+              <q-input
+                v-model="porcentajeAdicionalMaterialesEntrada"
+                class="campo-porcentaje-configuracion"
+                :style="{ '--caracteres-porcentaje': caracteresPorcentaje }"
+                dark
+                outlined
+                type="text"
+                inputmode="decimal"
+                label="Porcentaje adicional"
+                suffix="%"
+                :rules="[validarPorcentajeAdicionalMaterialesEntrada]"
+                @focus="seleccionarContenidoPorcentaje"
+                @click="seleccionarContenidoPorcentaje"
+              />
+            </div>
+          </section>
 
-            <q-banner v-if="monedaPrincipalCambio" class="aviso-advertencia" rounded>
-              <template #avatar><q-icon name="warning_amber" /></template>
-              Los importes de mano de obra y traslado no se convierten. Revisalos manualmente antes
-              de guardar.
-            </q-banner>
-          </div>
-        </section>
+          <section class="seccion-formulario" aria-labelledby="titulo-moneda-configuracion">
+            <div class="encabezado-seccion-formulario">
+              <div>
+                <p class="etiqueta-seccion">Preferencias de importes</p>
+                <h2 id="titulo-moneda-configuracion" class="titulo-seccion">Moneda principal</h2>
+                <p class="texto-secundario texto-ayuda-formulario">
+                  Se usará por defecto en materiales y presupuestos nuevos. Cambiar la moneda no
+                  convierte materiales ni presupuestos guardados.
+                </p>
+              </div>
+            </div>
+
+            <div class="grilla-configuracion grilla-configuracion--un-campo">
+              <SelectorMoneda
+                v-model="monedaPrincipal"
+                :opciones="opcionesMonedas"
+                etiqueta="Moneda principal"
+                buscable
+              />
+
+              <q-banner v-if="monedaPrincipalCambio" class="aviso-advertencia" rounded>
+                <template #avatar><q-icon name="warning_amber" /></template>
+                Los importes de mano de obra y traslado no se convierten. Revisalos manualmente
+                antes de guardar.
+              </q-banner>
+            </div>
+          </section>
+        </div>
       </div>
 
       <div class="grupo-configuracion grupo-configuracion--contacto">

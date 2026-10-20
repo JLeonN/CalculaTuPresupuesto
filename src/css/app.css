@@ -2279,23 +2279,23 @@ input[type='number']::-webkit-outer-spin-button {
   box-shadow: var(--sombra-principal);
 }
 
-.grupo-configuracion {
+.grupo-configuracion,
+.grupo-configuracion__columna {
   display: grid;
   min-width: 0;
   gap: var(--espaciado-mediano);
 }
 
-.grupo-configuracion > .seccion-formulario {
+.grupo-configuracion > .seccion-formulario,
+.grupo-configuracion__columna > .seccion-formulario {
   min-width: 0;
 }
 
-.grupo-configuracion--valores > .seccion-formulario:not(:first-child) {
+.grupo-configuracion__columna > .seccion-formulario {
   padding: var(--espaciado-mediano);
 }
 
-.grupo-configuracion--valores
-  > .seccion-formulario:not(:first-child)
-  .encabezado-seccion-formulario {
+.grupo-configuracion__columna .encabezado-seccion-formulario {
   margin-bottom: var(--espaciado-mediano);
 }
 
