@@ -2266,6 +2266,7 @@ input[type='number']::-webkit-outer-spin-button {
 .formulario-configuracion {
   display: grid;
   gap: var(--espaciado-grande);
+  container-type: inline-size;
 }
 
 .formulario-configuracion__contenedor {
@@ -2276,6 +2277,51 @@ input[type='number']::-webkit-outer-spin-button {
   border: var(--ancho-borde) solid var(--color-borde-principal);
   border-radius: var(--radio-grande);
   box-shadow: var(--sombra-principal);
+}
+
+.grupo-configuracion {
+  display: grid;
+  min-width: 0;
+  gap: var(--espaciado-mediano);
+}
+
+.grupo-configuracion > .seccion-formulario {
+  min-width: 0;
+}
+
+.grupo-configuracion--valores > .seccion-formulario:not(:first-child) {
+  padding: var(--espaciado-mediano);
+}
+
+.grupo-configuracion--valores
+  > .seccion-formulario:not(:first-child)
+  .encabezado-seccion-formulario {
+  margin-bottom: var(--espaciado-mediano);
+}
+
+/* El ancho mínimo deja espacio para dos tarjetas y sus campos dentro del formulario. */
+@container (min-width: 52rem) {
+  .grupo-configuracion--valores,
+  .grupo-configuracion--contacto {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .grupo-configuracion--valores .campos-tarifa-mano-obra,
+  .grupo-configuracion--contacto .campos-metodo-pago,
+  .grupo-configuracion--contacto .campos-red-social {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grupo-configuracion--valores > .seccion-formulario:first-child .encabezado-seccion-formulario,
+  .grupo-configuracion--contacto .encabezado-seccion-formulario {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .grupo-configuracion .encabezado-seccion-formulario .q-btn {
+    align-self: start;
+  }
 }
 
 .grilla-configuracion,
@@ -2290,6 +2336,16 @@ input[type='number']::-webkit-outer-spin-button {
 .grilla-configuracion--un-campo {
   grid-template-columns: minmax(0, 1fr);
   max-width: var(--ancho-texto-secundario);
+}
+
+.campo-porcentaje-configuracion .q-field__native {
+  flex: none;
+  width: calc(var(--caracteres-porcentaje) * 1ch + var(--espaciado-pequeno));
+  max-width: calc(100% - var(--espaciado-extra-grande));
+}
+
+.campo-porcentaje-configuracion .q-field__suffix {
+  margin-left: var(--espaciado-minimo);
 }
 
 .selector-logo-configuracion {

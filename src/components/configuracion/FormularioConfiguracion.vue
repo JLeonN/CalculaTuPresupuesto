@@ -50,6 +50,9 @@ const opcionesMonedas = obtenerOpcionesMonedasDisponibles();
 const monedaPrincipalCambio = computed(
   () => monedaPrincipal.value !== monedaPrincipalCargada.value,
 );
+const caracteresPorcentaje = computed(() =>
+  Math.max(String(porcentajeAdicionalMaterialesEntrada.value ?? '').length, 1),
+);
 const logoVistaPrevia = computed(() => logo.value?.datosUrl || LOGO_PREDETERMINADO);
 const textoAlternativoLogo = computed(() =>
   logo.value ? `Logo ${logo.value.nombre}` : `Logo de ${NOMBRE_APLICACION}`,
@@ -250,6 +253,12 @@ function validarPorcentajeAdicionalMaterialesEntrada(valor: unknown): true | str
     convertirEntradaPorcentajeAdicionalMateriales(valor) !== null || 'Ingresá un porcentaje válido.'
   );
 }
+
+function seleccionarContenidoPorcentaje(evento: Event): void {
+  if (evento.target instanceof HTMLInputElement) {
+    evento.target.select();
+  }
+}
 </script>
 
 <template>
@@ -343,251 +352,257 @@ function validarPorcentajeAdicionalMaterialesEntrada(valor: unknown): true | str
         </div>
       </section>
 
-      <section class="seccion-formulario" aria-labelledby="titulo-mano-obra-configuracion">
-        <div class="encabezado-seccion-formulario">
-          <div>
-            <p class="etiqueta-seccion">Valores habituales</p>
-            <h2 id="titulo-mano-obra-configuracion" class="titulo-seccion">Mano de obra</h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Definí un nombre y un precio por hora para cada tipo de trabajo.
-            </p>
-          </div>
-          <q-btn
-            class="boton-secundario"
-            flat
-            no-caps
-            icon="add"
-            label="Agregar mano de obra"
-            @click="agregarTarifaManoObra"
-          />
-        </div>
-
-        <div class="lista-campos-repetibles">
-          <article
-            v-for="(tarifa, indice) in tarifasManoObra"
-            :key="tarifa.id"
-            class="bloque-repetible"
-          >
-            <div class="bloque-repetible__campos campos-tarifa-mano-obra">
-              <q-input
-                v-model="tarifa.nombre"
-                dark
-                outlined
-                label="Nombre de la mano de obra"
-                :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá un nombre.']"
-              />
-              <q-input
-                v-model.number="tarifa.precioHora"
-                dark
-                outlined
-                type="number"
-                min="0"
-                step="0.01"
-                label="Precio"
-                :prefix="monedaPrincipal"
-                suffix="por hora"
-                :rules="[validarPrecioObligatorio]"
-              />
+      <div class="grupo-configuracion grupo-configuracion--valores">
+        <section class="seccion-formulario" aria-labelledby="titulo-mano-obra-configuracion">
+          <div class="encabezado-seccion-formulario">
+            <div>
+              <p class="etiqueta-seccion">Valores habituales</p>
+              <h2 id="titulo-mano-obra-configuracion" class="titulo-seccion">Mano de obra</h2>
+              <p class="texto-secundario texto-ayuda-formulario">
+                Definí un nombre y un precio por hora para cada tipo de trabajo.
+              </p>
             </div>
             <q-btn
-              v-if="tarifasManoObra.length > 1"
-              class="boton-icono-secundario"
+              class="boton-secundario"
               flat
-              round
-              dense
-              icon="delete_outline"
-              :aria-label="`Quitar mano de obra ${indice + 1}`"
-              @click="quitarTarifaManoObra(tarifa.id)"
+              no-caps
+              icon="add"
+              label="Agregar mano de obra"
+              @click="agregarTarifaManoObra"
             />
-          </article>
-        </div>
-      </section>
-
-      <section class="seccion-formulario" aria-labelledby="titulo-traslado-configuracion">
-        <div class="encabezado-seccion-formulario">
-          <div>
-            <p class="etiqueta-seccion">Valores habituales</p>
-            <h2 id="titulo-traslado-configuracion" class="titulo-seccion">Traslado</h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Guardá un único precio de referencia por kilómetro.
-            </p>
           </div>
-        </div>
 
-        <div class="grilla-configuracion grilla-configuracion--un-campo">
-          <q-input
-            v-model.number="precioTrasladoKilometro"
-            dark
-            outlined
-            type="number"
-            min="0"
-            step="0.01"
-            label="Precio de traslado"
-            :prefix="monedaPrincipal"
-            suffix="por kilómetro"
-            :rules="[validarPrecio]"
-          />
-        </div>
-      </section>
-
-      <section
-        class="seccion-formulario"
-        aria-labelledby="titulo-porcentaje-materiales-configuracion"
-      >
-        <div class="encabezado-seccion-formulario">
-          <div>
-            <p class="etiqueta-seccion">Valores habituales</p>
-            <h2 id="titulo-porcentaje-materiales-configuracion" class="titulo-seccion">
-              Porcentaje adicional sobre materiales
-            </h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Se usará en los presupuestos nuevos; podés cambiarlo en cada ticket.
-            </p>
+          <div class="lista-campos-repetibles">
+            <article
+              v-for="(tarifa, indice) in tarifasManoObra"
+              :key="tarifa.id"
+              class="bloque-repetible"
+            >
+              <div class="bloque-repetible__campos campos-tarifa-mano-obra">
+                <q-input
+                  v-model="tarifa.nombre"
+                  dark
+                  outlined
+                  label="Tipo de trabajo"
+                  :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá un nombre.']"
+                />
+                <q-input
+                  v-model.number="tarifa.precioHora"
+                  dark
+                  outlined
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  label="Precio"
+                  :prefix="monedaPrincipal"
+                  suffix="por hora"
+                  :rules="[validarPrecioObligatorio]"
+                />
+              </div>
+              <q-btn
+                v-if="tarifasManoObra.length > 1"
+                class="boton-icono-secundario"
+                flat
+                round
+                dense
+                icon="delete_outline"
+                :aria-label="`Quitar mano de obra ${indice + 1}`"
+                @click="quitarTarifaManoObra(tarifa.id)"
+              />
+            </article>
           </div>
-        </div>
+        </section>
 
-        <div class="grilla-configuracion grilla-configuracion--un-campo">
-          <q-input
-            v-model="porcentajeAdicionalMaterialesEntrada"
-            dark
-            outlined
-            type="number"
-            min="0"
-            step="0.01"
-            label="Porcentaje adicional sobre materiales"
-            suffix="%"
-            :rules="[validarPorcentajeAdicionalMaterialesEntrada]"
-          />
-        </div>
-      </section>
-
-      <section class="seccion-formulario" aria-labelledby="titulo-moneda-configuracion">
-        <div class="encabezado-seccion-formulario">
-          <div>
-            <p class="etiqueta-seccion">Preferencias de importes</p>
-            <h2 id="titulo-moneda-configuracion" class="titulo-seccion">Moneda principal</h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Se usará por defecto en materiales y presupuestos nuevos. Cambiar la moneda no
-              convierte materiales ni presupuestos guardados.
-            </p>
+        <section class="seccion-formulario" aria-labelledby="titulo-traslado-configuracion">
+          <div class="encabezado-seccion-formulario">
+            <div>
+              <p class="etiqueta-seccion">Valores habituales</p>
+              <h2 id="titulo-traslado-configuracion" class="titulo-seccion">Traslado</h2>
+              <p class="texto-secundario texto-ayuda-formulario">
+                Guardá un único precio de referencia por kilómetro.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div class="grilla-configuracion grilla-configuracion--un-campo">
-          <SelectorMoneda
-            v-model="monedaPrincipal"
-            :opciones="opcionesMonedas"
-            etiqueta="Moneda principal"
-            ayuda="Se usará por defecto en materiales y presupuestos nuevos."
-            buscable
-          />
-
-          <q-banner v-if="monedaPrincipalCambio" class="aviso-advertencia" rounded>
-            <template #avatar><q-icon name="warning_amber" /></template>
-            Los importes de mano de obra y traslado no se convierten. Revisalos manualmente antes de
-            guardar.
-          </q-banner>
-        </div>
-      </section>
-
-      <section class="seccion-formulario" aria-labelledby="titulo-pagos-configuracion">
-        <div class="encabezado-seccion-formulario">
-          <div>
-            <p class="etiqueta-seccion">Cobros</p>
-            <h2 id="titulo-pagos-configuracion" class="titulo-seccion">Métodos de pago</h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Agregá los bancos o medios de pago que estén disponibles.
-            </p>
+          <div class="grilla-configuracion grilla-configuracion--un-campo">
+            <q-input
+              v-model.number="precioTrasladoKilometro"
+              dark
+              outlined
+              type="number"
+              min="0"
+              step="0.01"
+              label="Precio de traslado"
+              :prefix="monedaPrincipal"
+              suffix="por kilómetro"
+              :rules="[validarPrecio]"
+            />
           </div>
-          <q-btn
-            class="boton-secundario"
-            flat
-            no-caps
-            icon="add"
-            label="Agregar método"
-            @click="agregarMetodoPago"
-          />
-        </div>
+        </section>
 
-        <div class="lista-campos-repetibles">
-          <article
-            v-for="(metodo, indice) in metodosPago"
-            :key="metodo.id"
-            class="bloque-repetible"
-          >
-            <div class="bloque-repetible__campos campos-metodo-pago">
-              <q-input v-model="metodo.nombre" dark outlined label="Nombre del banco o método" />
-              <q-input v-model="metodo.numeroCuenta" dark outlined label="Número de cuenta" />
+        <section
+          class="seccion-formulario"
+          aria-labelledby="titulo-porcentaje-materiales-configuracion"
+        >
+          <div class="encabezado-seccion-formulario">
+            <div>
+              <p class="etiqueta-seccion">Valores habituales</p>
+              <h2 id="titulo-porcentaje-materiales-configuracion" class="titulo-seccion">
+                Porcentaje adicional sobre materiales
+              </h2>
+              <p class="texto-secundario texto-ayuda-formulario">
+                Se usará en los presupuestos nuevos; podés cambiarlo en cada ticket.
+              </p>
+            </div>
+          </div>
+
+          <div class="grilla-configuracion grilla-configuracion--un-campo">
+            <q-input
+              v-model="porcentajeAdicionalMaterialesEntrada"
+              class="campo-porcentaje-configuracion"
+              :style="{ '--caracteres-porcentaje': caracteresPorcentaje }"
+              dark
+              outlined
+              type="text"
+              inputmode="decimal"
+              label="Porcentaje adicional"
+              suffix="%"
+              :rules="[validarPorcentajeAdicionalMaterialesEntrada]"
+              @focus="seleccionarContenidoPorcentaje"
+              @click="seleccionarContenidoPorcentaje"
+            />
+          </div>
+        </section>
+
+        <section class="seccion-formulario" aria-labelledby="titulo-moneda-configuracion">
+          <div class="encabezado-seccion-formulario">
+            <div>
+              <p class="etiqueta-seccion">Preferencias de importes</p>
+              <h2 id="titulo-moneda-configuracion" class="titulo-seccion">Moneda principal</h2>
+              <p class="texto-secundario texto-ayuda-formulario">
+                Se usará por defecto en materiales y presupuestos nuevos. Cambiar la moneda no
+                convierte materiales ni presupuestos guardados.
+              </p>
+            </div>
+          </div>
+
+          <div class="grilla-configuracion grilla-configuracion--un-campo">
+            <SelectorMoneda
+              v-model="monedaPrincipal"
+              :opciones="opcionesMonedas"
+              etiqueta="Moneda principal"
+              buscable
+            />
+
+            <q-banner v-if="monedaPrincipalCambio" class="aviso-advertencia" rounded>
+              <template #avatar><q-icon name="warning_amber" /></template>
+              Los importes de mano de obra y traslado no se convierten. Revisalos manualmente antes
+              de guardar.
+            </q-banner>
+          </div>
+        </section>
+      </div>
+
+      <div class="grupo-configuracion grupo-configuracion--contacto">
+        <section class="seccion-formulario" aria-labelledby="titulo-pagos-configuracion">
+          <div class="encabezado-seccion-formulario">
+            <div>
+              <p class="etiqueta-seccion">Cobros</p>
+              <h2 id="titulo-pagos-configuracion" class="titulo-seccion">Métodos de pago</h2>
+              <p class="texto-secundario texto-ayuda-formulario">
+                Agregá los bancos o medios de pago que estén disponibles.
+              </p>
             </div>
             <q-btn
-              v-if="metodosPago.length > 1"
-              class="boton-icono-secundario"
+              class="boton-secundario"
               flat
-              round
-              dense
-              icon="delete_outline"
-              :aria-label="`Quitar método de pago ${indice + 1}`"
-              @click="quitarMetodoPago(metodo.id)"
+              no-caps
+              icon="add"
+              label="Agregar método"
+              @click="agregarMetodoPago"
             />
-          </article>
-        </div>
-      </section>
-
-      <section class="seccion-formulario" aria-labelledby="titulo-redes-configuracion">
-        <div class="encabezado-seccion-formulario">
-          <div>
-            <p class="etiqueta-seccion">Presencia digital</p>
-            <h2 id="titulo-redes-configuracion" class="titulo-seccion">Redes sociales</h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Guardá los perfiles o enlaces públicos de la empresa.
-            </p>
           </div>
-          <q-btn
-            class="boton-secundario"
-            flat
-            no-caps
-            icon="add"
-            label="Agregar red"
-            @click="agregarRedSocial"
-          />
-        </div>
 
-        <div class="lista-campos-repetibles">
-          <article
-            v-for="(redSocial, indice) in redesSociales"
-            :key="redSocial.id"
-            class="bloque-repetible"
-          >
-            <div class="bloque-repetible__campos campos-red-social">
-              <q-select
-                v-model="redSocial.red"
-                dark
-                outlined
-                use-input
-                new-value-mode="add-unique"
-                label="Red social"
-                :options="[...REDES_SOCIALES_DISPONIBLES]"
+          <div class="lista-campos-repetibles">
+            <article
+              v-for="(metodo, indice) in metodosPago"
+              :key="metodo.id"
+              class="bloque-repetible"
+            >
+              <div class="bloque-repetible__campos campos-metodo-pago">
+                <q-input v-model="metodo.nombre" dark outlined label="Banco o método" />
+                <q-input v-model="metodo.numeroCuenta" dark outlined label="Número de cuenta" />
+              </div>
+              <q-btn
+                v-if="metodosPago.length > 1"
+                class="boton-icono-secundario"
+                flat
+                round
+                dense
+                icon="delete_outline"
+                :aria-label="`Quitar método de pago ${indice + 1}`"
+                @click="quitarMetodoPago(metodo.id)"
               />
-              <q-input
-                v-model="redSocial.usuarioOEnlace"
-                dark
-                outlined
-                :label="`${redSocial.red || 'Red social'}: usuario o enlace`"
-              />
+            </article>
+          </div>
+        </section>
+
+        <section class="seccion-formulario" aria-labelledby="titulo-redes-configuracion">
+          <div class="encabezado-seccion-formulario">
+            <div>
+              <p class="etiqueta-seccion">Presencia digital</p>
+              <h2 id="titulo-redes-configuracion" class="titulo-seccion">Redes sociales</h2>
+              <p class="texto-secundario texto-ayuda-formulario">
+                Guardá los perfiles o enlaces públicos de la empresa.
+              </p>
             </div>
             <q-btn
-              v-if="redesSociales.length > 1"
-              class="boton-icono-secundario"
+              class="boton-secundario"
               flat
-              round
-              dense
-              icon="delete_outline"
-              :aria-label="`Quitar red social ${indice + 1}`"
-              @click="quitarRedSocial(redSocial.id)"
+              no-caps
+              icon="add"
+              label="Agregar red"
+              @click="agregarRedSocial"
             />
-          </article>
-        </div>
-      </section>
+          </div>
+
+          <div class="lista-campos-repetibles">
+            <article
+              v-for="(redSocial, indice) in redesSociales"
+              :key="redSocial.id"
+              class="bloque-repetible"
+            >
+              <div class="bloque-repetible__campos campos-red-social">
+                <q-select
+                  v-model="redSocial.red"
+                  dark
+                  outlined
+                  use-input
+                  new-value-mode="add-unique"
+                  label="Red social"
+                  :options="[...REDES_SOCIALES_DISPONIBLES]"
+                />
+                <q-input
+                  v-model="redSocial.usuarioOEnlace"
+                  dark
+                  outlined
+                  label="Usuario o enlace"
+                />
+              </div>
+              <q-btn
+                v-if="redesSociales.length > 1"
+                class="boton-icono-secundario"
+                flat
+                round
+                dense
+                icon="delete_outline"
+                :aria-label="`Quitar red social ${indice + 1}`"
+                @click="quitarRedSocial(redSocial.id)"
+              />
+            </article>
+          </div>
+        </section>
+      </div>
 
       <section class="seccion-formulario" aria-labelledby="titulo-mensaje-configuracion">
         <div class="encabezado-seccion-formulario">
