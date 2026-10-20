@@ -85,7 +85,11 @@ function formatearFecha(fecha: string): string {
             <strong role="cell">
               {{
                 formatearImporte(
-                  calcularTotalPresupuesto(presupuesto.lineas, presupuesto.moneda),
+                  calcularTotalPresupuesto(
+                    presupuesto.lineas,
+                    presupuesto.moneda,
+                    presupuesto.porcentajeAdicionalMateriales,
+                  ),
                   presupuesto.moneda,
                 )
               }}
@@ -119,7 +123,11 @@ function formatearFecha(fecha: string): string {
             <strong>
               {{
                 formatearImporte(
-                  calcularTotalPresupuesto(presupuesto.lineas, presupuesto.moneda),
+                  calcularTotalPresupuesto(
+                    presupuesto.lineas,
+                    presupuesto.moneda,
+                    presupuesto.porcentajeAdicionalMateriales,
+                  ),
                   presupuesto.moneda,
                 )
               }}

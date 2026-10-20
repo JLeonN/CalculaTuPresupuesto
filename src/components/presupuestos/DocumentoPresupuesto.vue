@@ -3,7 +3,8 @@ import { computed, ref } from 'vue';
 import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
 import { formatearImporte, formatearNumero } from '@/dominio/monedas';
 import {
-  calcularSubtotalLinea,
+  calcularPrecioMaterialCliente,
+  calcularSubtotalMaterialCliente,
   calcularTotalManoObraYTraslado,
   calcularTotalMateriales,
   calcularTotalPresupuesto,
@@ -35,9 +36,19 @@ const totalManoObraYTraslado = computed(() =>
   calcularTotalManoObraYTraslado(props.datos.lineas, props.datos.moneda),
 );
 const totalMateriales = computed(() =>
-  calcularTotalMateriales(props.datos.lineas, props.datos.moneda),
+  calcularTotalMateriales(
+    props.datos.lineas,
+    props.datos.moneda,
+    props.datos.porcentajeAdicionalMateriales,
+  ),
 );
-const total = computed(() => calcularTotalPresupuesto(props.datos.lineas, props.datos.moneda));
+const total = computed(() =>
+  calcularTotalPresupuesto(
+    props.datos.lineas,
+    props.datos.moneda,
+    props.datos.porcentajeAdicionalMateriales,
+  ),
+);
 const cantidadMonedasIncompatibles = computed(
   () =>
     props.datos.lineas.filter((linea) => !lineaTieneMonedaCompatible(linea, props.datos.moneda))
@@ -167,8 +178,22 @@ defineExpose({ obtenerElemento });
             >
               <td>{{ linea.nombre || 'Sin descripción' }}</td>
               <td>{{ formatearCantidad(linea.cantidad) }} {{ linea.unidad }}</td>
-              <td>{{ formatearImporte(linea.precioUnitario ?? 0, linea.moneda) }}</td>
-              <td>{{ formatearImporte(calcularSubtotalLinea(linea), linea.moneda) }}</td>
+              <td>
+                {{
+                  formatearImporte(
+                    calcularPrecioMaterialCliente(linea, datos.porcentajeAdicionalMateriales),
+                    linea.moneda,
+                  )
+                }}
+              </td>
+              <td>
+                {{
+                  formatearImporte(
+                    calcularSubtotalMaterialCliente(linea, datos.porcentajeAdicionalMateriales),
+                    linea.moneda,
+                  )
+                }}
+              </td>
             </tr>
             <tr>
               <td>Mano de obra</td>

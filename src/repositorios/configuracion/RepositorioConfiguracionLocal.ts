@@ -3,6 +3,7 @@ import {
   esConfiguracionGuardada,
   migrarConfiguracionAnterior,
   migrarConfiguracionSinMonedaPrincipal,
+  migrarConfiguracionSinPorcentajeAdicionalMateriales,
   migrarMensajeFinalPredeterminado,
   type Configuracion,
 } from '@/dominio/configuracion';
@@ -35,16 +36,25 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
     if (esConfiguracionGuardada(configuracionGuardada)) {
       configuracionRecuperada = structuredClone(configuracionGuardada);
     } else {
-      const configuracionModernaMigrada =
-        migrarConfiguracionSinMonedaPrincipal(configuracionGuardada);
-      const configuracionAnteriorMigrada = configuracionModernaMigrada
+      const configuracionSinPorcentajeMigrada =
+        migrarConfiguracionSinPorcentajeAdicionalMateriales(configuracionGuardada);
+      const configuracionModernaMigrada = configuracionSinPorcentajeMigrada
         ? null
-        : migrarConfiguracionAnterior(configuracionGuardada);
+        : migrarConfiguracionSinMonedaPrincipal(configuracionGuardada);
+      const configuracionAnteriorMigrada =
+        configuracionSinPorcentajeMigrada || configuracionModernaMigrada
+          ? null
+          : migrarConfiguracionAnterior(configuracionGuardada);
 
       configuracionNecesitaMigracion =
-        configuracionModernaMigrada !== null || configuracionAnteriorMigrada !== null;
+        configuracionSinPorcentajeMigrada !== null ||
+        configuracionModernaMigrada !== null ||
+        configuracionAnteriorMigrada !== null;
       configuracionRecuperada =
-        configuracionModernaMigrada ?? configuracionAnteriorMigrada ?? crearConfiguracionInicial();
+        configuracionSinPorcentajeMigrada ??
+        configuracionModernaMigrada ??
+        configuracionAnteriorMigrada ??
+        crearConfiguracionInicial();
     }
 
     const configuracionMigrada = migrarMensajeFinalPredeterminado(configuracionRecuperada);

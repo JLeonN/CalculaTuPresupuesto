@@ -15,6 +15,7 @@ import {
   type TarifaManoObraConfiguracion,
 } from '@/dominio/configuracion';
 import { MONEDA_INICIAL, obtenerOpcionesMonedasDisponibles, type Moneda } from '@/dominio/monedas';
+import { convertirEntradaPorcentajeAdicionalMateriales } from '@/dominio/porcentajeAdicionalMateriales';
 
 const TAMANO_MAXIMO_LOGO_BYTES = 1024 * 1024;
 const TIPOS_LOGO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
@@ -38,6 +39,7 @@ const rut = ref('');
 const logo = ref<LogoConfiguracion | null>(null);
 const tarifasManoObra = ref<TarifaManoObraConfiguracion[]>([]);
 const precioTrasladoKilometro = ref<number | null>(null);
+const porcentajeAdicionalMaterialesEntrada = ref<string | number | null>('0');
 const monedaPrincipal = ref<Moneda>(MONEDA_INICIAL);
 const monedaPrincipalCargada = ref<Moneda>(MONEDA_INICIAL);
 const mensajeFinal = ref('');
@@ -77,6 +79,9 @@ watch(
       ? tarifasGuardadas.map((tarifa) => ({ ...tarifa }))
       : [crearTarifaManoObraConfiguracion()];
     precioTrasladoKilometro.value = configuracion.precioTrasladoKilometro;
+    porcentajeAdicionalMaterialesEntrada.value = String(
+      configuracion.porcentajeAdicionalMateriales,
+    );
     monedaPrincipal.value = configuracion.monedaPrincipal;
     monedaPrincipalCargada.value = configuracion.monedaPrincipal;
     mensajeFinal.value = configuracion.mensajeFinal;
@@ -215,6 +220,13 @@ function validarPrecioObligatorio(valor: unknown): true | string {
 }
 
 function guardarConfiguracion(): void {
+  const porcentajeAdicionalMateriales = convertirEntradaPorcentajeAdicionalMateriales(
+    porcentajeAdicionalMaterialesEntrada.value,
+  );
+  if (porcentajeAdicionalMateriales === null) {
+    return;
+  }
+
   emitir('guardar', {
     nombreEmpresa: nombreEmpresa.value,
     nombreResponsable: nombreResponsable.value,
@@ -225,11 +237,18 @@ function guardarConfiguracion(): void {
     logo: logo.value ? { ...logo.value } : null,
     tarifasManoObra: tarifasManoObra.value.map((tarifa) => ({ ...tarifa })),
     precioTrasladoKilometro: precioTrasladoKilometro.value,
+    porcentajeAdicionalMateriales,
     monedaPrincipal: monedaPrincipal.value,
     mensajeFinal: mensajeFinal.value,
     metodosPago: metodosPago.value.map((metodo) => ({ ...metodo })),
     redesSociales: redesSociales.value.map((redSocial) => ({ ...redSocial })),
   });
+}
+
+function validarPorcentajeAdicionalMaterialesEntrada(valor: unknown): true | string {
+  return (
+    convertirEntradaPorcentajeAdicionalMateriales(valor) !== null || 'Ingresá un porcentaje válido.'
+  );
 }
 </script>
 
@@ -407,6 +426,37 @@ function guardarConfiguracion(): void {
             :prefix="monedaPrincipal"
             suffix="por kilómetro"
             :rules="[validarPrecio]"
+          />
+        </div>
+      </section>
+
+      <section
+        class="seccion-formulario"
+        aria-labelledby="titulo-porcentaje-materiales-configuracion"
+      >
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Valores habituales</p>
+            <h2 id="titulo-porcentaje-materiales-configuracion" class="titulo-seccion">
+              Porcentaje adicional sobre materiales
+            </h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Se usará en los presupuestos nuevos; podés cambiarlo en cada ticket.
+            </p>
+          </div>
+        </div>
+
+        <div class="grilla-configuracion grilla-configuracion--un-campo">
+          <q-input
+            v-model="porcentajeAdicionalMaterialesEntrada"
+            dark
+            outlined
+            type="number"
+            min="0"
+            step="0.01"
+            label="Porcentaje adicional sobre materiales"
+            suffix="%"
+            :rules="[validarPorcentajeAdicionalMaterialesEntrada]"
           />
         </div>
       </section>

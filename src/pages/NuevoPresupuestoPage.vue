@@ -12,6 +12,10 @@ import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorD
 import type { Material } from '@/dominio/materiales';
 import { MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
 import {
+  convertirEntradaPorcentajeAdicionalMateriales,
+  exigirPorcentajeAdicionalMateriales,
+} from '@/dominio/porcentajeAdicionalMateriales';
+import {
   clonarLineasPresupuesto,
   confirmarConversionManualLinea,
   crearConfiguracionDocumento,
@@ -56,6 +60,7 @@ const nombreDestinatario = ref('');
 const telefonoDestinatario = ref('');
 const fechaPresupuesto = ref(obtenerFechaActualLocal());
 const monedaPresupuesto = ref<Moneda>(MONEDA_INICIAL);
+const porcentajeAdicionalMaterialesEntrada = ref<string | number | null>('0');
 const lineas = ref<LineaPresupuesto[]>([]);
 const presupuesto = ref<Presupuesto>();
 const cargandoPagina = ref(true);
@@ -82,7 +87,14 @@ const tieneErroresCarga = computed(
 const hayCambios = computed(
   () => estadoInicial.value !== '' && serializarDatosFormulario() !== estadoInicial.value,
 );
-const datosDocumento = computed(() => obtenerDatosFormulario());
+const porcentajeAdicionalMaterialesValido = computed(
+  () =>
+    convertirEntradaPorcentajeAdicionalMateriales(porcentajeAdicionalMaterialesEntrada.value) !==
+    null,
+);
+const datosDocumento = computed<DatosPresupuesto | null>(() =>
+  porcentajeAdicionalMaterialesValido.value ? obtenerDatosFormulario() : null,
+);
 const configuracionDocumentoEfectiva = computed(
   () =>
     configuracionDocumento.value ?? crearConfiguracionDocumento(configuracionStore.configuracion),
@@ -165,6 +177,9 @@ function restablecerFormularioNuevo(): void {
   telefonoDestinatario.value = '';
   fechaPresupuesto.value = obtenerFechaActualLocal();
   monedaPresupuesto.value = monedaPrincipal;
+  porcentajeAdicionalMaterialesEntrada.value = String(
+    configuracionStore.configuracion.porcentajeAdicionalMateriales,
+  );
   lineas.value = crearLineasInicialesPresupuesto(monedaPrincipal, {
     nombreManoObra: primeraTarifa?.nombre,
     precioManoObraHora: primeraTarifa?.precioHora,
@@ -187,12 +202,16 @@ function cargarDatosFormulario(datos: DatosPresupuesto): void {
   telefonoDestinatario.value = datos.destinatario.telefono;
   fechaPresupuesto.value = datos.fechaPresupuesto;
   monedaPresupuesto.value = datos.moneda;
+  porcentajeAdicionalMaterialesEntrada.value = String(datos.porcentajeAdicionalMateriales);
   lineas.value = clonarLineasPresupuesto(datos.lineas);
   configuracionDocumento.value =
     datos.configuracionDocumento ?? crearConfiguracionDocumento(configuracionStore.configuracion);
 }
 
 function obtenerDatosFormulario(): DatosPresupuesto {
+  const porcentajeAdicionalMateriales = convertirEntradaPorcentajeAdicionalMateriales(
+    porcentajeAdicionalMaterialesEntrada.value,
+  );
   return {
     destinatario: {
       tipo: tipoDestinatario.value,
@@ -202,19 +221,39 @@ function obtenerDatosFormulario(): DatosPresupuesto {
     },
     fechaPresupuesto: fechaPresupuesto.value,
     moneda: monedaPresupuesto.value,
+    porcentajeAdicionalMateriales: exigirPorcentajeAdicionalMateriales(
+      porcentajeAdicionalMateriales,
+    ),
     lineas: clonarLineasPresupuesto(lineas.value),
     configuracionDocumento: configuracionDocumento.value,
   };
 }
 
 function serializarDatosFormulario(): string {
-  const datos = obtenerDatosFormulario();
   return JSON.stringify({
-    destinatario: datos.destinatario,
-    fechaPresupuesto: datos.fechaPresupuesto,
-    moneda: datos.moneda,
-    lineas: datos.lineas,
+    destinatario: {
+      tipo: tipoDestinatario.value,
+      idCliente: idCliente.value,
+      nombre: nombreDestinatario.value,
+      telefono: telefonoDestinatario.value,
+    },
+    fechaPresupuesto: fechaPresupuesto.value,
+    moneda: monedaPresupuesto.value,
+    porcentajeAdicionalMaterialesEntrada: porcentajeAdicionalMaterialesEntrada.value,
+    lineas: lineas.value,
   });
+}
+
+function validarPorcentajeFormulario(): boolean {
+  if (!porcentajeAdicionalMaterialesValido.value) {
+    errorAccion.value = 'Ingresá un porcentaje adicional sobre materiales válido.';
+    return false;
+  }
+
+  if (errorAccion.value === 'Ingresá un porcentaje adicional sobre materiales válido.') {
+    errorAccion.value = null;
+  }
+  return true;
 }
 
 function agregarMaterial(material: Material): void {
@@ -252,6 +291,9 @@ function confirmarConversionLinea(indiceLinea: number): void {
 }
 
 function abrirVistaPrevia(): void {
+  if (!validarPorcentajeFormulario()) {
+    return;
+  }
   const idPresupuesto = presupuesto.value?.id ?? null;
   presupuestosStore.establecerBorradorVistaPrevia(
     obtenerDatosFormulario(),
@@ -285,6 +327,9 @@ function confirmarCancelacion(): void {
 }
 
 async function guardarNuevoYFinalizar(): Promise<void> {
+  if (!validarPorcentajeFormulario()) {
+    return;
+  }
   errorAccion.value = null;
 
   try {
@@ -304,6 +349,9 @@ async function guardarNuevoYFinalizar(): Promise<void> {
 }
 
 async function guardarCambios(): Promise<void> {
+  if (!validarPorcentajeFormulario()) {
+    return;
+  }
   if (!presupuesto.value) {
     return;
   }
@@ -385,6 +433,9 @@ function enviarPresupuesto(): void {
 }
 
 async function ejecutarAccionDocumento(accion: AccionDocumentoPresupuesto): Promise<void> {
+  if (!validarPorcentajeFormulario()) {
+    return;
+  }
   if (esEdicion.value || accionDocumento.value || !documentoPresupuesto.value?.obtenerElemento()) {
     return;
   }
@@ -589,6 +640,7 @@ function restablecerFechaPresupuesto(): void {
 
           <ResumenPresupuesto
             v-model:moneda="monedaPresupuesto"
+            v-model:porcentaje-adicional-materiales-entrada="porcentajeAdicionalMaterialesEntrada"
             :lineas="lineas"
             :moneda-principal="configuracionStore.monedaPrincipal"
             :solo-lectura="soloLectura"
@@ -720,7 +772,7 @@ function restablecerFechaPresupuesto(): void {
         />
 
         <DocumentoPresupuesto
-          v-if="!esEdicion"
+          v-if="!esEdicion && datosDocumento !== null"
           ref="documentoPresupuesto"
           :datos="datosDocumento"
           :configuracion="configuracionDocumentoEfectiva"

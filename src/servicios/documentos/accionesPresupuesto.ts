@@ -52,6 +52,7 @@ export async function enviarDocumentoPresupuesto(
       nombreEmpresa: opciones.configuracion.nombreEmpresa,
       fechaPresupuesto: opciones.datos.fechaPresupuesto,
       moneda: opciones.datos.moneda,
+      porcentajeAdicionalMateriales: opciones.datos.porcentajeAdicionalMateriales,
       lineas: opciones.datos.lineas,
     });
 

@@ -7,6 +7,10 @@ import {
   type PrecioMaterial,
 } from '@/dominio/materiales';
 import { esMoneda, MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
+import {
+  esPorcentajeAdicionalMateriales,
+  exigirPorcentajeAdicionalMateriales,
+} from '@/dominio/porcentajeAdicionalMateriales';
 import type {
   Configuracion,
   LogoConfiguracion,
@@ -18,6 +22,7 @@ export const TIPOS_DESTINATARIO = ['potencial', 'guardado'] as const;
 export const TIPOS_CONCEPTO_PRESUPUESTO = ['material', 'manoObra', 'traslado'] as const;
 export const ORIGENES_LINEA_PRESUPUESTO = ['predefinido', 'catalogo', 'manual'] as const;
 export const ESTADOS_PRESUPUESTO = ['pendiente', 'aceptado', 'rechazado'] as const;
+const FACTOR_REDONDEO_IMPORTES = 100;
 
 export type TipoDestinatario = (typeof TIPOS_DESTINATARIO)[number];
 export type TipoConceptoPresupuesto = (typeof TIPOS_CONCEPTO_PRESUPUESTO)[number];
@@ -82,6 +87,7 @@ export interface DatosPresupuesto {
   destinatario: DatosDestinatarioPresupuesto;
   fechaPresupuesto: string;
   moneda: Moneda;
+  porcentajeAdicionalMateriales: number;
   lineas: LineaPresupuesto[];
   configuracionDocumento: ConfiguracionDocumentoPresupuesto | null;
 }
@@ -168,6 +174,9 @@ export function normalizarDatosPresupuesto(datos: DatosPresupuesto): DatosPresup
     },
     fechaPresupuesto: datos.fechaPresupuesto.trim(),
     moneda: esMoneda(datos.moneda) ? datos.moneda : MONEDA_INICIAL,
+    porcentajeAdicionalMateriales: exigirPorcentajeAdicionalMateriales(
+      datos.porcentajeAdicionalMateriales,
+    ),
     lineas: datos.lineas.map(normalizarLineaPresupuesto),
     configuracionDocumento: datos.configuracionDocumento
       ? clonarConfiguracionDocumento(datos.configuracionDocumento)
@@ -215,6 +224,12 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     return null;
   }
 
+  const porcentajeAdicionalMateriales =
+    valor.porcentajeAdicionalMateriales === undefined ? 0 : valor.porcentajeAdicionalMateriales;
+  if (!esPorcentajeAdicionalMateriales(porcentajeAdicionalMateriales)) {
+    return null;
+  }
+
   const ahora = new Date().toISOString();
   const estado = esEstadoPresupuesto(valor.estado) ? valor.estado : 'pendiente';
 
@@ -223,6 +238,7 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     destinatario,
     fechaPresupuesto: obtenerTexto(valor.fechaPresupuesto),
     moneda: esMoneda(valor.moneda) ? valor.moneda : MONEDA_INICIAL,
+    porcentajeAdicionalMateriales,
     lineas,
     configuracionDocumento: recuperarConfiguracionDocumento(valor.configuracionDocumento),
     estado,
@@ -241,6 +257,7 @@ export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
     typeof valor.id === 'string' &&
     typeof valor.fechaPresupuesto === 'string' &&
     esMoneda(valor.moneda) &&
+    esPorcentajeAdicionalMateriales(valor.porcentajeAdicionalMateriales) &&
     esDestinatarioGuardado(valor.destinatario) &&
     Array.isArray(valor.lineas) &&
     valor.lineas.every(esLineaPresupuestoGuardada) &&
@@ -338,6 +355,36 @@ export function calcularSubtotalLinea(linea: LineaPresupuesto): number {
   return precio * normalizarNumeroNoNegativo(linea.cantidad);
 }
 
+function redondearImporteCliente(importe: number): number {
+  return (
+    Math.round((importe + Number.EPSILON) * FACTOR_REDONDEO_IMPORTES) / FACTOR_REDONDEO_IMPORTES
+  );
+}
+
+export function calcularPrecioMaterialCliente(
+  linea: LineaPresupuesto,
+  porcentajeAdicionalMateriales: number,
+): number {
+  exigirPorcentajeAdicionalMateriales(porcentajeAdicionalMateriales);
+  const precioReal = normalizarNumeroNoNegativo(linea.precioUnitario);
+  return porcentajeAdicionalMateriales === 0
+    ? precioReal
+    : redondearImporteCliente(precioReal * (1 + porcentajeAdicionalMateriales / 100));
+}
+
+export function calcularSubtotalMaterialCliente(
+  linea: LineaPresupuesto,
+  porcentajeAdicionalMateriales: number,
+): number {
+  exigirPorcentajeAdicionalMateriales(porcentajeAdicionalMateriales);
+  return porcentajeAdicionalMateriales === 0
+    ? calcularSubtotalLinea(linea)
+    : redondearImporteCliente(
+        calcularPrecioMaterialCliente(linea, porcentajeAdicionalMateriales) *
+          normalizarNumeroNoNegativo(linea.cantidad),
+      );
+}
+
 export function lineaTieneMonedaCompatible(
   linea: LineaPresupuesto,
   monedaPresupuesto: Moneda,
@@ -348,13 +395,20 @@ export function lineaTieneMonedaCompatible(
 export function calcularTotalPresupuesto(
   lineas: readonly LineaPresupuesto[],
   monedaPresupuesto: Moneda,
+  porcentajeAdicionalMateriales: number,
 ): number {
+  exigirPorcentajeAdicionalMateriales(porcentajeAdicionalMateriales);
   return lineas.reduce((total, linea) => {
     if (!lineaTieneMonedaCompatible(linea, monedaPresupuesto)) {
       return total;
     }
 
-    return total + calcularSubtotalLinea(linea);
+    return (
+      total +
+      (linea.tipo === 'material'
+        ? calcularSubtotalMaterialCliente(linea, porcentajeAdicionalMateriales)
+        : calcularSubtotalLinea(linea))
+    );
   }, 0);
 }
 
@@ -368,8 +422,16 @@ export function calcularTotalManoObraYTraslado(
 export function calcularTotalMateriales(
   lineas: readonly LineaPresupuesto[],
   monedaPresupuesto: Moneda,
+  porcentajeAdicionalMateriales: number,
 ): number {
-  return calcularTotalPorTiposConcepto(lineas, monedaPresupuesto, ['material']);
+  exigirPorcentajeAdicionalMateriales(porcentajeAdicionalMateriales);
+  return lineas.reduce(
+    (total, linea) =>
+      linea.tipo === 'material' && lineaTieneMonedaCompatible(linea, monedaPresupuesto)
+        ? total + calcularSubtotalMaterialCliente(linea, porcentajeAdicionalMateriales)
+        : total,
+    0,
+  );
 }
 
 export function lineaTienePrecioPendiente(linea: LineaPresupuesto): boolean {

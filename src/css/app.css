@@ -1545,6 +1545,17 @@ input[type='number']::-webkit-outer-spin-button {
   gap: var(--espaciado-mediano);
 }
 
+.resumen-presupuesto__grupo-controles {
+  display: grid;
+  gap: var(--espaciado-mediano);
+  min-width: 0;
+}
+
+.resumen-presupuesto__campo-porcentaje {
+  width: 100%;
+  max-width: var(--ancho-selector-moneda-denso);
+}
+
 .selector-moneda-presupuesto {
   flex: 0 0 auto;
 }
@@ -1973,6 +1984,9 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 767px) {
+  .resumen-presupuesto__campo-porcentaje {
+    max-width: none;
+  }
   .encabezado-modulo-presupuestos,
   .encabezado-nuevo-presupuesto,
   .encabezado-vista-previa-app,

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
+import { convertirEntradaPorcentajeAdicionalMateriales } from '@/dominio/porcentajeAdicionalMateriales';
 import { crearOpcionesMonedaOperacion, formatearImporte, type Moneda } from '@/dominio/monedas';
 import {
   calcularTotalMateriales,
@@ -18,12 +19,30 @@ const props = defineProps<{
 }>();
 
 const moneda = defineModel<Moneda>('moneda', { required: true });
+const porcentajeAdicionalMaterialesEntrada = defineModel<string | number | null>(
+  'porcentajeAdicionalMaterialesEntrada',
+  { required: true },
+);
+const porcentajeAdicionalMateriales = computed(
+  () =>
+    convertirEntradaPorcentajeAdicionalMateriales(porcentajeAdicionalMaterialesEntrada.value) ?? 0,
+);
+
+function validarPorcentajeAdicionalMaterialesEntrada(valor: unknown): true | string {
+  return (
+    convertirEntradaPorcentajeAdicionalMateriales(valor) !== null || 'Ingresá un porcentaje válido.'
+  );
+}
 
 const totalManoObraYTraslado = computed(() =>
   calcularTotalManoObraYTraslado(props.lineas, moneda.value),
 );
-const totalMateriales = computed(() => calcularTotalMateriales(props.lineas, moneda.value));
-const total = computed(() => calcularTotalPresupuesto(props.lineas, moneda.value));
+const totalMateriales = computed(() =>
+  calcularTotalMateriales(props.lineas, moneda.value, porcentajeAdicionalMateriales.value),
+);
+const total = computed(() =>
+  calcularTotalPresupuesto(props.lineas, moneda.value, porcentajeAdicionalMateriales.value),
+);
 const cantidadIncompatibles = computed(
   () => props.lineas.filter((linea) => !lineaTieneMonedaCompatible(linea, moneda.value)).length,
 );
@@ -37,22 +56,40 @@ const opcionesMonedaPresupuesto = computed(() =>
 
 <template>
   <footer class="resumen-presupuesto" aria-live="polite">
-    <div class="resumen-presupuesto__controles">
-      <SelectorMoneda
-        v-model="moneda"
-        class="selector-moneda-presupuesto"
-        :opciones="opcionesMonedaPresupuesto"
-        etiqueta="Moneda del presupuesto"
-        :deshabilitado="soloLectura"
-        denso
-      />
+    <div class="resumen-presupuesto__grupo-controles">
+      <div class="resumen-presupuesto__campo-porcentaje">
+        <q-input
+          v-model="porcentajeAdicionalMaterialesEntrada"
+          dark
+          outlined
+          dense
+          type="number"
+          min="0"
+          step="0.01"
+          suffix="%"
+          label="Porcentaje adicional sobre materiales"
+          hint="Se aplica solo a los materiales de este presupuesto."
+          :rules="[validarPorcentajeAdicionalMaterialesEntrada]"
+          :readonly="soloLectura"
+        />
+      </div>
+      <div class="resumen-presupuesto__controles">
+        <SelectorMoneda
+          v-model="moneda"
+          class="selector-moneda-presupuesto"
+          :opciones="opcionesMonedaPresupuesto"
+          etiqueta="Moneda del presupuesto"
+          :deshabilitado="soloLectura"
+          denso
+        />
 
-      <div class="resumen-presupuesto__estado">
-        <span>{{ lineas.length }} conceptos</span>
-        <span v-if="cantidadPendientes">{{ cantidadPendientes }} con precio pendiente</span>
-        <span v-if="cantidadIncompatibles" class="resumen-presupuesto__error">
-          {{ cantidadIncompatibles }} sin sumar por moneda
-        </span>
+        <div class="resumen-presupuesto__estado">
+          <span>{{ lineas.length }} conceptos</span>
+          <span v-if="cantidadPendientes">{{ cantidadPendientes }} con precio pendiente</span>
+          <span v-if="cantidadIncompatibles" class="resumen-presupuesto__error">
+            {{ cantidadIncompatibles }} sin sumar por moneda
+          </span>
+        </div>
       </div>
     </div>
     <div class="resumen-presupuesto__importes">

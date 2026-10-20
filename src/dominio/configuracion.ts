@@ -1,4 +1,8 @@
 import { esMoneda, MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
+import {
+  esPorcentajeAdicionalMateriales,
+  exigirPorcentajeAdicionalMateriales,
+} from '@/dominio/porcentajeAdicionalMateriales';
 
 export const MENSAJE_FINAL_PREDETERMINADO =
   'Gracias por confiar en nosotros. Quedamos a disposición por cualquier consulta.';
@@ -50,6 +54,7 @@ export interface DatosConfiguracion {
   logo: LogoConfiguracion | null;
   tarifasManoObra: TarifaManoObraConfiguracion[];
   precioTrasladoKilometro: number | null;
+  porcentajeAdicionalMateriales: number;
   monedaPrincipal: Moneda;
   mensajeFinal: string;
   metodosPago: MetodoPagoConfiguracion[];
@@ -60,9 +65,18 @@ export interface Configuracion extends DatosConfiguracion {
   fechaActualizacion: string | null;
 }
 
-type ConfiguracionSinMonedaPrincipal = Omit<Configuracion, 'monedaPrincipal'>;
-type ConfiguracionModernaRecuperable = ConfiguracionSinMonedaPrincipal & {
+type ConfiguracionSinPorcentajeAdicionalMateriales = Omit<
+  Configuracion,
+  'porcentajeAdicionalMateriales'
+> & {
+  porcentajeAdicionalMateriales?: unknown;
+};
+type ConfiguracionModernaRecuperable = Omit<
+  Configuracion,
+  'monedaPrincipal' | 'porcentajeAdicionalMateriales'
+> & {
   monedaPrincipal?: unknown;
+  porcentajeAdicionalMateriales?: unknown;
 };
 
 export function crearConfiguracionInicial(): Configuracion {
@@ -76,6 +90,7 @@ export function crearConfiguracionInicial(): Configuracion {
     logo: null,
     tarifasManoObra: [crearTarifaManoObraConfiguracion()],
     precioTrasladoKilometro: null,
+    porcentajeAdicionalMateriales: 0,
     monedaPrincipal: MONEDA_INICIAL,
     mensajeFinal: MENSAJE_FINAL_PREDETERMINADO,
     metodosPago: [crearMetodoPagoConfiguracion()],
@@ -128,6 +143,9 @@ export function normalizarDatosConfiguracion(datos: DatosConfiguracion): DatosCo
     logo: datos.logo ? { ...datos.logo, nombre: datos.logo.nombre.trim() } : null,
     tarifasManoObra: datos.tarifasManoObra.map(normalizarTarifaManoObra),
     precioTrasladoKilometro: normalizarPrecio(datos.precioTrasladoKilometro),
+    porcentajeAdicionalMateriales: exigirPorcentajeAdicionalMateriales(
+      datos.porcentajeAdicionalMateriales,
+    ),
     monedaPrincipal: esMoneda(datos.monedaPrincipal) ? datos.monedaPrincipal : MONEDA_INICIAL,
     mensajeFinal: normalizarTextoMultilinea(datos.mensajeFinal),
     metodosPago: datos.metodosPago
@@ -148,7 +166,21 @@ export function normalizarDatosConfiguracion(datos: DatosConfiguracion): DatosCo
 }
 
 export function esConfiguracionGuardada(valor: unknown): valor is Configuracion {
-  return esEstructuraConfiguracionComun(valor) && esMoneda(valor.monedaPrincipal);
+  return (
+    esEstructuraConfiguracionComun(valor) &&
+    esMoneda(valor.monedaPrincipal) &&
+    esPorcentajeAdicionalMateriales(valor.porcentajeAdicionalMateriales)
+  );
+}
+
+export function migrarConfiguracionSinPorcentajeAdicionalMateriales(
+  valor: unknown,
+): Configuracion | null {
+  if (!esConfiguracionGuardadaSinPorcentajeAdicionalMateriales(valor)) {
+    return null;
+  }
+
+  return { ...structuredClone(valor), porcentajeAdicionalMateriales: 0 };
 }
 
 export function migrarConfiguracionSinMonedaPrincipal(valor: unknown): Configuracion | null {
@@ -159,6 +191,11 @@ export function migrarConfiguracionSinMonedaPrincipal(valor: unknown): Configura
   return {
     ...structuredClone(valor),
     monedaPrincipal: MONEDA_INICIAL,
+    porcentajeAdicionalMateriales: esPorcentajeAdicionalMateriales(
+      valor.porcentajeAdicionalMateriales,
+    )
+      ? valor.porcentajeAdicionalMateriales
+      : 0,
   };
 }
 
@@ -296,6 +333,16 @@ function esConfiguracionGuardadaSinMonedaPrincipal(
   valor: unknown,
 ): valor is ConfiguracionModernaRecuperable {
   return esEstructuraConfiguracionComun(valor) && !esMoneda(valor.monedaPrincipal);
+}
+
+function esConfiguracionGuardadaSinPorcentajeAdicionalMateriales(
+  valor: unknown,
+): valor is ConfiguracionSinPorcentajeAdicionalMateriales {
+  return (
+    esEstructuraConfiguracionComun(valor) &&
+    esMoneda(valor.monedaPrincipal) &&
+    !esPorcentajeAdicionalMateriales(valor.porcentajeAdicionalMateriales)
+  );
 }
 
 function esPrecioGuardado(valor: unknown): valor is number | null {

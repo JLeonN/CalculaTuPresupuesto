@@ -12,6 +12,7 @@ export interface DatosMensajePresupuestoWhatsapp {
   nombreEmpresa: string;
   fechaPresupuesto: string;
   moneda: Moneda;
+  porcentajeAdicionalMateriales: number;
   lineas: readonly LineaPresupuesto[];
 }
 
@@ -47,8 +48,16 @@ export function crearMensajePresupuestoWhatsapp(datos: DatosMensajePresupuestoWh
   const nombreEmpresa = datos.nombreEmpresa.trim();
   const fecha = formatearFechaPresupuesto(datos.fechaPresupuesto);
   const totalManoObra = calcularTotalManoObraYTraslado(datos.lineas, datos.moneda);
-  const totalMateriales = calcularTotalMateriales(datos.lineas, datos.moneda);
-  const total = calcularTotalPresupuesto(datos.lineas, datos.moneda);
+  const totalMateriales = calcularTotalMateriales(
+    datos.lineas,
+    datos.moneda,
+    datos.porcentajeAdicionalMateriales,
+  );
+  const total = calcularTotalPresupuesto(
+    datos.lineas,
+    datos.moneda,
+    datos.porcentajeAdicionalMateriales,
+  );
 
   return [
     `Hola, *${nombreCliente}*`,
