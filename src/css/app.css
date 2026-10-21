@@ -1415,8 +1415,8 @@ input[type='number']::-webkit-outer-spin-button {
 .lista-compras__fila {
   display: grid;
   min-width: 0;
-  padding: var(--espaciado-grande);
-  gap: var(--espaciado-mediano);
+  padding: var(--espaciado-control) var(--espaciado-mediano);
+  gap: var(--espaciado-minimo);
   background: var(--color-superficie-principal);
   border: var(--ancho-borde) solid var(--color-borde-principal);
   border-radius: var(--radio-grande);
@@ -1426,36 +1426,71 @@ input[type='number']::-webkit-outer-spin-button {
   border-color: var(--color-exito);
 }
 
-.lista-compras__checkbox,
-.lista-compras__campos,
-.lista-compras__dato {
+.lista-compras__resumen,
+.lista-compras__detalle,
+.lista-compras__edicion,
+.lista-compras__campos {
   min-width: 0;
 }
 
-.lista-compras__checkbox .q-checkbox__label {
+.lista-compras__resumen {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--espaciado-pequeno);
+}
+
+.lista-compras__nombre {
   overflow-wrap: anywhere;
 }
 
-.lista-compras__campos {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr));
-  align-items: start;
-  gap: var(--espaciado-mediano);
+.lista-compras__cantidad {
+  color: var(--color-texto-secundario);
+  text-align: right;
+  white-space: nowrap;
 }
 
-.lista-compras__dato {
-  display: grid;
-  gap: var(--espaciado-minimo);
-  overflow-wrap: anywhere;
+.lista-compras__checkbox {
+  margin-right: calc(-1 * var(--espaciado-pequeno));
 }
 
-.lista-compras__dato span {
+.lista-compras__detalle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaciado-pequeno);
+}
+
+.lista-compras__precio {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
 }
 
+.lista-compras__editar {
+  flex: none;
+}
+
+.lista-compras__edicion {
+  display: grid;
+  gap: var(--espaciado-pequeno);
+  padding-top: var(--espaciado-pequeno);
+}
+
+.lista-compras__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--espaciado-pequeno);
+}
+
+.lista-compras__acciones-edicion {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--espaciado-pequeno);
+}
+
 .lista-compras__guardar {
-  justify-self: end;
   min-height: var(--altura-control);
 }
 
@@ -2116,9 +2151,6 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 1023px) {
-  .lista-compras__campos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .encabezado-vista-previa-app {
     align-items: stretch;
     flex-direction: column;
@@ -2161,17 +2193,6 @@ input[type='number']::-webkit-outer-spin-button {
     width: 100%;
   }
 
-  .lista-compras__fila {
-    padding: var(--espaciado-mediano);
-  }
-
-  .lista-compras__campos {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .lista-compras__guardar {
-    justify-self: stretch;
-  }
   .resumen-presupuesto__campo-porcentaje {
     max-width: none;
   }

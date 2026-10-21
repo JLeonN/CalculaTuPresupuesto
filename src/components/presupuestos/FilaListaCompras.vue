@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { CambiosMaterialListaCompras } from '@/dominio/listaCompras';
+import { formatearImporte, formatearNumero } from '@/dominio/monedas';
 import type { LineaPresupuesto } from '@/dominio/presupuestos';
 
 const props = defineProps<{
@@ -18,17 +19,43 @@ const nombreEntrada = ref('');
 const cantidadEntrada = ref<string | number | null>(null);
 const precioEntrada = ref<string | number | null>(null);
 const errorValidacion = ref<string | null>(null);
+const editando = ref(false);
 
 watch(
-  () => props.linea,
-  (linea) => {
-    nombreEntrada.value = linea.nombre;
-    cantidadEntrada.value = linea.cantidad;
-    precioEntrada.value = linea.precioUnitario;
-    errorValidacion.value = null;
+  () => [props.linea.nombre, props.linea.cantidad, props.linea.precioUnitario],
+  () => {
+    restaurarValores();
+    editando.value = false;
   },
   { immediate: true },
 );
+
+const hayCambios = computed(() => {
+  const cantidad = convertirNumero(cantidadEntrada.value);
+  const precio = convertirNumero(precioEntrada.value);
+  return (
+    nombreEntrada.value.trim() !== props.linea.nombre ||
+    cantidad !== props.linea.cantidad ||
+    (props.precioEditable && precio !== props.linea.precioUnitario)
+  );
+});
+
+function restaurarValores(): void {
+  nombreEntrada.value = props.linea.nombre;
+  cantidadEntrada.value = props.linea.cantidad;
+  precioEntrada.value = props.linea.precioUnitario;
+  errorValidacion.value = null;
+}
+
+function abrirEdicion(): void {
+  restaurarValores();
+  editando.value = true;
+}
+
+function cancelarEdicion(): void {
+  restaurarValores();
+  editando.value = false;
+}
 
 function convertirNumero(entrada: string | number | null): number | null | undefined {
   if (entrada === null || entrada === '') return null;
@@ -56,61 +83,93 @@ function guardarDetalles(): void {
 
 <template>
   <article class="lista-compras__fila" :class="{ 'lista-compras__fila--comprado': linea.comprado }">
-    <q-checkbox
-      class="lista-compras__checkbox"
-      :model-value="linea.comprado"
-      :disable="guardando"
-      :label="`Comprado: ${linea.nombre}`"
-      :aria-label="`${linea.nombre}: ${linea.comprado ? 'comprado' : 'pendiente'}`"
-      @update:model-value="emitir('cambiarComprado', !linea.comprado)"
-    />
-    <div class="lista-compras__campos">
+    <div class="lista-compras__resumen">
+      <strong class="lista-compras__nombre">{{ linea.nombre }}</strong>
+      <span class="lista-compras__cantidad">
+        {{ linea.cantidad === null ? '—' : formatearNumero(linea.cantidad) }} {{ linea.unidad }}
+      </span>
+      <q-checkbox
+        class="lista-compras__checkbox"
+        :model-value="linea.comprado"
+        :disable="guardando"
+        :aria-label="`${linea.nombre}: ${linea.comprado ? 'comprado' : 'pendiente'}`"
+        @update:model-value="emitir('cambiarComprado', !linea.comprado)"
+      />
+    </div>
+    <div class="lista-compras__detalle">
+      <span class="lista-compras__precio">
+        Precio unitario:
+        {{
+          linea.precioUnitario === null
+            ? `Sin precio · ${linea.moneda}`
+            : formatearImporte(linea.precioUnitario, linea.moneda)
+        }}
+      </span>
+      <q-btn
+        v-if="!editando"
+        class="boton-secundario lista-compras__editar"
+        flat
+        round
+        dense
+        icon="edit"
+        :aria-label="`Editar ${linea.nombre}`"
+        :disable="guardando"
+        @click="abrirEdicion"
+      />
+    </div>
+    <div v-if="editando" class="lista-compras__edicion">
       <q-input v-model="nombreEntrada" dark outlined dense label="Material" :disable="guardando" />
-      <q-input
-        v-model="cantidadEntrada"
-        dark
-        outlined
-        dense
-        type="number"
-        inputmode="decimal"
-        min="0"
-        step="any"
-        label="Cantidad"
-        :disable="guardando"
-      />
-      <div class="lista-compras__dato">
-        <span>Unidad</span><strong>{{ linea.unidad }}</strong>
+      <div class="lista-compras__campos">
+        <q-input
+          v-model="cantidadEntrada"
+          dark
+          outlined
+          dense
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="any"
+          label="Cantidad"
+          :suffix="linea.unidad"
+          :disable="guardando"
+        />
+        <q-input
+          v-if="precioEditable"
+          v-model="precioEntrada"
+          dark
+          outlined
+          dense
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="any"
+          label="Precio real unitario"
+          :suffix="linea.moneda"
+          :disable="guardando"
+        />
       </div>
-      <q-input
-        v-if="precioEditable"
-        v-model="precioEntrada"
-        dark
-        outlined
-        dense
-        type="number"
-        inputmode="decimal"
-        min="0"
-        step="any"
-        label="Precio real unitario"
-        :disable="guardando"
-      />
-      <div v-else class="lista-compras__dato">
-        <span>Precio real unitario</span><strong>{{ linea.precioUnitario ?? 'Sin precio' }}</strong>
-      </div>
-      <div class="lista-compras__dato">
-        <span>Moneda</span><strong>{{ linea.moneda }}</strong>
+      <div class="lista-compras__acciones-edicion">
+        <q-btn
+          class="boton-secundario"
+          flat
+          no-caps
+          label="Cancelar"
+          :disable="guardando"
+          @click="cancelarEdicion"
+        />
+        <q-btn
+          v-if="hayCambios"
+          class="boton-secundario lista-compras__guardar"
+          flat
+          no-caps
+          icon="save"
+          label="Guardar cambios"
+          :disable="guardando"
+          :loading="guardando"
+          @click="guardarDetalles"
+        />
       </div>
     </div>
-    <q-btn
-      class="boton-secundario lista-compras__guardar"
-      flat
-      no-caps
-      icon="save"
-      label="Guardar cambios"
-      :disable="guardando"
-      :loading="guardando"
-      @click="guardarDetalles"
-    />
     <p v-if="errorValidacion || error" class="lista-compras__error" role="alert">
       {{ errorValidacion || error }}
     </p>
