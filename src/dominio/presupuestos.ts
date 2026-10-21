@@ -22,12 +22,20 @@ export const TIPOS_DESTINATARIO = ['potencial', 'guardado'] as const;
 export const TIPOS_CONCEPTO_PRESUPUESTO = ['material', 'manoObra', 'traslado'] as const;
 export const ORIGENES_LINEA_PRESUPUESTO = ['predefinido', 'catalogo', 'manual'] as const;
 export const ESTADOS_PRESUPUESTO = ['pendiente', 'aceptado', 'rechazado'] as const;
+export const FORMATOS_DOCUMENTO_PRESUPUESTO = ['completo', 'resumido'] as const;
 const FACTOR_REDONDEO_IMPORTES = 100;
 
 export type TipoDestinatario = (typeof TIPOS_DESTINATARIO)[number];
 export type TipoConceptoPresupuesto = (typeof TIPOS_CONCEPTO_PRESUPUESTO)[number];
 export type OrigenLineaPresupuesto = (typeof ORIGENES_LINEA_PRESUPUESTO)[number];
 export type EstadoPresupuesto = (typeof ESTADOS_PRESUPUESTO)[number];
+export type FormatoDocumentoPresupuesto = (typeof FORMATOS_DOCUMENTO_PRESUPUESTO)[number];
+
+export function esFormatoDocumentoPresupuesto(
+  valor: unknown,
+): valor is FormatoDocumentoPresupuesto {
+  return FORMATOS_DOCUMENTO_PRESUPUESTO.some((formato) => formato === valor);
+}
 
 export interface OpcionUnidadPresupuesto {
   unidad: string;
@@ -88,6 +96,7 @@ export interface DatosPresupuesto {
   fechaPresupuesto: string;
   moneda: Moneda;
   porcentajeAdicionalMateriales: number;
+  formatoDocumento: FormatoDocumentoPresupuesto;
   lineas: LineaPresupuesto[];
   configuracionDocumento: ConfiguracionDocumentoPresupuesto | null;
 }
@@ -177,6 +186,9 @@ export function normalizarDatosPresupuesto(datos: DatosPresupuesto): DatosPresup
     porcentajeAdicionalMateriales: exigirPorcentajeAdicionalMateriales(
       datos.porcentajeAdicionalMateriales,
     ),
+    formatoDocumento: esFormatoDocumentoPresupuesto(datos.formatoDocumento)
+      ? datos.formatoDocumento
+      : 'completo',
     lineas: datos.lineas.map(normalizarLineaPresupuesto),
     configuracionDocumento: datos.configuracionDocumento
       ? clonarConfiguracionDocumento(datos.configuracionDocumento)
@@ -230,6 +242,12 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     return null;
   }
 
+  const formatoDocumento =
+    valor.formatoDocumento === undefined ? 'completo' : valor.formatoDocumento;
+  if (!esFormatoDocumentoPresupuesto(formatoDocumento)) {
+    return null;
+  }
+
   const ahora = new Date().toISOString();
   const estado = esEstadoPresupuesto(valor.estado) ? valor.estado : 'pendiente';
 
@@ -239,6 +257,7 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     fechaPresupuesto: obtenerTexto(valor.fechaPresupuesto),
     moneda: esMoneda(valor.moneda) ? valor.moneda : MONEDA_INICIAL,
     porcentajeAdicionalMateriales,
+    formatoDocumento,
     lineas,
     configuracionDocumento: recuperarConfiguracionDocumento(valor.configuracionDocumento),
     estado,
@@ -258,6 +277,7 @@ export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
     typeof valor.fechaPresupuesto === 'string' &&
     esMoneda(valor.moneda) &&
     esPorcentajeAdicionalMateriales(valor.porcentajeAdicionalMateriales) &&
+    esFormatoDocumentoPresupuesto(valor.formatoDocumento) &&
     esDestinatarioGuardado(valor.destinatario) &&
     Array.isArray(valor.lineas) &&
     valor.lineas.every(esLineaPresupuestoGuardada) &&

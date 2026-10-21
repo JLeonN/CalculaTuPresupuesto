@@ -6,6 +6,7 @@ import {
   normalizarDatosPresupuesto,
   type DatosPresupuesto,
   type EstadoPresupuesto,
+  type FormatoDocumentoPresupuesto,
   type Presupuesto,
 } from '@/dominio/presupuestos';
 import { crearRepositorioPresupuestos } from '@/repositorios/presupuestos/crearRepositorioPresupuestos';
@@ -115,6 +116,40 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     }
   }
 
+  async function cambiarFormatoDocumento(
+    idPresupuesto: string,
+    formatoDocumento: FormatoDocumentoPresupuesto,
+  ): Promise<Presupuesto> {
+    const presupuestoActual = obtenerPresupuestoPorId(idPresupuesto);
+    if (!presupuestoActual) {
+      throw new Error('El presupuesto cuyo formato intentás cambiar ya no existe.');
+    }
+
+    if (presupuestoActual.formatoDocumento === formatoDocumento) {
+      return presupuestoActual;
+    }
+
+    guardando.value = true;
+    error.value = null;
+    try {
+      const presupuestoActualizado = { ...presupuestoActual, formatoDocumento };
+      await repositorioPresupuestos.guardar(presupuestoActualizado);
+      presupuestos.value = presupuestos.value.map((actual) =>
+        actual.id === idPresupuesto ? presupuestoActualizado : actual,
+      );
+      actualizarFormatoBorradorVistaPrevia(idPresupuesto, formatoDocumento);
+      return presupuestoActualizado;
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof Error
+          ? errorCapturado.message
+          : 'No se pudo guardar el formato del presupuesto.';
+      throw new Error(error.value, { cause: errorCapturado });
+    } finally {
+      guardando.value = false;
+    }
+  }
+
   async function cambiarEstadoPresupuesto(
     idPresupuesto: string,
     estado: EstadoPresupuesto,
@@ -203,6 +238,15 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     borradorVistaPrevia.value = null;
   }
 
+  function actualizarFormatoBorradorVistaPrevia(
+    idPresupuesto: string | null,
+    formatoDocumento: FormatoDocumentoPresupuesto,
+  ): void {
+    if (borradorVistaPrevia.value?.idPresupuesto === idPresupuesto) {
+      borradorVistaPrevia.value.datos.formatoDocumento = formatoDocumento;
+    }
+  }
+
   function consumirBorradorVistaPrevia(
     rutaActual: string,
     idPresupuesto: string | null,
@@ -231,6 +275,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     cargarPresupuestos,
     agregarPresupuesto,
     editarPresupuesto,
+    cambiarFormatoDocumento,
     cambiarEstadoPresupuesto,
     obtenerPresupuestoPorId,
     buscarPresupuestos,
@@ -238,6 +283,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     obtenerBorradorVistaPrevia,
     marcarRetornoVistaPrevia,
     descartarBorradorVistaPrevia,
+    actualizarFormatoBorradorVistaPrevia,
     consumirBorradorVistaPrevia,
   };
 });

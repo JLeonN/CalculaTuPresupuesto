@@ -153,7 +153,7 @@ defineExpose({ obtenerElemento });
       </div>
     </section>
 
-    <section class="documento-presupuesto__seccion">
+    <section v-if="datos.formatoDocumento === 'completo'" class="documento-presupuesto__seccion">
       <p class="documento-presupuesto__etiqueta">Detalle del presupuesto</p>
       <div class="documento-presupuesto__tabla-contenedor">
         <table class="documento-presupuesto__tabla">

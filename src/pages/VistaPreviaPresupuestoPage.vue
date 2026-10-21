@@ -4,10 +4,12 @@ import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
 import { useQuasar } from 'quasar';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import DocumentoPresupuesto from '@/components/presupuestos/DocumentoPresupuesto.vue';
+import SelectorFormatoDocumento from '@/components/presupuestos/SelectorFormatoDocumento.vue';
 import {
   crearConfiguracionDocumento,
   normalizarDatosPresupuesto,
   type DatosPresupuesto,
+  type FormatoDocumentoPresupuesto,
 } from '@/dominio/presupuestos';
 import { normalizarNumeroWhatsapp } from '@/dominio/whatsapp';
 import { useAutenticacionStore } from '@/stores/autenticacion';
@@ -98,6 +100,29 @@ async function cargarVistaPrevia(): Promise<void> {
 
 function volver(): void {
   void router.push(rutaRetorno.value);
+}
+
+async function cambiarFormatoDocumento(formato: FormatoDocumentoPresupuesto): Promise<void> {
+  if (
+    !datosPresupuesto.value ||
+    formato === datosPresupuesto.value.formatoDocumento ||
+    presupuestosStore.guardando ||
+    accionDocumento.value
+  ) {
+    return;
+  }
+
+  errorDocumento.value = null;
+  try {
+    if (idPresupuesto.value !== null) {
+      await presupuestosStore.cambiarFormatoDocumento(idPresupuesto.value, formato);
+    } else {
+      presupuestosStore.actualizarFormatoBorradorVistaPrevia(null, formato);
+    }
+    datosPresupuesto.value = { ...datosPresupuesto.value, formatoDocumento: formato };
+  } catch (errorCapturado) {
+    errorDocumento.value = obtenerMensajeError(errorCapturado);
+  }
 }
 
 function imprimir(): void {
@@ -244,6 +269,12 @@ function obtenerMensajeError(errorCapturado: unknown): string {
         </div>
 
         <div class="acciones-vista-previa">
+          <SelectorFormatoDocumento
+            v-if="datosPresupuesto"
+            :formato="datosPresupuesto.formatoDocumento"
+            :deshabilitado="presupuestosStore.guardando || accionDocumento !== null"
+            @cambiar="cambiarFormatoDocumento"
+          />
           <q-btn
             class="boton-secundario"
             flat

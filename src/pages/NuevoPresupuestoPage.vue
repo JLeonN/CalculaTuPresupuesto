@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router';
 import AgregadorMaterialPresupuesto from '@/components/presupuestos/AgregadorMaterialPresupuesto.vue';
 import ControlEstadoPresupuesto from '@/components/presupuestos/ControlEstadoPresupuesto.vue';
 import DocumentoPresupuesto from '@/components/presupuestos/DocumentoPresupuesto.vue';
+import SelectorFormatoDocumento from '@/components/presupuestos/SelectorFormatoDocumento.vue';
 import FilaPresupuesto from '@/components/presupuestos/FilaPresupuesto.vue';
 import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue';
 import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorDestinatarioPresupuesto.vue';
@@ -26,6 +27,7 @@ import {
   type DatosPresupuesto,
   type ConfiguracionDocumentoPresupuesto,
   type EstadoPresupuesto,
+  type FormatoDocumentoPresupuesto,
   type LineaPresupuesto,
   type Presupuesto,
   type TipoDestinatario,
@@ -61,6 +63,7 @@ const telefonoDestinatario = ref('');
 const fechaPresupuesto = ref(obtenerFechaActualLocal());
 const monedaPresupuesto = ref<Moneda>(MONEDA_INICIAL);
 const porcentajeAdicionalMaterialesEntrada = ref<string | number | null>('0');
+const formatoDocumento = ref<FormatoDocumentoPresupuesto>('completo');
 const lineas = ref<LineaPresupuesto[]>([]);
 const presupuesto = ref<Presupuesto>();
 const cargandoPagina = ref(true);
@@ -180,6 +183,7 @@ function restablecerFormularioNuevo(): void {
   porcentajeAdicionalMaterialesEntrada.value = String(
     configuracionStore.configuracion.porcentajeAdicionalMateriales,
   );
+  formatoDocumento.value = 'completo';
   lineas.value = crearLineasInicialesPresupuesto(monedaPrincipal, {
     nombreManoObra: primeraTarifa?.nombre,
     precioManoObraHora: primeraTarifa?.precioHora,
@@ -203,6 +207,7 @@ function cargarDatosFormulario(datos: DatosPresupuesto): void {
   fechaPresupuesto.value = datos.fechaPresupuesto;
   monedaPresupuesto.value = datos.moneda;
   porcentajeAdicionalMaterialesEntrada.value = String(datos.porcentajeAdicionalMateriales);
+  formatoDocumento.value = datos.formatoDocumento;
   lineas.value = clonarLineasPresupuesto(datos.lineas);
   configuracionDocumento.value =
     datos.configuracionDocumento ?? crearConfiguracionDocumento(configuracionStore.configuracion);
@@ -224,6 +229,7 @@ function obtenerDatosFormulario(): DatosPresupuesto {
     porcentajeAdicionalMateriales: exigirPorcentajeAdicionalMateriales(
       porcentajeAdicionalMateriales,
     ),
+    formatoDocumento: formatoDocumento.value,
     lineas: clonarLineasPresupuesto(lineas.value),
     configuracionDocumento: configuracionDocumento.value,
   };
@@ -306,6 +312,25 @@ function abrirVistaPrevia(): void {
     ? `/presupuestos/${idPresupuesto}/vista-previa`
     : '/presupuestos/nuevo/vista-previa';
   void router.push(rutaVistaPrevia);
+}
+
+async function cambiarFormatoDocumento(formato: FormatoDocumentoPresupuesto): Promise<void> {
+  if (formato === formatoDocumento.value || presupuestosStore.guardando || accionDocumento.value) {
+    return;
+  }
+
+  errorAccion.value = null;
+  try {
+    if (presupuesto.value) {
+      presupuesto.value = await presupuestosStore.cambiarFormatoDocumento(
+        presupuesto.value.id,
+        formato,
+      );
+    }
+    formatoDocumento.value = formato;
+  } catch (errorCapturado) {
+    errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
+  }
 }
 
 function solicitarCancelacion(): void {
@@ -712,6 +737,11 @@ function restablecerFechaPresupuesto(): void {
           </div>
 
           <div class="acciones-presupuesto__salida">
+            <SelectorFormatoDocumento
+              :formato="formatoDocumento"
+              :deshabilitado="presupuestosStore.guardando || accionDocumento !== null"
+              @cambiar="cambiarFormatoDocumento"
+            />
             <q-btn
               class="boton-secundario"
               no-caps
