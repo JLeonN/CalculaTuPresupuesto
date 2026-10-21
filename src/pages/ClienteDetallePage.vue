@@ -58,6 +58,7 @@ async function eliminarCliente(): Promise<void> {
   <q-page class="pagina-contenido">
     <main class="contenedor-principal contenedor-detalle-cliente">
       <q-btn
+        v-if="!cliente"
         class="boton-secundario"
         flat
         no-caps
@@ -81,14 +82,25 @@ async function eliminarCliente(): Promise<void> {
               Sin teléfono principal
             </p>
           </div>
-          <q-btn
-            class="boton-accion-principal"
-            unelevated
-            no-caps
-            icon="edit"
-            label="Editar cliente"
-            :to="`/clientes/${cliente.id}/editar`"
-          />
+          <div class="acciones-encabezado-detalle">
+            <q-btn
+              class="boton-secundario accion-volver-compacta"
+              flat
+              no-caps
+              icon="arrow_back"
+              label="Volver a clientes"
+              aria-label="Volver a clientes"
+              to="/clientes"
+            />
+            <q-btn
+              class="boton-accion-principal"
+              unelevated
+              no-caps
+              icon="edit"
+              label="Editar cliente"
+              :to="`/clientes/${cliente.id}/editar`"
+            />
+          </div>
         </header>
 
         <div class="detalle-cliente__contenedor">

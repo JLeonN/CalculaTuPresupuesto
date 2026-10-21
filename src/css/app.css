@@ -615,6 +615,18 @@ input[type='number']::-webkit-outer-spin-button {
   padding-block: var(--espaciado-mediano) var(--espaciado-extra-grande);
 }
 
+.acciones-encabezado-detalle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espaciado-pequeno);
+}
+
+.acciones-encabezado-detalle .q-btn__content {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
 .encabezado-modulo-clientes__descripcion,
 .encabezado-formulario-cliente .texto-secundario {
   max-width: var(--ancho-texto-secundario);
@@ -948,10 +960,6 @@ input[type='number']::-webkit-outer-spin-button {
   justify-content: end;
 }
 
-.detalle-cliente {
-  margin-top: var(--espaciado-extra-grande);
-}
-
 .encabezado-detalle-cliente__telefono {
   margin-top: var(--espaciado-mediano);
 }
@@ -1079,7 +1087,6 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .encabezado-modulo-clientes > .q-btn,
-  .encabezado-detalle-cliente > .q-btn,
   .zona-peligro-cliente > .q-btn {
     width: 100%;
   }
@@ -1102,12 +1109,13 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .acciones-formulario {
-    align-items: stretch;
-    flex-direction: column-reverse;
+    flex-wrap: nowrap;
+    gap: var(--espaciado-pequeno);
   }
 
-  .acciones-formulario .q-btn {
-    width: 100%;
+  .acciones-encabezado-detalle {
+    justify-content: space-between;
+    flex-wrap: nowrap;
   }
 
   .formulario-cliente__contenedor {
@@ -1410,6 +1418,10 @@ input[type='number']::-webkit-outer-spin-button {
 
 .lista-compras__grupos > .titulo-seccion {
   margin: var(--espaciado-mediano) 0 0;
+}
+
+.lista-compras__grupos > .titulo-seccion:first-child {
+  margin-top: 0;
 }
 
 .lista-compras__fila {
@@ -2182,13 +2194,26 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 767px) {
-  .lista-compras__encabezado,
-  .lista-compras__acciones {
-    align-items: stretch;
-    flex-direction: column;
+  .lista-compras {
+    gap: var(--espaciado-control);
   }
 
-  .lista-compras__acciones > .q-btn,
+  .lista-compras__encabezado {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--espaciado-pequeno);
+  }
+
+  .lista-compras__encabezado .texto-secundario {
+    margin: var(--espaciado-minimo) 0 0;
+  }
+
+  .lista-compras__acciones {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--espaciado-pequeno);
+  }
+
   .ticket-presupuesto__lista-compras {
     width: 100%;
   }
@@ -2214,12 +2239,7 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .modal-inicio-sesion__acciones {
-    align-items: stretch;
-    flex-direction: column-reverse;
-  }
-
-  .modal-inicio-sesion__acciones > .q-btn {
-    width: 100%;
+    flex-wrap: nowrap;
   }
 
   .acciones-vista-previa {
@@ -2350,6 +2370,44 @@ input[type='number']::-webkit-outer-spin-button {
 
   .fila-presupuesto__eliminar {
     justify-self: end;
+  }
+}
+
+/* En teléfonos muy angostos, el texto del botón de regreso no cabe junto a «Editar ticket». */
+@media (max-width: 389px) {
+  /* Quasar asigna display: block !important a la etiqueta del botón. */
+  .accion-volver-compacta .q-btn__content > .block {
+    display: none !important;
+  }
+
+  .accion-volver-compacta .q-icon {
+    font-size: var(--tamano-icono-tarjeta);
+    margin-right: 0;
+  }
+}
+
+/* Las fichas tienen botones más largos que la lista de compras. */
+@media (max-width: 419px) {
+  .acciones-encabezado-detalle .accion-volver-compacta .q-btn__content > .block {
+    display: none !important;
+  }
+
+  .acciones-encabezado-detalle .accion-volver-compacta .q-icon {
+    font-size: var(--tamano-icono-tarjeta);
+    margin-right: 0;
+  }
+
+  .accion-cancelar-compacta .q-btn__content > .block {
+    display: none !important;
+  }
+
+  .accion-cancelar-compacta .q-icon {
+    font-size: var(--tamano-icono-tarjeta);
+    margin-right: 0;
+  }
+
+  .acciones-presupuesto__edicion > .accion-cancelar-compacta {
+    flex: 0 0 auto;
   }
 }
 
@@ -2944,10 +3002,6 @@ input[type='number']::-webkit-outer-spin-button {
   margin: 0;
 }
 
-.detalle-material {
-  margin-top: var(--espaciado-extra-grande);
-}
-
 .tarjeta-detalle-material,
 .zona-peligro-material {
   padding: var(--espaciado-grande);
@@ -3021,7 +3075,6 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .encabezado-modulo-materiales > .q-btn,
-  .encabezado-detalle-material > .q-btn,
   .zona-peligro-material > .q-btn {
     width: 100%;
   }

@@ -101,11 +101,12 @@ function formatearFecha(fecha: string): string {
         </div>
         <div class="lista-compras__acciones">
           <q-btn
-            class="boton-secundario"
+            class="boton-secundario accion-volver-compacta"
             flat
             no-caps
             icon="arrow_back"
             label="Volver al presupuesto"
+            aria-label="Volver al presupuesto"
             @click="volverAlPresupuesto"
           />
           <q-btn

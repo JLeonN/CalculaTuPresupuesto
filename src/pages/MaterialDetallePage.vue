@@ -92,6 +92,7 @@ async function eliminarMaterial(): Promise<void> {
   <q-page class="pagina-contenido">
     <main class="contenedor-principal contenedor-detalle-material">
       <q-btn
+        v-if="!material"
         class="boton-secundario"
         flat
         no-caps
@@ -112,14 +113,25 @@ async function eliminarMaterial(): Promise<void> {
             <h1 class="titulo-pagina">{{ material.nombre }}</h1>
             <p class="texto-secundario">{{ precios.length }} precios registrados</p>
           </div>
-          <q-btn
-            class="boton-accion-principal"
-            unelevated
-            no-caps
-            icon="edit"
-            label="Editar material"
-            :to="`/materiales/${material.id}/editar`"
-          />
+          <div class="acciones-encabezado-detalle">
+            <q-btn
+              class="boton-secundario accion-volver-compacta"
+              flat
+              no-caps
+              icon="arrow_back"
+              label="Volver a materiales"
+              aria-label="Volver a materiales"
+              to="/materiales"
+            />
+            <q-btn
+              class="boton-accion-principal"
+              unelevated
+              no-caps
+              icon="edit"
+              label="Editar material"
+              :to="`/materiales/${material.id}/editar`"
+            />
+          </div>
         </header>
 
         <div class="detalle-material__contenedor">

@@ -699,7 +699,8 @@ function restablecerFechaPresupuesto(): void {
                 unelevated
                 no-caps
                 icon="save"
-                :label="esEdicion ? 'Guardar cambios' : 'Guardar'"
+                label="Guardar"
+                :aria-label="esEdicion ? 'Guardar cambios' : 'Guardar presupuesto'"
                 :loading="presupuestosStore.guardando"
                 :disable="presupuestosStore.guardando || accionDocumento !== null"
                 @click="esEdicion ? guardarCambios() : guardarNuevoYFinalizar()"
@@ -733,11 +734,12 @@ function restablecerFechaPresupuesto(): void {
                 <q-btn
                   v-else
                   key="cancelar"
-                  class="boton-secundario"
+                  class="boton-secundario accion-cancelar-compacta"
                   flat
                   no-caps
                   icon="close"
                   :label="esEdicion ? 'Cancelar cambios' : 'Cancelar'"
+                  :aria-label="esEdicion ? 'Cancelar cambios' : 'Cancelar'"
                   :disable="presupuestosStore.guardando || accionDocumento !== null"
                   @click="solicitarCancelacion"
                 />
