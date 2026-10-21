@@ -18,6 +18,8 @@ export async function generarPdfPresupuesto(elementoDocumento: HTMLElement): Pro
   try {
     await document.fonts.ready;
     await esperarImagenes(copiaDocumento);
+    convertirIconosRedesSocialesAPng(copiaDocumento);
+    await esperarImagenes(copiaDocumento);
 
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -168,4 +170,28 @@ async function esperarImagenes(elemento: HTMLElement): Promise<void> {
       await imagen.decode().catch(() => undefined);
     }),
   );
+}
+
+function convertirIconosRedesSocialesAPng(elemento: HTMLElement): void {
+  const iconos = elemento.querySelectorAll<HTMLImageElement>('.documento-presupuesto__icono-red');
+  const colorFondo = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-documento-destacado-suave')
+    .trim();
+
+  for (const icono of iconos) {
+    const lienzo = document.createElement('canvas');
+    lienzo.width = icono.naturalWidth;
+    lienzo.height = icono.naturalHeight;
+    const contexto = lienzo.getContext('2d');
+
+    if (!contexto) {
+      throw new Error('No se pudo preparar el ícono de la red social para el PDF.');
+    }
+
+    // El fondo opaco evita que html2canvas convierta la transparencia del ícono en negro.
+    contexto.fillStyle = colorFondo;
+    contexto.fillRect(0, 0, lienzo.width, lienzo.height);
+    contexto.drawImage(icono, 0, 0);
+    icono.src = lienzo.toDataURL('image/png');
+  }
 }

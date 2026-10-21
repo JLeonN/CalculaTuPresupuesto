@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
+import { obtenerImagenRedSocial } from '@/configuracion/iconosRedesSociales';
 import { formatearImporte, formatearNumero } from '@/dominio/monedas';
 import {
   calcularPrecioMaterialCliente,
@@ -246,6 +247,12 @@ defineExpose({ obtenerElemento });
         target="_blank"
         rel="noopener noreferrer"
       >
+        <img
+          class="documento-presupuesto__icono-red"
+          :src="obtenerImagenRedSocial(redSocial.red)"
+          alt=""
+          aria-hidden="true"
+        />
         <strong>{{ redSocial.red }}</strong>
         <span>{{ redSocial.usuarioOEnlace }}</span>
       </a>

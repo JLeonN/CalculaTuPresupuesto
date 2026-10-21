@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
 import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
+import { obtenerIconoRedSocial } from '@/configuracion/iconosRedesSociales';
 import {
   crearMetodoPagoConfiguracion,
   crearRedSocialConfiguracion,
@@ -577,13 +578,32 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
               <div class="bloque-repetible__campos campos-red-social">
                 <q-select
                   v-model="redSocial.red"
+                  class="selector-red-social"
                   dark
                   outlined
                   use-input
                   new-value-mode="add-unique"
                   label="Red social"
                   :options="[...REDES_SOCIALES_DISPONIBLES]"
-                />
+                >
+                  <template #selected>
+                    <span v-if="redSocial.red" class="selector-red-social__seleccion">
+                      <q-icon :name="obtenerIconoRedSocial(redSocial.red)" aria-hidden="true" />
+                      <span>{{ redSocial.red }}</span>
+                    </span>
+                  </template>
+                  <template #option="opcion">
+                    <q-item v-bind="opcion.itemProps">
+                      <q-item-section avatar>
+                        <q-icon
+                          :name="obtenerIconoRedSocial(String(opcion.opt))"
+                          aria-hidden="true"
+                        />
+                      </q-item-section>
+                      <q-item-section>{{ opcion.opt }}</q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
                 <q-input
                   v-model="redSocial.usuarioOEnlace"
                   dark
