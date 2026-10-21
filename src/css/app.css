@@ -1375,6 +1375,95 @@ input[type='number']::-webkit-outer-spin-button {
   gap: var(--espaciado-mediano);
 }
 
+.ticket-presupuesto__titulo-acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: var(--espaciado-pequeno) var(--espaciado-mediano);
+}
+
+.ticket-presupuesto__titulo-acciones .etiqueta-seccion {
+  flex-basis: 100%;
+}
+
+.lista-compras {
+  display: grid;
+  align-content: start;
+  gap: var(--espaciado-grande);
+}
+
+.lista-compras__encabezado,
+.lista-compras__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: var(--espaciado-mediano);
+}
+
+.lista-compras__grupos {
+  display: grid;
+  gap: var(--espaciado-mediano);
+}
+
+.lista-compras__grupos > .titulo-seccion {
+  margin: var(--espaciado-mediano) 0 0;
+}
+
+.lista-compras__fila {
+  display: grid;
+  min-width: 0;
+  padding: var(--espaciado-grande);
+  gap: var(--espaciado-mediano);
+  background: var(--color-superficie-principal);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+}
+
+.lista-compras__fila--comprado {
+  border-color: var(--color-exito);
+}
+
+.lista-compras__checkbox,
+.lista-compras__campos,
+.lista-compras__dato {
+  min-width: 0;
+}
+
+.lista-compras__checkbox .q-checkbox__label {
+  overflow-wrap: anywhere;
+}
+
+.lista-compras__campos {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--espaciado-mediano);
+}
+
+.lista-compras__dato {
+  display: grid;
+  gap: var(--espaciado-minimo);
+  overflow-wrap: anywhere;
+}
+
+.lista-compras__dato span {
+  color: var(--color-texto-secundario);
+  font-size: var(--tamano-texto-secundario);
+}
+
+.lista-compras__guardar {
+  justify-self: end;
+  min-height: var(--altura-control);
+}
+
+.lista-compras__error {
+  margin: 0;
+  color: var(--color-error);
+}
+
 .ticket-presupuesto__fecha {
   width: var(--ancho-fecha-ticket);
 }
@@ -2027,6 +2116,9 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 1023px) {
+  .lista-compras__campos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .encabezado-vista-previa-app {
     align-items: stretch;
     flex-direction: column;
@@ -2058,6 +2150,28 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 767px) {
+  .lista-compras__encabezado,
+  .lista-compras__acciones {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lista-compras__acciones > .q-btn,
+  .ticket-presupuesto__lista-compras {
+    width: 100%;
+  }
+
+  .lista-compras__fila {
+    padding: var(--espaciado-mediano);
+  }
+
+  .lista-compras__campos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lista-compras__guardar {
+    justify-self: stretch;
+  }
   .resumen-presupuesto__campo-porcentaje {
     max-width: none;
   }

@@ -1,5 +1,9 @@
 import { computed, ref } from 'vue';
 import {
+  crearDatosPresupuestoConMaterialActualizado,
+  type CambiosMaterialListaCompras,
+} from '@/dominio/listaCompras';
+import {
   actualizarPresupuesto,
   actualizarEstadoPresupuesto,
   crearPresupuesto,
@@ -114,6 +118,24 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     } finally {
       guardando.value = false;
     }
+  }
+
+  async function actualizarMaterialListaCompras(
+    idPresupuesto: string,
+    idLinea: string,
+    cambios: CambiosMaterialListaCompras,
+  ): Promise<Presupuesto> {
+    const presupuestoActual = obtenerPresupuestoPorId(idPresupuesto);
+    if (!presupuestoActual) {
+      throw new Error('El presupuesto que intentás actualizar ya no existe.');
+    }
+    if ('precioUnitario' in cambios && presupuestoActual.estado !== 'pendiente') {
+      throw new Error(
+        'Falta definir la regla de cambios de precio después de la aceptación del presupuesto.',
+      );
+    }
+    const datos = crearDatosPresupuestoConMaterialActualizado(presupuestoActual, idLinea, cambios);
+    return editarPresupuesto(idPresupuesto, datos);
   }
 
   async function cambiarFormatoDocumento(
@@ -275,6 +297,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     cargarPresupuestos,
     agregarPresupuesto,
     editarPresupuesto,
+    actualizarMaterialListaCompras,
     cambiarFormatoDocumento,
     cambiarEstadoPresupuesto,
     obtenerPresupuestoPorId,

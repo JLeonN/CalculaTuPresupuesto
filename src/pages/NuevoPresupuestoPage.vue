@@ -601,9 +601,18 @@ function restablecerFechaPresupuesto(): void {
         <section class="ticket-presupuesto" aria-labelledby="titulo-ticket-presupuesto">
           <div class="ticket-presupuesto__encabezado">
             <div class="ticket-presupuesto__encabezado-superior">
-              <div>
+              <div class="ticket-presupuesto__titulo-acciones">
                 <p class="etiqueta-seccion">Detalle {{ soloLectura ? 'guardado' : 'editable' }}</p>
                 <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
+                <q-btn
+                  v-if="soloLectura && presupuesto"
+                  class="boton-secundario ticket-presupuesto__lista-compras"
+                  flat
+                  no-caps
+                  icon="checklist"
+                  label="Lista de compras"
+                  :to="`/presupuestos/${presupuesto.id}/lista-compras`"
+                />
                 <q-btn
                   v-if="!soloLectura"
                   class="boton-secundario ticket-presupuesto__agregar-mano-obra"

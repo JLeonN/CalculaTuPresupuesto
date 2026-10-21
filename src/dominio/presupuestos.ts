@@ -53,6 +53,7 @@ export interface OpcionPrecioPresupuesto {
 export interface LineaPresupuesto {
   id: string;
   tipo: TipoConceptoPresupuesto;
+  comprado: boolean;
   origen: OrigenLineaPresupuesto;
   idMaterial: string | null;
   nombre: string;
@@ -298,6 +299,7 @@ export function crearLineaMaterialManual(
   return {
     id: crearIdentificadorMaterial(),
     tipo: 'material',
+    comprado: false,
     origen: 'manual',
     idMaterial: null,
     nombre: nombre.trim(),
@@ -342,6 +344,7 @@ export function crearLineaDesdeMaterial(
   return {
     id: crearIdentificadorMaterial(),
     tipo: 'material',
+    comprado: false,
     origen: 'catalogo',
     idMaterial: material.id,
     nombre: material.nombre,
@@ -468,6 +471,7 @@ function crearLineaPredefinida(
   return {
     id: crearIdentificadorMaterial(),
     tipo,
+    comprado: false,
     origen: 'predefinido',
     idMaterial: null,
     nombre,
@@ -546,6 +550,7 @@ function normalizarNumeroNoNegativo(valor: number | null): number {
 function normalizarLineaPresupuesto(linea: LineaPresupuesto): LineaPresupuesto {
   return {
     ...linea,
+    comprado: linea.tipo === 'material' && linea.comprado === true,
     nombre: linea.nombre.trim(),
     cantidad: normalizarNumeroEditable(linea.cantidad, 0),
     precioUnitario: normalizarNumeroEditable(linea.precioUnitario, null),
@@ -709,6 +714,7 @@ function recuperarLineaPresupuesto(valor: unknown): LineaPresupuesto | null {
   return {
     id: typeof valor.id === 'string' ? valor.id : crearIdentificadorMaterial(),
     tipo,
+    comprado: tipo === 'material' && valor.comprado === true,
     origen: esOrigenLineaPresupuesto(valor.origen) ? valor.origen : 'manual',
     idMaterial: typeof valor.idMaterial === 'string' ? valor.idMaterial : null,
     nombre: obtenerTexto(valor.nombre).trim(),
@@ -785,6 +791,7 @@ function esLineaPresupuestoGuardada(valor: unknown): valor is LineaPresupuesto {
     esRegistro(valor) &&
     typeof valor.id === 'string' &&
     TIPOS_CONCEPTO_PRESUPUESTO.some((tipo) => tipo === valor.tipo) &&
+    typeof valor.comprado === 'boolean' &&
     ORIGENES_LINEA_PRESUPUESTO.some((origen) => origen === valor.origen) &&
     (valor.idMaterial === null || typeof valor.idMaterial === 'string') &&
     typeof valor.nombre === 'string' &&
