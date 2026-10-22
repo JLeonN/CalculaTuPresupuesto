@@ -2443,6 +2443,12 @@ input[type='number']::-webkit-outer-spin-button {
     width: 100%;
   }
 
+  .acciones-presupuesto__salida {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: stretch;
+  }
+
   .estado-presupuesto {
     align-items: stretch;
     flex-direction: column;
@@ -2454,9 +2460,11 @@ input[type='number']::-webkit-outer-spin-button {
     flex: 1 1 auto;
   }
 
-  .acciones-presupuesto__salida .selector-formato-documento-contenedor {
-    flex-basis: 100%;
-    justify-content: center;
+  .acciones-presupuesto__salida .selector-formato-documento-contenedor,
+  .acciones-presupuesto__salida .selector-formato-documento,
+  .acciones-presupuesto__salida > .q-btn {
+    width: 100%;
+    min-width: 0;
   }
 
   .encabezado-modulo-presupuestos > .q-btn {
