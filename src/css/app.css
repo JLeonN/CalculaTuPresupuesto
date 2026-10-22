@@ -1217,17 +1217,30 @@ input[type='number']::-webkit-outer-spin-button {
   box-shadow: var(--sombra-control);
 }
 
+.tarjeta-presupuesto-guardado__encabezado {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: var(--espaciado-mediano);
+}
+
 .tarjeta-presupuesto-guardado h2 {
-  margin: 0 0 var(--espaciado-minimo);
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
   font-size: var(--tamano-texto-destacado);
 }
 
-.tarjeta-presupuesto-guardado > .q-btn {
-  justify-self: start;
+.tarjeta-presupuesto-guardado__fecha {
+  flex: none;
+  white-space: nowrap;
 }
 
-.tarjeta-presupuesto-guardado > .insignia-estado-presupuesto {
-  justify-self: start;
+.tarjeta-presupuesto-guardado__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaciado-minimo);
 }
 
 .insignia-estado-presupuesto {

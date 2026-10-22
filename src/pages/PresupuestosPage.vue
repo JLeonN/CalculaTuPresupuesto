@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import BuscadorListado from '@/components/BuscadorListado.vue';
+import TextoDesplazable from '@/components/TextoDesplazable.vue';
 import InsigniaEstadoPresupuesto from '@/components/presupuestos/InsigniaEstadoPresupuesto.vue';
 import { calcularTotalPresupuesto } from '@/dominio/presupuestos';
 import { formatearImporte } from '@/dominio/monedas';
@@ -114,9 +115,11 @@ function formatearFecha(fecha: string): string {
             :key="presupuesto.id"
             class="tarjeta-presupuesto-guardado"
           >
-            <div>
-              <h2>{{ presupuesto.destinatario.nombre || 'Sin nombre' }}</h2>
-              <span class="texto-secundario">{{
+            <div class="tarjeta-presupuesto-guardado__encabezado">
+              <h2>
+                <TextoDesplazable :texto="presupuesto.destinatario.nombre || 'Sin nombre'" />
+              </h2>
+              <span class="texto-secundario tarjeta-presupuesto-guardado__fecha">{{
                 formatearFecha(presupuesto.fechaPresupuesto)
               }}</span>
             </div>
@@ -132,16 +135,18 @@ function formatearFecha(fecha: string): string {
                 )
               }}
             </strong>
-            <InsigniaEstadoPresupuesto :estado="presupuesto.estado" />
-            <q-btn
-              class="boton-secundario"
-              flat
-              dense
-              no-caps
-              icon-right="arrow_forward"
-              label="Ver presupuesto"
-              :to="`/presupuestos/${presupuesto.id}`"
-            />
+            <div class="tarjeta-presupuesto-guardado__acciones">
+              <InsigniaEstadoPresupuesto :estado="presupuesto.estado" />
+              <q-btn
+                class="boton-secundario"
+                flat
+                dense
+                no-caps
+                icon-right="arrow_forward"
+                label="Ver presupuesto"
+                :to="`/presupuestos/${presupuesto.id}`"
+              />
+            </div>
           </article>
         </div>
       </section>
