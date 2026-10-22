@@ -534,28 +534,31 @@ function restablecerFechaPresupuesto(): void {
 <template>
   <q-page class="pagina-contenido">
     <main class="contenedor-principal nuevo-presupuesto">
-      <q-btn
-        v-if="!esNuevo"
-        class="boton-secundario"
-        flat
-        no-caps
-        icon="arrow_back"
-        label="Volver a presupuestos"
-        to="/presupuestos"
-      />
-
       <header class="encabezado-nuevo-presupuesto">
-        <div>
-          <p class="etiqueta-seccion">Presupuestos</p>
-          <h1 class="titulo-pagina">{{ tituloPagina }}</h1>
-          <p class="texto-secundario encabezado-nuevo-presupuesto__descripcion">
-            {{
-              soloLectura
-                ? 'Consultá la copia guardada, descargala o enviala cuando lo necesites.'
-                : 'Agregá los conceptos, ajustá sus importes y revisá el total en el mismo ticket.'
-            }}
-          </p>
+        <div class="encabezado-nuevo-presupuesto__fila">
+          <div class="encabezado-nuevo-presupuesto__titulo">
+            <h1 class="titulo-pagina">{{ tituloPagina }}</h1>
+          </div>
+          <q-btn
+            v-if="!esNuevo"
+            class="boton-secundario encabezado-nuevo-presupuesto__volver"
+            flat
+            no-caps
+            icon="arrow_back"
+            aria-label="Volver a presupuestos"
+            to="/presupuestos"
+          >
+            <span class="encabezado-nuevo-presupuesto__volver-completo">Volver a presupuestos</span>
+            <span class="encabezado-nuevo-presupuesto__volver-corto">Volver</span>
+          </q-btn>
         </div>
+        <p class="texto-secundario encabezado-nuevo-presupuesto__descripcion">
+          {{
+            soloLectura
+              ? 'Consultá la copia guardada, descargala o enviala cuando lo necesites.'
+              : 'Agregá los conceptos, ajustá sus importes y revisá el total en el mismo ticket.'
+          }}
+        </p>
       </header>
 
       <q-banner v-if="tieneErroresCarga" class="aviso-error" rounded>

@@ -1162,6 +1162,51 @@ input[type='number']::-webkit-outer-spin-button {
   margin: var(--espaciado-mediano) 0 0;
 }
 
+.encabezado-nuevo-presupuesto {
+  display: block;
+  container: encabezado-nuevo-presupuesto / inline-size;
+}
+
+.encabezado-nuevo-presupuesto__fila {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--espaciado-pequeno);
+}
+
+.encabezado-nuevo-presupuesto__titulo {
+  min-width: 0;
+}
+
+.encabezado-nuevo-presupuesto__volver {
+  flex: 0 0 auto;
+}
+
+.encabezado-nuevo-presupuesto__volver-corto {
+  display: none;
+}
+
+/* Cortes locales según el espacio real que ocupan el título y las etiquetas del botón. */
+@container encabezado-nuevo-presupuesto (max-width: 24rem) {
+  .encabezado-nuevo-presupuesto__volver-completo {
+    display: none;
+  }
+
+  .encabezado-nuevo-presupuesto__volver-corto {
+    display: inline;
+  }
+}
+
+@container encabezado-nuevo-presupuesto (max-width: 17rem) {
+  .encabezado-nuevo-presupuesto__volver-corto {
+    display: none;
+  }
+
+  .encabezado-nuevo-presupuesto__volver .q-icon {
+    margin-right: 0;
+  }
+}
+
 .buscador-presupuestos {
   margin-bottom: var(--espaciado-grande);
 }
