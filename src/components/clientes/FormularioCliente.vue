@@ -155,6 +155,10 @@ function guardarCliente(): void {
                 v-model="telefono.etiqueta"
                 dark
                 outlined
+                behavior="menu"
+                menu-anchor="bottom left"
+                menu-self="top left"
+                popup-content-class="selector-opciones"
                 label="Tipo"
                 :options="ETIQUETAS_TELEFONO"
               />

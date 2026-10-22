@@ -581,6 +581,10 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
                   class="selector-red-social"
                   dark
                   outlined
+                  behavior="menu"
+                  menu-anchor="bottom left"
+                  menu-self="top left"
+                  popup-content-class="selector-opciones"
                   use-input
                   new-value-mode="add-unique"
                   label="Red social"

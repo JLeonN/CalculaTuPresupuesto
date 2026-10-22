@@ -92,6 +92,10 @@ watch(idCliente, (idClienteActual) => {
       v-model="idCliente"
       dark
       outlined
+      behavior="menu"
+      menu-anchor="bottom left"
+      menu-self="top left"
+      popup-content-class="selector-opciones"
       clearable
       emit-value
       map-options

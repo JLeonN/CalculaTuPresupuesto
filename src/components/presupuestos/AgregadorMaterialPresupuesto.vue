@@ -95,6 +95,10 @@ function limpiar(): void {
         v-model="seleccion"
         dark
         outlined
+        behavior="menu"
+        menu-anchor="bottom left"
+        menu-self="top left"
+        popup-content-class="selector-opciones"
         clearable
         fill-input
         hide-selected

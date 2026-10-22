@@ -47,6 +47,10 @@ function restaurarOpciones(): void {
     :class="{ 'selector-moneda--denso': denso }"
     dark
     outlined
+    behavior="menu"
+    menu-anchor="bottom left"
+    menu-self="top left"
+    popup-content-class="selector-opciones"
     :dense="denso"
     :label="etiqueta"
     :options="opcionesFiltradas"

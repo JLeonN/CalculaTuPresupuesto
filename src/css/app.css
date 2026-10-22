@@ -177,6 +177,30 @@ input[type='number']::-webkit-outer-spin-button {
   box-shadow: var(--sombra-control);
 }
 
+.selector-opciones {
+  color: var(--color-texto-principal);
+  background: var(--color-superficie-principal);
+  border: var(--ancho-borde) solid var(--color-borde-destacado);
+  border-radius: var(--radio-mediano);
+  box-shadow: var(--sombra-principal);
+}
+
+.selector-opciones .q-item {
+  min-height: var(--altura-control);
+  padding: var(--espaciado-control) var(--espaciado-mediano);
+  color: var(--color-texto-principal);
+  font-size: var(--tamano-texto-secundario);
+}
+
+.selector-opciones .q-item.q-manual-focusable--focused {
+  background: var(--color-superficie-interactiva);
+}
+
+.selector-opciones .q-item[aria-selected='true'] {
+  color: var(--color-accion-principal);
+  background: var(--color-accion-suave);
+}
+
 .menu-sesion__usuario {
   padding: var(--espaciado-mediano);
   gap: var(--espaciado-control);

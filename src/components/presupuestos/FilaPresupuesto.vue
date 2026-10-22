@@ -181,6 +181,10 @@ function seleccionarContenidoNumerico(evento: Event): void {
         v-model="seleccionManoObra"
         dark
         outlined
+        behavior="menu"
+        menu-anchor="bottom left"
+        menu-self="top left"
+        popup-content-class="selector-opciones"
         dense
         clearable
         use-input
@@ -231,6 +235,10 @@ function seleccionarContenidoNumerico(evento: Event): void {
           v-model="linea.unidad"
           dark
           outlined
+          behavior="menu"
+          menu-anchor="bottom left"
+          menu-self="top left"
+          popup-content-class="selector-opciones"
           dense
           label="Unidad"
           :options="opcionesUnidad"
@@ -242,6 +250,10 @@ function seleccionarContenidoNumerico(evento: Event): void {
           v-model="linea.unidad"
           dark
           outlined
+          behavior="menu"
+          menu-anchor="bottom left"
+          menu-self="top left"
+          popup-content-class="selector-opciones"
           dense
           use-input
           new-value-mode="add-unique"
@@ -273,6 +285,10 @@ function seleccionarContenidoNumerico(evento: Event): void {
         class="fila-presupuesto__selector-precio"
         dark
         outlined
+        behavior="menu"
+        menu-anchor="bottom left"
+        menu-self="top left"
+        popup-content-class="selector-opciones"
         dense
         emit-value
         map-options

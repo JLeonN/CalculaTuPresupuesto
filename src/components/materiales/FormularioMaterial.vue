@@ -225,6 +225,10 @@ function guardarMaterial(): void {
                   v-model="precio.unidadMedida"
                   dark
                   outlined
+                  behavior="menu"
+                  menu-anchor="bottom left"
+                  menu-self="top left"
+                  popup-content-class="selector-opciones"
                   label="Unidad de medida"
                   :options="UNIDADES_MEDIDA"
                 />
@@ -246,6 +250,10 @@ function guardarMaterial(): void {
                     v-model="precio.presentacion"
                     dark
                     outlined
+                    behavior="menu"
+                    menu-anchor="bottom left"
+                    menu-self="top left"
+                    popup-content-class="selector-opciones"
                     label="Presentación"
                     :options="PRESENTACIONES"
                   />
@@ -301,6 +309,10 @@ function guardarMaterial(): void {
                     v-model="precio.unidadMedida"
                     dark
                     outlined
+                    behavior="menu"
+                    menu-anchor="bottom left"
+                    menu-self="top left"
+                    popup-content-class="selector-opciones"
                     label="Unidad del contenido"
                     :options="UNIDADES_MEDIDA"
                   />
