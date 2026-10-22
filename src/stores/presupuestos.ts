@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue';
+import { coincideBusquedaPresupuesto } from '@/dominio/busquedaPresupuestos';
 import {
   crearDatosPresupuestoConMaterialActualizado,
   type CambiosMaterialListaCompras,
@@ -212,18 +213,12 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
   }
 
   function buscarPresupuestos(termino: string): Presupuesto[] {
-    const terminoNormalizado = termino.trim().toLocaleLowerCase('es');
-
-    if (terminoNormalizado === '') {
+    if (termino.trim() === '') {
       return presupuestosOrdenados.value;
     }
 
     return presupuestosOrdenados.value.filter((presupuesto) =>
-      [
-        presupuesto.destinatario.nombre,
-        presupuesto.destinatario.telefono,
-        presupuesto.fechaPresupuesto,
-      ].some((dato) => dato.toLocaleLowerCase('es').includes(terminoNormalizado)),
+      coincideBusquedaPresupuesto(presupuesto, termino),
     );
   }
 
