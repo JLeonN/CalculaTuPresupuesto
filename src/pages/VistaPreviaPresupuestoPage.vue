@@ -262,27 +262,24 @@ function obtenerMensajeError(errorCapturado: unknown): string {
   <q-page class="pagina-vista-previa">
     <main class="vista-previa-presupuesto">
       <header class="encabezado-vista-previa-app">
-        <div>
-          <p class="etiqueta-seccion">Documento</p>
+        <p class="etiqueta-seccion">Documento</p>
+        <div class="encabezado-vista-previa-app__titulo">
           <h1 class="titulo-pagina">Vista previa</h1>
-          <p class="texto-secundario">Así verá el cliente el presupuesto.</p>
-        </div>
-
-        <div class="acciones-vista-previa">
-          <SelectorFormatoDocumento
-            v-if="datosPresupuesto"
-            :formato="datosPresupuesto.formatoDocumento"
-            :deshabilitado="presupuestosStore.guardando || accionDocumento !== null"
-            @cambiar="cambiarFormatoDocumento"
-          />
           <q-btn
-            class="boton-secundario"
+            class="boton-secundario vista-previa-presupuesto__volver"
             flat
             no-caps
             icon="arrow_back"
             label="Volver"
+            aria-label="Volver al presupuesto"
             @click="volver"
           />
+        </div>
+        <p class="texto-secundario">Así verá el cliente el presupuesto.</p>
+      </header>
+
+      <div class="barra-acciones-vista-previa">
+        <div class="acciones-vista-previa">
           <q-btn
             class="boton-secundario"
             flat
@@ -336,7 +333,15 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             @click="enviarPorWhatsapp"
           />
         </div>
-      </header>
+
+        <div v-if="datosPresupuesto" class="vista-previa-presupuesto__formato">
+          <SelectorFormatoDocumento
+            :formato="datosPresupuesto.formatoDocumento"
+            :deshabilitado="presupuestosStore.guardando || accionDocumento !== null"
+            @cambiar="cambiarFormatoDocumento"
+          />
+        </div>
+      </div>
 
       <q-banner v-if="errorCarga" class="aviso-error" rounded>
         <template #avatar><q-icon name="error_outline" /></template>

@@ -2113,20 +2113,44 @@ input[type='number']::-webkit-outer-spin-button {
   margin-inline: auto;
 }
 
-.encabezado-vista-previa-app,
+.barra-acciones-vista-previa,
 .acciones-vista-previa {
   display: flex;
   align-items: center;
   gap: var(--espaciado-pequeno);
 }
 
-.encabezado-vista-previa-app {
+.barra-acciones-vista-previa {
   justify-content: space-between;
 }
 
+.encabezado-vista-previa-app {
+  display: grid;
+  gap: var(--espaciado-minimo);
+}
+
+.encabezado-vista-previa-app .etiqueta-seccion,
+.encabezado-vista-previa-app .texto-secundario {
+  margin: 0;
+}
+
+.encabezado-vista-previa-app__titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaciado-pequeno);
+}
+
 .acciones-vista-previa {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  flex: 1 1 auto;
+}
+
+.vista-previa-presupuesto__formato {
+  display: flex;
+  justify-content: center;
+  order: -1;
 }
 
 .vista-previa-presupuesto__lienzo {
@@ -2454,11 +2478,6 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 1023px) {
-  .encabezado-vista-previa-app {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .acciones-vista-previa {
     justify-content: stretch;
   }
@@ -2520,7 +2539,6 @@ input[type='number']::-webkit-outer-spin-button {
   }
   .encabezado-modulo-presupuestos,
   .encabezado-nuevo-presupuesto,
-  .encabezado-vista-previa-app,
   .resumen-presupuesto {
     align-items: stretch;
     flex-direction: column;
@@ -2528,6 +2546,28 @@ input[type='number']::-webkit-outer-spin-button {
 
   .pagina-vista-previa {
     padding: var(--espaciado-mediano);
+  }
+
+  .vista-previa-presupuesto {
+    gap: var(--espaciado-mediano);
+  }
+
+  .barra-acciones-vista-previa {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--espaciado-mediano);
+  }
+
+  .vista-previa-presupuesto__formato {
+    order: 0;
+  }
+
+  .vista-previa-presupuesto__volver .q-btn__content > .block {
+    display: none !important;
+  }
+
+  .vista-previa-presupuesto__volver .q-icon {
+    margin: 0;
   }
 
   .modal-inicio-sesion__encabezado,
@@ -2550,9 +2590,8 @@ input[type='number']::-webkit-outer-spin-button {
     min-width: 0;
   }
 
-  .acciones-vista-previa .selector-formato-documento-contenedor {
+  .acciones-vista-previa > :last-child {
     grid-column: 1 / -1;
-    justify-content: center;
   }
 
   .documento-presupuesto {
@@ -2756,7 +2795,7 @@ input[type='number']::-webkit-outer-spin-button {
   .menu-escritorio,
   .navegacion-movil,
   .encabezado-vista-previa-app,
-  .acciones-vista-previa,
+  .barra-acciones-vista-previa,
   .aviso-error {
     display: none !important;
   }
