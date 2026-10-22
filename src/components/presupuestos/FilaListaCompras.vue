@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import type { CambiosMaterialListaCompras } from '@/dominio/listaCompras';
 import { formatearImporte, formatearNumero } from '@/dominio/monedas';
 import type { LineaPresupuesto } from '@/dominio/presupuestos';
+import TextoDesplazable from '@/components/TextoDesplazable.vue';
 
 const props = defineProps<{
   linea: LineaPresupuesto;
@@ -84,7 +85,7 @@ function guardarDetalles(): void {
 <template>
   <article class="lista-compras__fila" :class="{ 'lista-compras__fila--comprado': linea.comprado }">
     <div class="lista-compras__resumen">
-      <strong class="lista-compras__nombre">{{ linea.nombre }}</strong>
+      <strong class="lista-compras__nombre"><TextoDesplazable :texto="linea.nombre" /></strong>
       <span class="lista-compras__cantidad">
         {{ linea.cantidad === null ? '—' : formatearNumero(linea.cantidad) }} {{ linea.unidad }}
       </span>

@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import FilaListaCompras from '@/components/presupuestos/FilaListaCompras.vue';
+import TextoDesplazable from '@/components/TextoDesplazable.vue';
 import {
   obtenerMaterialesListaCompras,
   type CambiosMaterialListaCompras,
@@ -93,9 +94,14 @@ function formatearFecha(fecha: string): string {
           <p class="etiqueta-seccion">Presupuesto guardado</p>
           <h1 class="titulo-pagina">Lista de compras</h1>
           <template v-if="presupuesto">
-            <p class="texto-secundario">
-              {{ presupuesto.destinatario.nombre || 'Sin nombre' }} ·
-              {{ formatearFecha(presupuesto.fechaPresupuesto) }} · {{ presupuesto.estado }}
+            <p class="texto-secundario lista-compras__metadatos">
+              <TextoDesplazable
+                class="lista-compras__cliente"
+                :texto="presupuesto.destinatario.nombre || 'Sin nombre'"
+              />
+              <span class="lista-compras__fecha-estado">
+                · {{ formatearFecha(presupuesto.fechaPresupuesto) }} · {{ presupuesto.estado }}
+              </span>
             </p>
           </template>
         </div>

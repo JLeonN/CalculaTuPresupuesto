@@ -1411,6 +1411,57 @@ input[type='number']::-webkit-outer-spin-button {
   gap: var(--espaciado-mediano);
 }
 
+.lista-compras__metadatos {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.lista-compras__cliente {
+  flex: 1 1 0;
+}
+
+.lista-compras__fecha-estado {
+  flex: none;
+}
+
+.lista-compras__encabezado > div:first-child {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.texto-desplazable {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.texto-desplazable__contenido {
+  display: inline-block;
+  width: max-content;
+}
+
+.texto-desplazable__contenido--activo {
+  animation: desplazar-texto var(--duracion-texto) linear infinite alternate;
+}
+
+/* Las pausas al inicio y al final son propias del desplazamiento de este texto. */
+@keyframes desplazar-texto {
+  0%,
+  5% {
+    transform: translateX(0);
+  }
+  95%,
+  100% {
+    transform: translateX(calc(-1 * var(--distancia-texto)));
+  }
+}
+
 .lista-compras__grupos {
   display: grid;
   gap: var(--espaciado-mediano);
@@ -1453,7 +1504,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .lista-compras__nombre {
-  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .lista-compras__cantidad {
@@ -2519,6 +2570,14 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .texto-desplazable__contenido--activo {
+    animation: none;
+    width: auto;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   *,
   *::before,
   *::after {
