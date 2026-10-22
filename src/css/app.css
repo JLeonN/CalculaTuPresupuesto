@@ -1773,6 +1773,10 @@ input[type='number']::-webkit-outer-spin-button {
     minmax(8rem, 0.8fr) auto;
 }
 
+.fila-presupuesto__cierre {
+  display: contents;
+}
+
 .fila-presupuesto__subtotal {
   display: grid;
   min-height: var(--altura-control);
@@ -2309,12 +2313,22 @@ input[type='number']::-webkit-outer-spin-button {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .fila-presupuesto__cierre {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    min-width: 0;
+    gap: var(--espaciado-pequeno);
+  }
+
   .fila-presupuesto__subtotal {
     justify-items: start;
   }
 
   .fila-presupuesto__eliminar {
-    justify-self: end;
+    flex: none;
+    margin-top: 0;
   }
 }
 
@@ -2479,10 +2493,6 @@ input[type='number']::-webkit-outer-spin-button {
 
   .resumen-presupuesto__importes {
     width: 100%;
-  }
-
-  .fila-presupuesto__eliminar {
-    justify-self: end;
   }
 }
 

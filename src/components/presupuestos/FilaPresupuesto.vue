@@ -297,21 +297,23 @@ function seleccionarContenidoNumerico(evento: Event): void {
         @update:model-value="seleccionarPrecio"
       />
 
-      <div class="fila-presupuesto__subtotal">
-        <span>Subtotal</span>
-        <strong>{{ formatearImporte(subtotal, linea.moneda) }}</strong>
-      </div>
+      <div class="fila-presupuesto__cierre">
+        <div class="fila-presupuesto__subtotal">
+          <span>Subtotal</span>
+          <strong>{{ formatearImporte(subtotal, linea.moneda) }}</strong>
+        </div>
 
-      <q-btn
-        v-if="!soloLectura"
-        class="boton-icono-secundario fila-presupuesto__eliminar"
-        flat
-        round
-        dense
-        icon="delete_outline"
-        :aria-label="`Eliminar ${linea.nombre}`"
-        @click="emitir('eliminar')"
-      />
+        <q-btn
+          v-if="!soloLectura"
+          class="boton-icono-secundario fila-presupuesto__eliminar"
+          flat
+          round
+          dense
+          icon="delete_outline"
+          :aria-label="`Eliminar ${linea.nombre}`"
+          @click="emitir('eliminar')"
+        />
+      </div>
     </div>
 
     <div v-if="!monedaCompatible" class="fila-presupuesto__aviso-moneda" role="alert">
