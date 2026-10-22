@@ -1454,6 +1454,25 @@ input[type='number']::-webkit-outer-spin-button {
   }
 }
 
+/* Umbral local: las acciones pasan debajo cuando no caben junto a Ticket y la fecha. */
+@container encabezado-ticket (max-width: 28rem) {
+  .ticket-presupuesto__encabezado-superior {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'etiqueta etiqueta'
+      'titulo fecha'
+      'acciones acciones';
+  }
+
+  .ticket-presupuesto__agregar-mano-obra {
+    padding-inline: 0;
+  }
+
+  .ticket-presupuesto__lista-compras {
+    width: 100%;
+  }
+}
+
 .lista-compras {
   display: grid;
   align-content: start;
@@ -2300,14 +2319,6 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 767px) {
-  .ticket-presupuesto__encabezado-superior {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      'etiqueta etiqueta'
-      'titulo fecha'
-      'acciones acciones';
-  }
-
   .lista-compras {
     gap: var(--espaciado-control);
   }
@@ -2326,10 +2337,6 @@ input[type='number']::-webkit-outer-spin-button {
     flex-direction: row;
     flex-wrap: nowrap;
     gap: var(--espaciado-pequeno);
-  }
-
-  .ticket-presupuesto__lista-compras {
-    width: 100%;
   }
 
   .resumen-presupuesto__campo-porcentaje {
