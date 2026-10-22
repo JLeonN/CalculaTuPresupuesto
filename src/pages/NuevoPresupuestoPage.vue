@@ -601,9 +601,9 @@ function restablecerFechaPresupuesto(): void {
         <section class="ticket-presupuesto" aria-labelledby="titulo-ticket-presupuesto">
           <div class="ticket-presupuesto__encabezado">
             <div class="ticket-presupuesto__encabezado-superior">
+              <p class="etiqueta-seccion">Detalle {{ soloLectura ? 'guardado' : 'editable' }}</p>
+              <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
               <div class="ticket-presupuesto__titulo-acciones">
-                <p class="etiqueta-seccion">Detalle {{ soloLectura ? 'guardado' : 'editable' }}</p>
-                <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
                 <q-btn
                   v-if="soloLectura && presupuesto"
                   class="boton-secundario ticket-presupuesto__lista-compras"
@@ -639,7 +639,7 @@ function restablecerFechaPresupuesto(): void {
                 />
                 <q-btn
                   v-if="!soloLectura"
-                  class="boton-icono-secundario"
+                  class="boton-icono-secundario ticket-presupuesto__restablecer-fecha"
                   flat
                   round
                   dense

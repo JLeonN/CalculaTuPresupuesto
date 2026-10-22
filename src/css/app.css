@@ -1411,16 +1411,30 @@ input[type='number']::-webkit-outer-spin-button {
   gap: var(--espaciado-mediano);
   background: var(--color-fondo-secundario);
   border-bottom: var(--ancho-borde) solid var(--color-borde-principal);
+  container: encabezado-ticket / inline-size;
 }
 
 .ticket-presupuesto__encabezado-superior {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: var(--espaciado-mediano);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'etiqueta etiqueta etiqueta'
+    'titulo acciones fecha';
+  align-items: center;
+  gap: var(--espaciado-pequeno) var(--espaciado-mediano);
+}
+
+.ticket-presupuesto__encabezado-superior > .etiqueta-seccion {
+  grid-area: etiqueta;
+  margin: 0;
+}
+
+.ticket-presupuesto__encabezado-superior > .titulo-seccion {
+  grid-area: titulo;
 }
 
 .ticket-presupuesto__titulo-acciones {
+  grid-area: acciones;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -1428,8 +1442,16 @@ input[type='number']::-webkit-outer-spin-button {
   gap: var(--espaciado-pequeno) var(--espaciado-mediano);
 }
 
-.ticket-presupuesto__titulo-acciones .etiqueta-seccion {
-  flex-basis: 100%;
+.ticket-presupuesto__fecha-controles {
+  grid-area: fecha;
+  justify-self: end;
+}
+
+/* Umbral local: por debajo de este ancho no caben Ticket, fecha y botón de restablecer. */
+@container encabezado-ticket (max-width: 18rem) {
+  .ticket-presupuesto__restablecer-fecha {
+    display: none;
+  }
 }
 
 .lista-compras {
@@ -1601,10 +1623,6 @@ input[type='number']::-webkit-outer-spin-button {
 
 .ticket-presupuesto__fecha {
   width: var(--ancho-fecha-ticket);
-}
-
-.ticket-presupuesto__agregar-mano-obra {
-  margin-top: var(--espaciado-pequeno);
 }
 
 .ticket-presupuesto__fecha-controles,
@@ -2282,6 +2300,14 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 767px) {
+  .ticket-presupuesto__encabezado-superior {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'etiqueta etiqueta'
+      'titulo fecha'
+      'acciones acciones';
+  }
+
   .lista-compras {
     gap: var(--espaciado-control);
   }
@@ -2387,14 +2413,6 @@ input[type='number']::-webkit-outer-spin-button {
   .fila-presupuesto__principal--importe-unico,
   .fila-presupuesto__principal--con-selector-precio {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ticket-presupuesto__encabezado-superior {
-    align-items: stretch;
-  }
-
-  .ticket-presupuesto__fecha {
-    width: var(--ancho-fecha-ticket);
   }
 
   .acciones-presupuesto__edicion,
