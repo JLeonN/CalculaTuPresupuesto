@@ -65,7 +65,24 @@ const opcionesMonedaPresupuesto = computed(() =>
 
 <template>
   <footer class="resumen-presupuesto" aria-live="polite">
-    <div class="resumen-presupuesto__grupo-controles">
+    <div v-if="soloLectura" class="resumen-presupuesto__datos-lectura">
+      <div>
+        <span>Adicional sobre materiales</span>
+        <strong>{{ porcentajeAdicionalMateriales }} %</strong>
+      </div>
+      <div>
+        <span>Moneda del presupuesto</span>
+        <strong>{{ moneda }}</strong>
+      </div>
+      <div class="resumen-presupuesto__estado">
+        <span>{{ lineas.length }} conceptos</span>
+        <span v-if="cantidadPendientes">{{ cantidadPendientes }} con precio pendiente</span>
+        <span v-if="cantidadIncompatibles" class="resumen-presupuesto__error">
+          {{ cantidadIncompatibles }} sin sumar por moneda
+        </span>
+      </div>
+    </div>
+    <div v-else class="resumen-presupuesto__grupo-controles">
       <div class="resumen-presupuesto__campo-porcentaje">
         <q-input
           v-model="porcentajeAdicionalMaterialesEntrada"

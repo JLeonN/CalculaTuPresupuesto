@@ -79,6 +79,10 @@ const estadoEnProceso = ref<EstadoPresupuesto | null>(null);
 const esNuevo = computed(() => ruta.name === 'nuevo-presupuesto');
 const esEdicion = computed(() => ruta.name === 'editar-presupuesto');
 const soloLectura = computed(() => ruta.name === 'detalle-presupuesto');
+const fechaPresupuestoLegible = computed(() => {
+  const [anio, mes, dia] = fechaPresupuesto.value.split('-');
+  return anio && mes && dia ? `${dia}/${mes}/${anio}` : fechaPresupuesto.value;
+});
 const tieneErroresCarga = computed(
   () =>
     errorAccion.value ||
@@ -600,7 +604,10 @@ function restablecerFechaPresupuesto(): void {
 
         <section class="ticket-presupuesto" aria-labelledby="titulo-ticket-presupuesto">
           <div class="ticket-presupuesto__encabezado">
-            <div class="ticket-presupuesto__encabezado-superior">
+            <div
+              class="ticket-presupuesto__encabezado-superior"
+              :class="{ 'ticket-presupuesto__encabezado-superior--lectura': soloLectura }"
+            >
               <p class="etiqueta-seccion">Detalle {{ soloLectura ? 'guardado' : 'editable' }}</p>
               <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
               <div class="ticket-presupuesto__titulo-acciones">
@@ -610,9 +617,12 @@ function restablecerFechaPresupuesto(): void {
                   flat
                   no-caps
                   icon="checklist"
-                  label="Lista de compras"
+                  aria-label="Lista de compras"
                   :to="`/presupuestos/${presupuesto.id}/lista-compras`"
-                />
+                >
+                  <span class="ticket-presupuesto__lista-etiqueta-completa">Lista de compras</span>
+                  <span class="ticket-presupuesto__lista-etiqueta-corta">Lista</span>
+                </q-btn>
                 <q-btn
                   v-if="!soloLectura"
                   class="boton-secundario ticket-presupuesto__agregar-mano-obra"
@@ -627,7 +637,14 @@ function restablecerFechaPresupuesto(): void {
               </div>
 
               <div class="ticket-presupuesto__fecha-controles">
+                <div v-if="soloLectura" class="ticket-presupuesto__fecha-lectura">
+                  <span>Fecha</span>
+                  <time :datetime="fechaPresupuesto" aria-label="Fecha del presupuesto">
+                    {{ fechaPresupuestoLegible }}
+                  </time>
+                </div>
                 <q-input
+                  v-else
                   v-model="fechaPresupuesto"
                   class="ticket-presupuesto__fecha"
                   dark
@@ -651,7 +668,11 @@ function restablecerFechaPresupuesto(): void {
             </div>
           </div>
 
-          <div v-if="lineas.length" class="ticket-presupuesto__lineas">
+          <div
+            v-if="lineas.length"
+            class="ticket-presupuesto__lineas"
+            :class="{ 'ticket-presupuesto__lineas--lectura': soloLectura }"
+          >
             <FilaPresupuesto
               v-for="(linea, indice) in lineas"
               :key="linea.id"

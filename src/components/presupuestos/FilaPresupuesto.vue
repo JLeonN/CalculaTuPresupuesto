@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import TextoDesplazable from '@/components/TextoDesplazable.vue';
 import { UNIDADES_MEDIDA } from '@/dominio/materiales';
-import { formatearImporte, type Moneda } from '@/dominio/monedas';
+import { formatearImporte, formatearNumero, type Moneda } from '@/dominio/monedas';
 import type { TarifaManoObraConfiguracion } from '@/dominio/configuracion';
 import {
   calcularSubtotalLinea,
@@ -167,9 +168,45 @@ function seleccionarContenidoNumerico(evento: Event): void {
 <template>
   <article
     class="fila-presupuesto"
-    :class="{ 'fila-presupuesto--moneda-incompatible': !monedaCompatible }"
+    :class="{
+      'fila-presupuesto--moneda-incompatible': !monedaCompatible,
+      'fila-presupuesto--lectura': soloLectura,
+    }"
   >
     <div
+      v-if="soloLectura"
+      class="fila-presupuesto__lectura"
+      :class="{ 'fila-presupuesto__lectura--material': esMaterial }"
+    >
+      <div class="fila-presupuesto__nombre-lectura">
+        <TextoDesplazable :texto="linea.nombre || 'Sin concepto'" />
+      </div>
+      <div class="fila-presupuesto__datos-lectura">
+        <div class="fila-presupuesto__dato-lectura">
+          <span>{{ etiquetaCantidad }}:</span>
+          <strong>
+            {{ formatearNumero(linea.cantidad ?? 0) }}
+            <span v-if="esMaterial">{{ linea.unidad }}</span>
+          </strong>
+        </div>
+        <div class="fila-presupuesto__dato-lectura">
+          <span>{{ esMaterial ? 'Precio unitario' : etiquetaPrecio }}:</span>
+          <strong>
+            {{
+              linea.precioUnitario === null
+                ? 'Sin precio'
+                : formatearImporte(linea.precioUnitario, linea.moneda)
+            }}
+          </strong>
+        </div>
+      </div>
+      <div class="fila-presupuesto__subtotal-lectura">
+        <span>Subtotal</span>
+        <strong>{{ formatearImporte(subtotal, linea.moneda) }}</strong>
+      </div>
+    </div>
+    <div
+      v-else
       class="fila-presupuesto__principal"
       :class="{
         'fila-presupuesto__principal--importe-unico': !esMaterial,
