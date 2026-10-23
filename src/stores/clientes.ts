@@ -96,6 +96,10 @@ export const useClientesStore = defineStore('clientes', () => {
     return clientes.value.find((cliente) => cliente.id === idCliente);
   }
 
+  function limpiarError(): void {
+    error.value = null;
+  }
+
   function buscarClientes(termino: string): Cliente[] {
     const terminoNormalizado = termino.trim().toLocaleLowerCase('es');
 
@@ -111,8 +115,13 @@ export const useClientesStore = defineStore('clientes', () => {
       const coincideTelefono = cliente.telefonos.some((telefono) =>
         telefono.numero.toLocaleLowerCase('es').includes(terminoNormalizado),
       );
+      const coincideTelefonoLocal = cliente.locales.some((local) =>
+        local.telefonos.some((telefono) =>
+          telefono.numero.toLocaleLowerCase('es').includes(terminoNormalizado),
+        ),
+      );
 
-      return coincideNombre || coincideLocal || coincideTelefono;
+      return coincideNombre || coincideLocal || coincideTelefono || coincideTelefonoLocal;
     });
   }
 
@@ -127,6 +136,7 @@ export const useClientesStore = defineStore('clientes', () => {
     editarCliente,
     eliminarCliente,
     obtenerClientePorId,
+    limpiarError,
     buscarClientes,
   };
 });

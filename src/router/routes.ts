@@ -56,11 +56,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/ClienteFormularioPage.vue'),
       },
       {
-        path: 'clientes/:idCliente/editar',
-        name: 'editar-cliente',
-        component: () => import('@/pages/ClienteFormularioPage.vue'),
-      },
-      {
         path: 'clientes/:idCliente',
         name: 'detalle-cliente',
         component: () => import('@/pages/ClienteDetallePage.vue'),

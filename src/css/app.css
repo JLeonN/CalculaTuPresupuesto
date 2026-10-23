@@ -1070,6 +1070,61 @@ input[type='number']::-webkit-outer-spin-button {
   overflow-wrap: anywhere;
 }
 
+.dato-editable-cliente {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: var(--espaciado-pequeno);
+}
+
+.dato-editable-cliente > .q-field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dato-editable-cliente > .q-btn {
+  flex: 0 0 auto;
+  color: var(--color-accion-principal);
+}
+
+.contenido-local-cliente,
+.telefonos-local-formulario {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: var(--espaciado-mediano);
+}
+
+.contenido-local-cliente > .q-btn,
+.telefonos-local-formulario > .q-btn {
+  justify-self: start;
+}
+
+.telefono-local-formulario {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: var(--espaciado-pequeno);
+}
+
+.bloque-repetible:has(> .telefonos-local-formulario) {
+  flex-wrap: wrap;
+}
+
+.bloque-repetible:has(> .telefonos-local-formulario) > .telefonos-local-formulario {
+  flex-basis: 100%;
+}
+
+@media (max-width: 767px) {
+  .telefono-local-formulario {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .telefono-local-formulario > .q-field {
+    grid-column: 1 / -1;
+  }
+}
+
 .encabezado-seccion-formulario {
   align-items: start;
   margin-bottom: var(--espaciado-grande);

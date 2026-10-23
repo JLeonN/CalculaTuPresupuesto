@@ -161,3 +161,9 @@ Validar el flujo completo del apartado Clientes en navegador y en una compilaci�
 Fecha de creación: 17 de Agosto 2026
 Fecha de última actualización: 17 de Agosto 2026
 Estado: EN PROCESO
+
+## Evolución de la ficha — 23 de octubre de 2026
+
+La edición del cliente se realiza ahora en su ficha: el botón Editar cliente habilita lápices por dato y controles para agregar o quitar teléfonos y locales. Los cambios se guardan juntos o se descartan con Cancelar; salir con cambios pendientes requiere confirmación. El formulario separado se utiliza solo para crear clientes y la ruta de edición anterior fue eliminada.
+
+Cada local puede tener varios teléfonos y un principal propio, independiente del teléfono principal general del cliente. Los clientes guardados antes de este cambio se leen con una lista vacía de teléfonos por local. El selector de destinatario de presupuestos continúa usando el teléfono principal general.

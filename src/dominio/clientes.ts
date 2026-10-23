@@ -13,6 +13,7 @@ export interface LocalCliente {
   id: string;
   nombre: string;
   direccion: string;
+  telefonos: TelefonoCliente[];
 }
 
 export interface Cliente {
@@ -47,11 +48,16 @@ export function crearTelefono(): TelefonoCliente {
   };
 }
 
+export function crearTelefonoLocal(): TelefonoCliente {
+  return { ...crearTelefono(), etiqueta: 'Trabajo' };
+}
+
 export function crearLocal(): LocalCliente {
   return {
     id: crearIdentificador(),
     nombre: '',
     direccion: '',
+    telefonos: [],
   };
 }
 
@@ -71,7 +77,12 @@ export function obtenerTelefonosConNumero(telefonos: TelefonoCliente[]): Telefon
 }
 
 export function obtenerLocalesConDatos(locales: LocalCliente[]): LocalCliente[] {
-  return locales.filter((local) => local.nombre.trim() !== '' || local.direccion.trim() !== '');
+  return locales.filter(
+    (local) =>
+      local.nombre.trim() !== '' ||
+      local.direccion.trim() !== '' ||
+      obtenerTelefonosConNumero(local.telefonos ?? []).length > 0,
+  );
 }
 
 export function crearCliente(datos: DatosCliente): Cliente {
@@ -109,6 +120,7 @@ export function normalizarDatosCliente(datos: DatosCliente): DatosCliente {
       ...local,
       nombre: local.nombre.trim(),
       direccion: local.direccion.trim(),
+      telefonos: normalizarTelefonos(obtenerTelefonosConNumero(local.telefonos ?? [])),
     })),
     correo: datos.correo.trim(),
     notas: datos.notas.trim(),

@@ -16,7 +16,15 @@ export class RepositorioClientesLocal implements RepositorioClientes {
 
     try {
       const clientes = JSON.parse(datosGuardados) as unknown;
-      return Array.isArray(clientes) ? structuredClone(clientes as Cliente[]) : [];
+      return Array.isArray(clientes)
+        ? structuredClone(clientes as Cliente[]).map((cliente) => ({
+            ...cliente,
+            locales: cliente.locales.map((local) => ({
+              ...local,
+              telefonos: local.telefonos ?? [],
+            })),
+          }))
+        : [];
     } catch {
       return [];
     }

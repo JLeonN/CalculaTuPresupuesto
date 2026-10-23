@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { ref } from 'vue';
 import {
   crearLocal,
   crearTelefono,
+  crearTelefonoLocal,
   ETIQUETAS_TELEFONO,
-  type Cliente,
   type DatosCliente,
   type LocalCliente,
   type TelefonoCliente,
 } from '@/dominio/clientes';
 
-const props = defineProps<{
-  cliente: Cliente | undefined;
+defineProps<{
   guardando: boolean;
-  agregarLocalAlAbrir?: boolean;
 }>();
 
 const emitir = defineEmits<{
@@ -22,51 +20,13 @@ const emitir = defineEmits<{
 }>();
 
 const nombre = ref('');
-const telefonos = ref<TelefonoCliente[]>([]);
-const locales = ref<LocalCliente[]>([]);
+const telefonos = ref<TelefonoCliente[]>([crearTelefono()]);
+const locales = ref<LocalCliente[]>([crearLocal()]);
 const correo = ref('');
 const notas = ref('');
 const mostrarDatosAdicionales = ref(false);
 const telefonoPrincipalId = ref('');
-const idLocalPendienteEliminar = ref<string | null>(null);
-const mostrarConfirmacionEliminarLocal = ref(false);
-const seccionLocales = ref<HTMLElement | null>(null);
-
-const esEdicion = computed(() => props.cliente !== undefined);
-
-function cargarDatosCliente(cliente: Cliente | undefined): void {
-  nombre.value = cliente?.nombre ?? '';
-  telefonos.value = (cliente?.telefonos ?? [crearTelefono()]).map((telefono) => ({
-    ...telefono,
-  }));
-  const localesGuardados = cliente?.locales ?? [];
-  locales.value = localesGuardados.length
-    ? localesGuardados.map((local) => ({ ...local }))
-    : [crearLocal()];
-  if (props.agregarLocalAlAbrir && localesGuardados.length > 0) {
-    locales.value.push(crearLocal());
-  }
-  correo.value = cliente?.correo ?? '';
-  notas.value = cliente?.notas ?? '';
-  telefonoPrincipalId.value =
-    cliente?.telefonos.find((telefono) => telefono.esPrincipal)?.id ?? telefonos.value[0]?.id ?? '';
-  mostrarDatosAdicionales.value = false;
-}
-
-watch(() => props.cliente, cargarDatosCliente, { immediate: true });
-
-onMounted(async () => {
-  if (props.agregarLocalAlAbrir) {
-    await nextTick();
-    const campoNuevoLocal = seccionLocales.value?.querySelector<HTMLInputElement>(
-      '.bloque-repetible:last-child input',
-    );
-    requestAnimationFrame(() => {
-      campoNuevoLocal?.focus();
-      campoNuevoLocal?.scrollIntoView({ block: 'center' });
-    });
-  }
-});
+telefonoPrincipalId.value = telefonos.value[0]?.id ?? '';
 
 function agregarTelefono(): void {
   const telefono = crearTelefono();
@@ -90,21 +50,28 @@ function agregarLocal(): void {
   locales.value.push(crearLocal());
 }
 
-function solicitarEliminarLocal(idLocal: string): void {
-  if (locales.value.length > 1) {
-    idLocalPendienteEliminar.value = idLocal;
-    mostrarConfirmacionEliminarLocal.value = true;
+function agregarTelefonoLocal(local: LocalCliente): void {
+  local.telefonos.push({
+    ...crearTelefonoLocal(),
+    esPrincipal: local.telefonos.length === 0,
+  });
+}
+
+function quitarTelefonoLocal(local: LocalCliente, idTelefono: string): void {
+  local.telefonos = local.telefonos.filter((telefono) => telefono.id !== idTelefono);
+  if (local.telefonos.length > 0 && !local.telefonos.some((telefono) => telefono.esPrincipal)) {
+    local.telefonos[0]!.esPrincipal = true;
   }
 }
 
-function confirmarEliminarLocal(): void {
-  if (idLocalPendienteEliminar.value === null) {
-    return;
-  }
+function marcarTelefonoLocalPrincipal(local: LocalCliente, idTelefono: string): void {
+  local.telefonos.forEach((telefono) => {
+    telefono.esPrincipal = telefono.id === idTelefono;
+  });
+}
 
-  locales.value = locales.value.filter((local) => local.id !== idLocalPendienteEliminar.value);
-  idLocalPendienteEliminar.value = null;
-  mostrarConfirmacionEliminarLocal.value = false;
+function quitarLocal(idLocal: string): void {
+  locales.value = locales.value.filter((local) => local.id !== idLocal);
 }
 
 function guardarCliente(): void {
@@ -204,7 +171,7 @@ function guardarCliente(): void {
         </div>
       </section>
 
-      <section ref="seccionLocales" class="seccion-formulario" aria-labelledby="titulo-locales">
+      <section class="seccion-formulario" aria-labelledby="titulo-locales">
         <div class="encabezado-seccion-formulario">
           <div>
             <p class="etiqueta-seccion">Lugar de trabajo</p>
@@ -240,15 +207,59 @@ function guardarCliente(): void {
                 autocomplete="street-address"
               />
             </div>
+            <div class="telefonos-local-formulario">
+              <div
+                v-for="telefono in local.telefonos"
+                :key="telefono.id"
+                class="telefono-local-formulario"
+              >
+                <q-input
+                  v-model="telefono.numero"
+                  dark
+                  outlined
+                  type="tel"
+                  label="Teléfono del local"
+                />
+                <q-select
+                  v-model="telefono.etiqueta"
+                  dark
+                  outlined
+                  behavior="menu"
+                  label="Tipo"
+                  popup-content-class="selector-opciones"
+                  :options="ETIQUETAS_TELEFONO"
+                />
+                <q-radio
+                  :model-value="local.telefonos.find((actual) => actual.esPrincipal)?.id"
+                  :val="telefono.id"
+                  label="Principal"
+                  @update:model-value="marcarTelefonoLocalPrincipal(local, telefono.id)"
+                />
+                <q-btn
+                  flat
+                  round
+                  icon="delete_outline"
+                  aria-label="Quitar teléfono del local"
+                  @click="quitarTelefonoLocal(local, telefono.id)"
+                />
+              </div>
+              <q-btn
+                class="boton-secundario"
+                flat
+                no-caps
+                icon="add"
+                label="Agregar teléfono del local"
+                @click="agregarTelefonoLocal(local)"
+              />
+            </div>
             <q-btn
-              v-if="locales.length > 1"
               class="boton-icono-secundario"
               flat
               round
               dense
               icon="delete_outline"
               aria-label="Quitar local"
-              @click="solicitarEliminarLocal(local.id)"
+              @click="quitarLocal(local.id)"
             />
           </article>
         </div>
@@ -298,31 +309,9 @@ function guardarCliente(): void {
           no-caps
           type="submit"
           :loading="guardando"
-          :label="esEdicion ? 'Guardar cambios' : 'Guardar cliente'"
+          label="Guardar cliente"
         />
       </div>
     </div>
   </q-form>
-
-  <q-dialog v-model="mostrarConfirmacionEliminarLocal" persistent>
-    <q-card class="dialogo-confirmacion">
-      <q-card-section>
-        <p class="etiqueta-seccion">Confirmar acción</p>
-        <h2 class="titulo-seccion">¿Quitar este local?</h2>
-        <p class="texto-secundario">
-          Esta acción se aplicará cuando guardes los cambios del cliente.
-        </p>
-      </q-card-section>
-      <q-card-actions align="right">
-        <q-btn class="boton-secundario" flat no-caps label="Cancelar" v-close-popup />
-        <q-btn
-          class="boton-peligro"
-          flat
-          no-caps
-          label="Quitar local"
-          @click="confirmarEliminarLocal"
-        />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
 </template>
