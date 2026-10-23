@@ -94,6 +94,7 @@
   --columnas-linea-presupuesto-con-precio: minmax(11rem, 1.7fr) minmax(5rem, 0.5fr)
     minmax(5rem, 0.5fr) minmax(7rem, 0.7fr) minmax(7rem, 0.7fr) minmax(8rem, 0.8fr) auto;
   --altura-control: 3rem;
+  --alto-tarjeta-detalle-cliente: 24rem;
   --altura-encabezado-movil: 4rem;
   --altura-navegacion-movil: 4.5rem;
   --tamano-cobertura-autocompletado: 100vmax;
@@ -101,6 +102,7 @@
   --tamano-icono-tarjeta: 1.75rem;
   --tamano-logo-pequeno: 2.5rem;
   --tamano-logo-mediano: 4rem;
+  --tamano-avatar-cliente: 7.5rem;
   --tamano-logo-configuracion: 9rem;
   --tamano-logo-grande: 12rem;
   --tamano-boton-sesion: 2.75rem;

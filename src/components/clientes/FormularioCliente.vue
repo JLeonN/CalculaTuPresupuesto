@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import {
   crearLocal,
   crearTelefono,
@@ -13,6 +13,7 @@ import {
 const props = defineProps<{
   cliente: Cliente | undefined;
   guardando: boolean;
+  agregarLocalAlAbrir?: boolean;
 }>();
 
 const emitir = defineEmits<{
@@ -29,6 +30,7 @@ const mostrarDatosAdicionales = ref(false);
 const telefonoPrincipalId = ref('');
 const idLocalPendienteEliminar = ref<string | null>(null);
 const mostrarConfirmacionEliminarLocal = ref(false);
+const seccionLocales = ref<HTMLElement | null>(null);
 
 const esEdicion = computed(() => props.cliente !== undefined);
 
@@ -37,7 +39,13 @@ function cargarDatosCliente(cliente: Cliente | undefined): void {
   telefonos.value = (cliente?.telefonos ?? [crearTelefono()]).map((telefono) => ({
     ...telefono,
   }));
-  locales.value = (cliente?.locales ?? [crearLocal()]).map((local) => ({ ...local }));
+  const localesGuardados = cliente?.locales ?? [];
+  locales.value = localesGuardados.length
+    ? localesGuardados.map((local) => ({ ...local }))
+    : [crearLocal()];
+  if (props.agregarLocalAlAbrir && localesGuardados.length > 0) {
+    locales.value.push(crearLocal());
+  }
   correo.value = cliente?.correo ?? '';
   notas.value = cliente?.notas ?? '';
   telefonoPrincipalId.value =
@@ -46,6 +54,19 @@ function cargarDatosCliente(cliente: Cliente | undefined): void {
 }
 
 watch(() => props.cliente, cargarDatosCliente, { immediate: true });
+
+onMounted(async () => {
+  if (props.agregarLocalAlAbrir) {
+    await nextTick();
+    const campoNuevoLocal = seccionLocales.value?.querySelector<HTMLInputElement>(
+      '.bloque-repetible:last-child input',
+    );
+    requestAnimationFrame(() => {
+      campoNuevoLocal?.focus();
+      campoNuevoLocal?.scrollIntoView({ block: 'center' });
+    });
+  }
+});
 
 function agregarTelefono(): void {
   const telefono = crearTelefono();
@@ -183,7 +204,7 @@ function guardarCliente(): void {
         </div>
       </section>
 
-      <section class="seccion-formulario" aria-labelledby="titulo-locales">
+      <section ref="seccionLocales" class="seccion-formulario" aria-labelledby="titulo-locales">
         <div class="encabezado-seccion-formulario">
           <div>
             <p class="etiqueta-seccion">Lugar de trabajo</p>

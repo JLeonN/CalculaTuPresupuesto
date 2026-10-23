@@ -14,6 +14,7 @@ const cliente = ref<Cliente>();
 const clienteNoEncontrado = ref(false);
 const cargandoCliente = ref(false);
 const esEdicion = computed(() => typeof ruta.params.idCliente === 'string');
+const agregarLocalAlAbrir = computed(() => ruta.query.agregarLocal === '1');
 
 onMounted(async () => {
   cargandoCliente.value = esEdicion.value;
@@ -113,6 +114,7 @@ function cancelar(): void {
         :key="cliente?.id ?? 'nuevo-cliente'"
         :cliente="cliente"
         :guardando="clientesStore.guardando"
+        :agregar-local-al-abrir="agregarLocalAlAbrir"
         @guardar="guardarCliente"
         @cancelar="cancelar"
       />
