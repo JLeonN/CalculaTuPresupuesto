@@ -94,40 +94,46 @@ async function eliminarCliente(): Promise<void> {
       />
 
       <section v-if="cliente" class="detalle-cliente">
-        <q-btn
-          class="boton-secundario detalle-cliente__volver"
-          flat
-          no-caps
-          icon="arrow_back"
-          label="Volver a clientes"
-          to="/clientes"
-        />
-
         <header class="encabezado-detalle-cliente">
-          <div class="encabezado-detalle-cliente__perfil">
-            <div class="encabezado-detalle-cliente__avatar" aria-hidden="true">
-              {{ inicialesCliente }}
-            </div>
-            <div class="encabezado-detalle-cliente__datos">
-              <p class="etiqueta-seccion">Ficha del cliente</p>
-              <h1 class="titulo-pagina">{{ cliente.nombre }}</h1>
-              <p v-if="telefonoPrincipal" class="encabezado-detalle-cliente__telefono">
-                <q-icon name="phone" aria-hidden="true" />
-                {{ telefonoPrincipal.numero }}
-              </p>
-              <p v-else class="texto-secundario encabezado-detalle-cliente__telefono">
-                Sin teléfono principal
-              </p>
-            </div>
+          <div class="encabezado-detalle-cliente__fila-superior">
+            <p class="etiqueta-seccion">Ficha del cliente</p>
+            <q-btn
+              class="boton-secundario boton-volver-adaptable"
+              flat
+              no-caps
+              icon="arrow_back"
+              aria-label="Volver a clientes"
+              to="/clientes"
+            >
+              <span class="boton-volver-adaptable__completo">Volver a clientes</span>
+              <span class="boton-volver-adaptable__corto">Volver</span>
+            </q-btn>
           </div>
-          <q-btn
-            class="boton-accion-principal encabezado-detalle-cliente__editar"
-            unelevated
-            no-caps
-            icon="edit"
-            label="Editar cliente"
-            :to="`/clientes/${cliente.id}/editar`"
-          />
+          <div class="encabezado-detalle-cliente__principal">
+            <div class="encabezado-detalle-cliente__perfil">
+              <div class="encabezado-detalle-cliente__avatar" aria-hidden="true">
+                {{ inicialesCliente }}
+              </div>
+              <div class="encabezado-detalle-cliente__datos">
+                <h1 class="titulo-pagina">{{ cliente.nombre }}</h1>
+                <p v-if="telefonoPrincipal" class="encabezado-detalle-cliente__telefono">
+                  <q-icon name="phone" aria-hidden="true" />
+                  {{ telefonoPrincipal.numero }}
+                </p>
+                <p v-else class="texto-secundario encabezado-detalle-cliente__telefono">
+                  Sin teléfono principal
+                </p>
+              </div>
+            </div>
+            <q-btn
+              class="boton-accion-principal encabezado-detalle-cliente__editar"
+              unelevated
+              no-caps
+              icon="edit"
+              label="Editar cliente"
+              :to="`/clientes/${cliente.id}/editar`"
+            />
+          </div>
         </header>
 
         <div class="detalle-cliente__columnas">

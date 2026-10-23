@@ -541,15 +541,15 @@ function restablecerFechaPresupuesto(): void {
           </div>
           <q-btn
             v-if="!esNuevo"
-            class="boton-secundario encabezado-nuevo-presupuesto__volver"
+            class="boton-secundario boton-volver-adaptable"
             flat
             no-caps
             icon="arrow_back"
             aria-label="Volver a presupuestos"
             to="/presupuestos"
           >
-            <span class="encabezado-nuevo-presupuesto__volver-completo">Volver a presupuestos</span>
-            <span class="encabezado-nuevo-presupuesto__volver-corto">Volver</span>
+            <span class="boton-volver-adaptable__completo">Volver a presupuestos</span>
+            <span class="boton-volver-adaptable__corto">Volver</span>
           </q-btn>
         </div>
         <p class="texto-secundario encabezado-nuevo-presupuesto__descripcion">

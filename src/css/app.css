@@ -639,6 +639,20 @@ input[type='number']::-webkit-outer-spin-button {
   padding-block: var(--espaciado-mediano) var(--espaciado-extra-grande);
 }
 
+.encabezado-detalle-cliente {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  container-type: inline-size;
+}
+
+.encabezado-detalle-cliente__fila-superior,
+.encabezado-detalle-cliente__principal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaciado-mediano);
+}
+
 .encabezado-detalle-cliente__perfil {
   display: flex;
   align-items: center;
@@ -895,10 +909,6 @@ input[type='number']::-webkit-outer-spin-button {
 .detalle-cliente {
   display: grid;
   gap: var(--espaciado-grande);
-}
-
-.detalle-cliente__volver {
-  justify-self: start;
 }
 
 .detalle-cliente__columnas {
@@ -1317,13 +1327,13 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 767px) {
-  .encabezado-detalle-cliente {
+  .encabezado-detalle-cliente__principal {
     align-items: stretch;
     flex-direction: column;
   }
 
   .encabezado-detalle-cliente__editar {
-    align-self: flex-start;
+    align-self: flex-end;
   }
 
   .zona-peligro-cliente > .q-btn {
@@ -1380,31 +1390,31 @@ input[type='number']::-webkit-outer-spin-button {
   min-width: 0;
 }
 
-.encabezado-nuevo-presupuesto__volver {
+.boton-volver-adaptable {
   flex: 0 0 auto;
 }
 
-.encabezado-nuevo-presupuesto__volver-corto {
+.boton-volver-adaptable__corto {
   display: none;
 }
 
-/* Cortes locales según el espacio real que ocupan el título y las etiquetas del botón. */
-@container encabezado-nuevo-presupuesto (max-width: 24rem) {
-  .encabezado-nuevo-presupuesto__volver-completo {
+/* El texto del botón se adapta al ancho real de cada encabezado. */
+@container (max-width: 24rem) {
+  .boton-volver-adaptable__completo {
     display: none;
   }
 
-  .encabezado-nuevo-presupuesto__volver-corto {
+  .boton-volver-adaptable__corto {
     display: inline;
   }
 }
 
-@container encabezado-nuevo-presupuesto (max-width: 17rem) {
-  .encabezado-nuevo-presupuesto__volver-corto {
+@container (max-width: 17rem) {
+  .boton-volver-adaptable__corto {
     display: none;
   }
 
-  .encabezado-nuevo-presupuesto__volver .q-icon {
+  .boton-volver-adaptable .q-icon {
     margin-right: 0;
   }
 }
