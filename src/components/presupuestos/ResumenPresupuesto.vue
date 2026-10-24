@@ -12,6 +12,12 @@ import {
   type LineaPresupuesto,
 } from '@/dominio/presupuestos';
 
+const FACTOR_REDONDEO_IMPORTES = 100;
+
+function convertirACentavos(importe: number): number {
+  return Math.round((importe + Number.EPSILON) * FACTOR_REDONDEO_IMPORTES);
+}
+
 const props = defineProps<{
   lineas: LineaPresupuesto[];
   monedaPrincipal: Moneda;
@@ -48,6 +54,16 @@ const totalManoObraYTraslado = computed(() =>
 );
 const totalMateriales = computed(() =>
   calcularTotalMateriales(props.lineas, moneda.value, porcentajeAdicionalMateriales.value),
+);
+const totalMaterialesSinAdicional = computed(() =>
+  convertirACentavos(calcularTotalMateriales(props.lineas, moneda.value, 0)) /
+  FACTOR_REDONDEO_IMPORTES,
+);
+const importeAdicionalMateriales = computed(
+  () =>
+    (convertirACentavos(totalMateriales.value) -
+      convertirACentavos(totalMaterialesSinAdicional.value)) /
+    FACTOR_REDONDEO_IMPORTES,
 );
 const total = computed(() =>
   calcularTotalPresupuesto(props.lineas, moneda.value, porcentajeAdicionalMateriales.value),
@@ -130,6 +146,20 @@ const opcionesMonedaPresupuesto = computed(() =>
         <span>Materiales</span>
         <strong>{{ formatearImporte(totalMateriales, moneda) }}</strong>
       </div>
+      <Transition name="desglose-materiales">
+        <div v-if="porcentajeAdicionalMateriales > 0" class="resumen-presupuesto__desglose">
+          <div class="resumen-presupuesto__desglose-contenido">
+            <div class="resumen-presupuesto__importe resumen-presupuesto__importe--desglose">
+              <span>Materiales sin adicional</span>
+              <strong>{{ formatearImporte(totalMaterialesSinAdicional, moneda) }}</strong>
+            </div>
+            <div class="resumen-presupuesto__importe resumen-presupuesto__importe--desglose">
+              <span>Adicional ({{ porcentajeAdicionalMateriales }} %)</span>
+              <strong>{{ formatearImporte(importeAdicionalMateriales, moneda) }}</strong>
+            </div>
+          </div>
+        </div>
+      </Transition>
       <div class="resumen-presupuesto__importe resumen-presupuesto__importe--total">
         <span>Total</span>
         <strong>{{ formatearImporte(total, moneda) }}</strong>
