@@ -12,6 +12,16 @@
 - Toda comunicación y documentación propia debe escribirse en español natural y UTF-8.
 - Preferir respuestas cortas, claras y directas, con una recomendación práctica.
 
+## Flujo de trabajo
+
+- Antes de modificar código, revisá el proyecto y los archivos relacionados.
+- Explicame brevemente qué entendiste, qué encontraste y cómo pensás resolverlo.
+- Esperá mi aprobación explícita antes de implementar.
+- Cuando apruebe la implementación, hacé los cambios y contame qué quedó hecho.
+- No ejecutes la aplicación, pruebas, compilaciones ni linters, salvo que yo te lo pida explícitamente.
+- Yo voy a probar el resultado.
+- Si encontrás un riesgo o una decisión importante durante el trabajo, explicámelo de forma breve y proponé una solución práctica.
+
 ## Stack y arquitectura
 
 - Usar Quasar CLI con Vue 3, TypeScript estricto, Vite, Vue Router, Pinia y Composition API mediante `<script setup>`.
@@ -39,5 +49,4 @@
 
 ## Cierre de tareas
 
-- Ejecutar las validaciones proporcionales al cambio, incluyendo lint, TypeScript y build cuando corresponda.
-- Informar pruebas realizadas, bloqueos reales y próximos pasos.
+- Informar los cambios realizados, las validaciones solicitadas por Leo, los bloqueos reales y los próximos pasos.
