@@ -943,8 +943,16 @@ input[type='number']::-webkit-outer-spin-button {
   min-height: var(--alto-tarjeta-detalle-cliente);
 }
 
+.tarjeta-detalle-cliente--locales {
+  padding: var(--espaciado-mediano);
+}
+
 .tarjeta-detalle-cliente .titulo-seccion {
   margin-top: var(--espaciado-grande);
+}
+
+.tarjeta-detalle-cliente--locales .titulo-seccion {
+  margin-top: var(--espaciado-pequeno);
 }
 
 .tarjeta-detalle-cliente__descripcion {
@@ -981,6 +989,10 @@ input[type='number']::-webkit-outer-spin-button {
 
 .fila-detalle-cliente__datos strong {
   overflow-wrap: anywhere;
+}
+
+.fila-detalle-cliente__datos .insignia-principal {
+  justify-self: start;
 }
 
 .fila-detalle-cliente__accion {
@@ -1028,11 +1040,29 @@ input[type='number']::-webkit-outer-spin-button {
 
 .locales-cliente__pestanas {
   max-width: 100%;
-  margin-block: var(--espaciado-grande) var(--espaciado-mediano);
+  margin-block: var(--espaciado-mediano) var(--espaciado-pequeno);
+}
+
+.locales-cliente__pestanas .q-tabs__content {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: var(--espaciado-pequeno);
 }
 
 .locales-cliente__pestanas .q-tab {
-  max-width: var(--ancho-selector-formato-documento);
+  max-width: var(--ancho-pestana-local);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-mediano);
+  background: var(--color-superficie-secundaria);
+}
+
+.locales-cliente__pestanas .q-tab--active {
+  border-color: var(--color-accion-borde);
+  background: var(--color-accion-suave);
+}
+
+.locales-cliente__pestanas .q-tab__indicator {
+  display: none;
 }
 
 .locales-cliente__pestanas .q-tab__label {
@@ -1051,7 +1081,7 @@ input[type='number']::-webkit-outer-spin-button {
 .locales-cliente__paneles .q-tab-panel {
   display: flex;
   align-items: flex-start;
-  padding: var(--espaciado-mediano) 0;
+  padding: var(--espaciado-pequeno) 0;
   gap: var(--espaciado-mediano);
 }
 
@@ -1068,6 +1098,15 @@ input[type='number']::-webkit-outer-spin-button {
   margin: var(--espaciado-pequeno) 0 0;
   color: var(--color-texto-secundario);
   overflow-wrap: anywhere;
+}
+
+.tarjeta-detalle-cliente--locales .locales-cliente__paneles p {
+  margin-top: 0;
+}
+
+.tarjeta-detalle-cliente--locales .contenido-local-cliente,
+.tarjeta-detalle-cliente--locales .lista-detalle-cliente {
+  gap: var(--espaciado-pequeno);
 }
 
 .dato-editable-cliente {

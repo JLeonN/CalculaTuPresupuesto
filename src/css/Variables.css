@@ -84,6 +84,7 @@
   --ancho-selector-moneda: 22rem;
   --ancho-selector-moneda-denso: 15rem;
   --ancho-selector-formato-documento: 10rem;
+  --ancho-pestana-local: 12rem;
   --tamano-perilla-formato-documento: 2.5rem;
   --columnas-tabla-materiales: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr)
     var(--ancho-columna-accion-material);

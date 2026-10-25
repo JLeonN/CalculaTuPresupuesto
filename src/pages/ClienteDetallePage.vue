@@ -329,10 +329,13 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                       :options="ETIQUETAS_TELEFONO"
                     />
                   </template>
-                  <template v-else
-                    ><strong>{{ telefono.numero }}</strong
-                    ><span>{{ telefono.etiqueta }}</span></template
-                  >
+                  <template v-else>
+                    <strong>{{ telefono.numero }}</strong>
+                    <span>{{ telefono.etiqueta }}</span>
+                    <q-badge v-if="!editando && telefono.esPrincipal" class="insignia-principal">
+                      Principal
+                    </q-badge>
+                  </template>
                 </div>
                 <template v-if="editando && borrador">
                   <q-radio
@@ -358,9 +361,6 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                   />
                 </template>
                 <template v-else>
-                  <q-badge v-if="telefono.esPrincipal" class="insignia-principal"
-                    >Principal</q-badge
-                  >
                   <EnlaceWhatsapp
                     class="fila-detalle-cliente__accion"
                     :nombre-cliente="cliente.nombre"
@@ -450,7 +450,6 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                       />
                     </div>
                     <div class="lista-detalle-cliente">
-                      <p class="texto-secundario">Teléfonos del local</p>
                       <article
                         v-for="telefono in editando
                           ? local.telefonos
@@ -484,10 +483,16 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                               :options="ETIQUETAS_TELEFONO"
                             />
                           </template>
-                          <template v-else
-                            ><strong>{{ telefono.numero }}</strong
-                            ><span>{{ telefono.etiqueta }}</span></template
-                          >
+                          <template v-else>
+                            <strong>{{ telefono.numero }}</strong>
+                            <span>{{ telefono.etiqueta }}</span>
+                            <q-badge
+                              v-if="!editando && telefono.esPrincipal"
+                              class="insignia-principal"
+                            >
+                              Principal
+                            </q-badge>
+                          </template>
                         </div>
                         <template v-if="editando">
                           <q-radio
@@ -513,9 +518,6 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                           />
                         </template>
                         <template v-else>
-                          <q-badge v-if="telefono.esPrincipal" class="insignia-principal"
-                            >Principal</q-badge
-                          >
                           <EnlaceWhatsapp
                             :nombre-cliente="cliente.nombre"
                             :numero="telefono.numero"
