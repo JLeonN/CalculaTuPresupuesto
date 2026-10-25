@@ -38,14 +38,14 @@ Pablo necesita consultar desde la ficha de un cliente todos los presupuestos vin
 
 ## Mapa de cambios
 
-| Archivo | Acción | Símbolos principales | Propósito |
-| --- | --- | --- | --- |
-| `src/router/routes.ts` | Modificar | `routes`, ruta `historial-presupuestos-cliente` | Abrir la lista del cliente mediante `/clientes/:idCliente/presupuestos`. |
-| `src/pages/ClienteDetallePage.vue` | Modificar | `presupuestosStore`, `presupuestosDelCliente`, `cargarPresupuestos`, encabezado | Condicionar «Ver presupuestos», ofrecer «Nuevo presupuesto» y quitar el teléfono duplicado. |
-| `src/pages/PresupuestosPage.vue` | Modificar | `esHistorialCliente`, `clienteActual`, `presupuestosFiltrados` | Reutilizar la lista existente para un único cliente sin alterar la lista general. |
-| `src/pages/NuevoPresupuestoPage.vue` | Modificar | `inicializarPantalla`, `restablecerFormularioNuevo`, `confirmarCancelacion`, `guardarNuevoYFinalizar` | Completar el cliente indicado por la ruta y devolverlo a su contexto. |
-| `src/css/app.css` | Modificar | `.encabezado-detalle-cliente`, `.acciones-encabezado-detalle`, `.encabezado-modulo-presupuestos` | Distribución y espaciado responsivos. |
-| `src/css/Variables.css` | Modificar solo si hace falta un token reutilizable | Variables semánticas | Centralizar cualquier valor visual nuevo; preferir tokens actuales. |
+| Archivo                              | Acción                                             | Símbolos principales                                                                                  | Propósito                                                                                   |
+| ------------------------------------ | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `src/router/routes.ts`               | Modificar                                          | `routes`, ruta `historial-presupuestos-cliente`                                                       | Abrir la lista del cliente mediante `/clientes/:idCliente/presupuestos`.                    |
+| `src/pages/ClienteDetallePage.vue`   | Modificar                                          | `presupuestosStore`, `presupuestosDelCliente`, `cargarPresupuestos`, encabezado                       | Condicionar «Ver presupuestos», ofrecer «Nuevo presupuesto» y quitar el teléfono duplicado. |
+| `src/pages/PresupuestosPage.vue`     | Modificar                                          | `esHistorialCliente`, `clienteActual`, `presupuestosFiltrados`                                        | Reutilizar la lista existente para un único cliente sin alterar la lista general.           |
+| `src/pages/NuevoPresupuestoPage.vue` | Modificar                                          | `inicializarPantalla`, `restablecerFormularioNuevo`, `confirmarCancelacion`, `guardarNuevoYFinalizar` | Completar el cliente indicado por la ruta y devolverlo a su contexto.                       |
+| `src/css/app.css`                    | Modificar                                          | `.encabezado-detalle-cliente`, `.acciones-encabezado-detalle`, `.encabezado-modulo-presupuestos`      | Distribución y espaciado responsivos.                                                       |
+| `src/css/Variables.css`              | Modificar solo si hace falta un token reutilizable | Variables semánticas                                                                                  | Centralizar cualquier valor visual nuevo; preferir tokens actuales.                         |
 
 ## FASE 1: Habilitar la consulta de presupuestos por cliente
 
@@ -108,7 +108,7 @@ Dejar escenarios concretos para que Leo compruebe el cambio cuando autorice la i
 
 ### Validaciones técnicas sujetas a solicitud de Leo
 
-- [ ] Si Leo lo pide expresamente, ejecutar `npm run lint:check`, `npm run typecheck` y `npm run build`; corregir solo errores introducidos por este cambio. No ejecutar estos comandos por defecto, conforme a `AGENTS.md`.
+- [x] A pedido de Leo durante el release, ejecutar `npm run lint:check`, `npm run typecheck` y la compilación Android que incluye la interfaz; corregir los errores de formato detectados.
 
 ### Pruebas funcionales para Leo
 
@@ -133,10 +133,10 @@ Dejar escenarios concretos para que Leo compruebe el cambio cuando autorice la i
 - [ ] Fase Testing
 
 Fecha de creación: 24 de octubre de 2026
-Fecha de última actualización: 24 de octubre de 2026
+Fecha de última actualización: 25 de octubre de 2026
 Estado: EN PROCESO
 
 ## Avance de implementación
 
 - La consulta por ID, la navegación contextual, el autocompletado y el ajuste de espaciado ya están implementados.
-- Queda pendiente la revisión visual responsiva y las pruebas funcionales de Leo. No se ejecutaron la aplicación, pruebas, compilaciones ni linters por la restricción de `AGENTS.md`.
+- Queda pendiente la revisión visual responsiva y las pruebas funcionales de Leo. Durante el release `v0.0.5`, Leo autorizó las validaciones: pasaron `npm run lint:check`, `npm run typecheck` y `npm run build:android`.

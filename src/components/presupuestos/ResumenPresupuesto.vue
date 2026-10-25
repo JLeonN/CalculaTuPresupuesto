@@ -55,9 +55,10 @@ const totalManoObraYTraslado = computed(() =>
 const totalMateriales = computed(() =>
   calcularTotalMateriales(props.lineas, moneda.value, porcentajeAdicionalMateriales.value),
 );
-const totalMaterialesSinAdicional = computed(() =>
-  convertirACentavos(calcularTotalMateriales(props.lineas, moneda.value, 0)) /
-  FACTOR_REDONDEO_IMPORTES,
+const totalMaterialesSinAdicional = computed(
+  () =>
+    convertirACentavos(calcularTotalMateriales(props.lineas, moneda.value, 0)) /
+    FACTOR_REDONDEO_IMPORTES,
 );
 const importeAdicionalMateriales = computed(
   () =>

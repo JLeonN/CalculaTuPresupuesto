@@ -125,19 +125,10 @@ function formatearFecha(fecha: string): string {
       >
         <p class="texto-secundario">No se pudo mostrar la lista de presupuestos.</p>
       </section>
-      <section
-        v-else-if="esHistorialCliente && !clienteActual"
-        class="estado-vacio-presupuestos"
-      >
+      <section v-else-if="esHistorialCliente && !clienteActual" class="estado-vacio-presupuestos">
         <q-icon name="person_off" aria-hidden="true" />
         <h2 class="titulo-seccion">No encontramos este cliente</h2>
-        <q-btn
-          class="boton-secundario"
-          flat
-          no-caps
-          label="Volver a clientes"
-          to="/clientes"
-        />
+        <q-btn class="boton-secundario" flat no-caps label="Volver a clientes" to="/clientes" />
       </section>
 
       <section

@@ -1,12 +1,19 @@
 {
-  "version": "0.0.4",
+  "version": "0.0.5",
   "mostrarActualizacion": true,
   "cambios": {
     "es-AR": [
       {
         "apartado": "Actualizaciones",
         "novedades": [
-          "Actualizamos información de configuración para mantener la aplicación preparada para las próximas mejoras."
+          "Desde la ficha de un cliente podés ver sus presupuestos y crear uno nuevo con nombre y teléfono ya cargados.",
+          "Ahora podés editar los datos del cliente en su ficha y guardar varios teléfonos para cada local.",
+          "Cada presupuesto tiene una lista de compras para marcar materiales comprados y ajustar sus datos.",
+          "Podés aplicar un porcentaje adicional a los materiales y ver su desglose en el ticket.",
+          "Al agregar un material, podés elegir entre sus precios guardados.",
+          "Podés elegir un presupuesto completo o resumido antes de compartirlo o descargarlo.",
+          "La búsqueda de presupuestos encuentra nombres, teléfonos y fechas con más facilidad.",
+          "Reorganizamos botones, tarjetas y campos para que sean más cómodos de usar en el celular."
         ]
       }
     ]
