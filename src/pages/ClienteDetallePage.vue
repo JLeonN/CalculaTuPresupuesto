@@ -385,7 +385,18 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
             aria-labelledby="titulo-locales-cliente"
           >
             <p class="etiqueta-seccion">Lugar de trabajo</p>
-            <h2 id="titulo-locales-cliente" class="titulo-seccion">Locales</h2>
+            <div class="locales-cliente__encabezado">
+              <h2 id="titulo-locales-cliente" class="titulo-seccion">Locales</h2>
+              <q-btn
+                v-if="editando"
+                class="boton-secundario locales-cliente__agregar"
+                flat
+                no-caps
+                icon="add"
+                label="Agregar otro local"
+                @click="agregarLocal"
+              />
+            </div>
             <div v-if="!locales.length" class="locales-cliente__vacio">
               <q-icon name="storefront" aria-hidden="true" />
               <p>Sin locales registrados</p>
@@ -548,15 +559,6 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                 </q-tab-panel>
               </q-tab-panels>
             </template>
-            <q-btn
-              v-if="editando"
-              class="boton-secundario locales-cliente__agregar"
-              flat
-              no-caps
-              icon="add"
-              label="Agregar otro local"
-              @click="agregarLocal"
-            />
           </section>
         </div>
         <section v-if="editando || datos.correo || datos.notas" class="tarjeta-detalle-cliente">

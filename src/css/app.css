@@ -951,8 +951,21 @@ input[type='number']::-webkit-outer-spin-button {
   margin-top: var(--espaciado-grande);
 }
 
-.tarjeta-detalle-cliente--locales .titulo-seccion {
+.locales-cliente__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   margin-top: var(--espaciado-pequeno);
+  gap: var(--espaciado-pequeno);
+}
+
+.tarjeta-detalle-cliente--locales .locales-cliente__encabezado .titulo-seccion {
+  margin-top: 0;
+}
+
+.locales-cliente__encabezado .locales-cliente__agregar {
+  align-self: center;
 }
 
 .tarjeta-detalle-cliente__descripcion {
