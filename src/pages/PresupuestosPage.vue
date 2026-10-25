@@ -1,23 +1,49 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import BuscadorListado from '@/components/BuscadorListado.vue';
 import TextoDesplazable from '@/components/TextoDesplazable.vue';
 import InsigniaEstadoPresupuesto from '@/components/presupuestos/InsigniaEstadoPresupuesto.vue';
-import { calcularTotalPresupuesto } from '@/dominio/presupuestos';
 import { formatearImporte } from '@/dominio/monedas';
+import { calcularTotalPresupuesto } from '@/dominio/presupuestos';
+import { useClientesStore } from '@/stores/clientes';
 import { usePresupuestosStore } from '@/stores/presupuestos';
 
+const ruta = useRoute();
 const presupuestosStore = usePresupuestosStore();
+const clientesStore = useClientesStore();
 const terminoBusqueda = ref<string | null>('');
-const presupuestosFiltrados = computed(() =>
-  presupuestosStore.buscarPresupuestos(terminoBusqueda.value ?? ''),
+const esHistorialCliente = computed(() => ruta.name === 'historial-presupuestos-cliente');
+const clienteActual = computed(() =>
+  esHistorialCliente.value
+    ? clientesStore.obtenerClientePorId(String(ruta.params.idCliente))
+    : undefined,
+);
+const presupuestosFiltrados = computed(() => {
+  const encontrados = presupuestosStore.buscarPresupuestos(terminoBusqueda.value ?? '');
+  return esHistorialCliente.value
+    ? encontrados.filter(
+        (presupuesto) =>
+          presupuesto.destinatario.tipo === 'guardado' &&
+          presupuesto.destinatario.idCliente === clienteActual.value?.id,
+      )
+    : encontrados;
+});
+const rutaNuevoPresupuesto = computed(() =>
+  esHistorialCliente.value && clienteActual.value
+    ? `/presupuestos/nuevo?idCliente=${encodeURIComponent(clienteActual.value.id)}`
+    : '/presupuestos/nuevo',
 );
 
-onMounted(() => {
-  if (presupuestosStore.presupuestos.length === 0) {
+watch(
+  () => [ruta.name, ruta.params.idCliente],
+  () => {
+    terminoBusqueda.value = '';
     void presupuestosStore.cargarPresupuestos();
-  }
-});
+    if (esHistorialCliente.value) void clientesStore.cargarClientes();
+  },
+  { immediate: true },
+);
 
 function formatearFecha(fecha: string): string {
   const [anio, mes, dia] = fecha.split('-');
@@ -31,36 +57,88 @@ function formatearFecha(fecha: string): string {
       <header class="encabezado-modulo-presupuestos">
         <div>
           <p class="etiqueta-seccion">Trabajos cotizados</p>
-          <h1 class="titulo-pagina">Presupuestos</h1>
+          <h1 class="titulo-pagina">
+            {{
+              esHistorialCliente && clienteActual
+                ? `Presupuestos de ${clienteActual.nombre}`
+                : 'Presupuestos'
+            }}
+          </h1>
           <p class="texto-secundario encabezado-modulo-presupuestos__descripcion">
-            Consultá los presupuestos guardados y volvé a abrirlos cuando lo necesites.
+            {{
+              esHistorialCliente
+                ? 'Consultá los presupuestos vinculados con este cliente.'
+                : 'Consultá los presupuestos guardados y volvé a abrirlos cuando lo necesites.'
+            }}
           </p>
         </div>
-        <q-btn
-          class="boton-accion-principal"
-          unelevated
-          no-caps
-          icon="add"
-          label="Nuevo presupuesto"
-          to="/presupuestos/nuevo"
-        />
+        <div class="encabezado-modulo-presupuestos__acciones">
+          <q-btn
+            v-if="esHistorialCliente && clienteActual"
+            class="boton-secundario boton-volver-adaptable"
+            flat
+            no-caps
+            icon="arrow_back"
+            label="Volver al cliente"
+            :to="`/clientes/${encodeURIComponent(clienteActual.id)}`"
+          />
+          <q-btn
+            v-if="!esHistorialCliente || clienteActual"
+            class="boton-accion-principal"
+            unelevated
+            no-caps
+            icon="add"
+            label="Nuevo presupuesto"
+            :to="rutaNuevoPresupuesto"
+          />
+        </div>
       </header>
 
       <BuscadorListado
+        v-if="!esHistorialCliente || clienteActual"
         v-model="terminoBusqueda"
         class="buscador-presupuestos"
-        etiqueta="Buscar por cliente, teléfono o fecha"
+        :etiqueta="
+          esHistorialCliente ? 'Buscar en sus presupuestos' : 'Buscar por cliente, teléfono o fecha'
+        "
       />
 
       <q-banner v-if="presupuestosStore.error" class="aviso-error" rounded>
         <template #avatar><q-icon name="error_outline" /></template>
         {{ presupuestosStore.error }}
       </q-banner>
+      <q-banner v-if="esHistorialCliente && clientesStore.error" class="aviso-error" rounded>
+        <template #avatar><q-icon name="error_outline" /></template>
+        {{ clientesStore.error }}
+      </q-banner>
 
-      <div v-if="presupuestosStore.cargando" class="estado-presupuestos">
+      <div
+        v-if="presupuestosStore.cargando || (esHistorialCliente && clientesStore.cargando)"
+        class="estado-presupuestos"
+      >
         <q-spinner class="indicador-carga" size="2rem" />
         <span>Cargando presupuestos…</span>
       </div>
+      <section
+        v-else-if="presupuestosStore.error || (esHistorialCliente && clientesStore.error)"
+        class="estado-vacio-presupuestos"
+      >
+        <p class="texto-secundario">No se pudo mostrar la lista de presupuestos.</p>
+      </section>
+      <section
+        v-else-if="esHistorialCliente && !clienteActual"
+        class="estado-vacio-presupuestos"
+      >
+        <q-icon name="person_off" aria-hidden="true" />
+        <h2 class="titulo-seccion">No encontramos este cliente</h2>
+        <q-btn
+          class="boton-secundario"
+          flat
+          no-caps
+          label="Volver a clientes"
+          to="/clientes"
+        />
+      </section>
 
       <section
         v-else-if="presupuestosFiltrados.length"
@@ -155,14 +233,22 @@ function formatearFecha(fecha: string): string {
         <q-icon name="request_quote" aria-hidden="true" />
         <h2 class="titulo-seccion">
           {{
-            terminoBusqueda ? 'No encontramos coincidencias' : 'Todavía no guardaste presupuestos'
+            terminoBusqueda
+              ? 'No encontramos coincidencias'
+              : esHistorialCliente
+                ? 'Este cliente todavía no tiene presupuestos'
+                : 'Todavía no guardaste presupuestos'
           }}
         </h2>
         <p class="texto-secundario">
           {{
             terminoBusqueda
-              ? 'Probá buscar por otro cliente, teléfono o fecha.'
-              : 'Creá el primer presupuesto para comenzar tu registro de trabajos.'
+              ? esHistorialCliente
+                ? 'Probá con otra búsqueda.'
+                : 'Probá buscar por otro cliente, teléfono o fecha.'
+              : esHistorialCliente
+                ? 'Creá un presupuesto para este cliente.'
+                : 'Creá el primer presupuesto para comenzar tu registro de trabajos.'
           }}
         </p>
         <q-btn
@@ -172,7 +258,7 @@ function formatearFecha(fecha: string): string {
           no-caps
           icon="add"
           label="Nuevo presupuesto"
-          to="/presupuestos/nuevo"
+          :to="rutaNuevoPresupuesto"
         />
       </section>
     </main>

@@ -9,19 +9,20 @@ import {
   crearTelefonoLocal,
   ETIQUETAS_TELEFONO,
   obtenerLocalesConDatos,
-  obtenerTelefonoPrincipal,
   obtenerTelefonosConNumero,
-  type Cliente,
   type DatosCliente,
   type LocalCliente,
   type TelefonoCliente,
 } from '@/dominio/clientes';
+import type { Presupuesto } from '@/dominio/presupuestos';
 import { useClientesStore } from '@/stores/clientes';
+import { usePresupuestosStore } from '@/stores/presupuestos';
 
 const ruta = useRoute();
 const router = useRouter();
 const $q = useQuasar();
 const clientesStore = useClientesStore();
+const presupuestosStore = usePresupuestosStore();
 const cargando = ref(true);
 const editando = ref(false);
 const borrador = ref<DatosCliente | null>(null);
@@ -33,6 +34,15 @@ const confirmarCliente = ref(false);
 const confirmarAbandono = ref(false);
 let resolverAbandono: ((confirmado: boolean) => void) | null = null;
 const cliente = computed(() => clientesStore.obtenerClientePorId(String(ruta.params.idCliente)));
+const presupuestosDelCliente = computed<Presupuesto[]>(() =>
+  cliente.value
+    ? presupuestosStore.presupuestosOrdenados.filter(
+        (presupuesto) =>
+          presupuesto.destinatario.tipo === 'guardado' &&
+          presupuesto.destinatario.idCliente === cliente.value?.id,
+      )
+    : [],
+);
 const datos = computed(() => borrador.value ?? cliente.value);
 const telefonos = computed(() =>
   editando.value
@@ -43,9 +53,6 @@ const locales = computed(() =>
   editando.value
     ? (borrador.value?.locales ?? [])
     : obtenerLocalesConDatos(cliente.value?.locales ?? []),
-);
-const telefonoPrincipal = computed(() =>
-  datos.value ? obtenerTelefonoPrincipal(datos.value as Cliente) : undefined,
 );
 const iniciales = computed(() =>
   (datos.value?.nombre.trim().split(/\s+/).slice(0, 2) ?? [])
@@ -198,7 +205,10 @@ watch(
 );
 onMounted(async () => {
   window.addEventListener('beforeunload', advertirCierre);
-  if (!clientesStore.clientes.length) await clientesStore.cargarClientes();
+  await Promise.all([
+    clientesStore.clientes.length ? Promise.resolve() : clientesStore.cargarClientes(),
+    presupuestosStore.cargarPresupuestos(),
+  ]);
   cargando.value = false;
 });
 onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre));
@@ -209,6 +219,10 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
     <main class="contenedor-principal contenedor-detalle-cliente">
       <q-banner v-if="clientesStore.error" class="aviso-error" rounded>
         <template #avatar><q-icon name="error_outline" /></template>{{ clientesStore.error }}
+      </q-banner>
+      <q-banner v-if="presupuestosStore.error" class="aviso-error" rounded>
+        <template #avatar><q-icon name="error_outline" /></template>
+        {{ presupuestosStore.error }}
       </q-banner>
       <div v-if="cargando" class="estado-clientes">
         <q-spinner class="indicador-carga" size="2rem" /><span>Cargando datos del cliente…</span>
@@ -257,12 +271,6 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                     @click="habilitarCampo('nombre')"
                   />
                 </div>
-                <p v-if="telefonoPrincipal" class="encabezado-detalle-cliente__telefono">
-                  <q-icon name="phone" aria-hidden="true" />{{ telefonoPrincipal.numero }}
-                </p>
-                <p v-else class="texto-secundario encabezado-detalle-cliente__telefono">
-                  Sin teléfono principal
-                </p>
               </div>
             </div>
             <div class="acciones-encabezado-detalle">
@@ -284,15 +292,40 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', advertirCierre)
                   :loading="clientesStore.guardando"
                 />
               </template>
-              <q-btn
-                v-else
-                class="boton-accion-principal encabezado-detalle-cliente__editar"
-                unelevated
-                no-caps
-                icon="edit"
-                label="Editar cliente"
-                @click="comenzarEdicion"
-              />
+              <template v-else>
+                <q-btn
+                  class="boton-accion-principal encabezado-detalle-cliente__editar"
+                  unelevated
+                  dense
+                  no-caps
+                  icon="edit"
+                  label="Editar cliente"
+                  @click="comenzarEdicion"
+                />
+                <q-btn
+                  v-if="
+                    !presupuestosStore.cargando &&
+                    !presupuestosStore.error &&
+                    presupuestosDelCliente.length
+                  "
+                  class="boton-secundario"
+                  flat
+                  dense
+                  no-caps
+                  icon="history"
+                  label="Ver presupuestos"
+                  :to="`/clientes/${encodeURIComponent(cliente.id)}/presupuestos`"
+                />
+                <q-btn
+                  class="boton-secundario"
+                  flat
+                  dense
+                  no-caps
+                  icon="add"
+                  label="Nuevo presupuesto"
+                  :to="`/presupuestos/nuevo?idCliente=${encodeURIComponent(cliente.id)}`"
+                />
+              </template>
             </div>
           </div>
         </header>

@@ -67,7 +67,7 @@ onMounted(() => {
 });
 
 onBeforeRouteLeave((destino) => {
-  if (destino.path === rutaRetorno.value) {
+  if (destino.fullPath === rutaRetorno.value) {
     presupuestosStore.marcarRetornoVistaPrevia(rutaRetorno.value);
   }
 });

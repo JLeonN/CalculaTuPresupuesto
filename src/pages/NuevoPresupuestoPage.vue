@@ -10,6 +10,7 @@ import SelectorFormatoDocumento from '@/components/presupuestos/SelectorFormatoD
 import FilaPresupuesto from '@/components/presupuestos/FilaPresupuesto.vue';
 import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue';
 import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorDestinatarioPresupuesto.vue';
+import { obtenerTelefonoPrincipal } from '@/dominio/clientes';
 import type { Material } from '@/dominio/materiales';
 import { MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
 import {
@@ -58,6 +59,7 @@ const presupuestosStore = usePresupuestosStore();
 
 const tipoDestinatario = ref<TipoDestinatario>('potencial');
 const idCliente = ref<string | null>(null);
+const idClienteOrigen = ref<string | null>(null);
 const nombreDestinatario = ref('');
 const telefonoDestinatario = ref('');
 const fechaPresupuesto = ref(obtenerFechaActualLocal());
@@ -124,6 +126,7 @@ watch(
 
 async function inicializarPantalla(): Promise<void> {
   cargandoPagina.value = true;
+  idClienteOrigen.value = null;
   presupuestoNoEncontrado.value = false;
   mostrarConfirmacionCancelar.value = false;
   errorAccion.value = null;
@@ -137,9 +140,18 @@ async function inicializarPantalla(): Promise<void> {
       esNuevo.value ? Promise.resolve() : presupuestosStore.cargarPresupuestos(),
     ]);
 
+    const idClienteConsultado = ruta.query.idCliente;
+    const clienteOrigen =
+      esNuevo.value &&
+      !clientesStore.error &&
+      typeof idClienteConsultado === 'string' &&
+      idClienteConsultado.trim()
+        ? clientesStore.obtenerClientePorId(idClienteConsultado)
+        : undefined;
+    idClienteOrigen.value = clienteOrigen?.id ?? null;
     const idPresupuestoActual = esNuevo.value ? null : String(ruta.params.idPresupuesto);
     const borradorRecuperado = presupuestosStore.consumirBorradorVistaPrevia(
-      ruta.path,
+      ruta.fullPath,
       idPresupuestoActual,
     );
 
@@ -151,6 +163,16 @@ async function inicializarPantalla(): Promise<void> {
       }
 
       restablecerFormularioNuevo();
+      if (clienteOrigen) {
+        tipoDestinatario.value = 'guardado';
+        idCliente.value = clienteOrigen.id;
+        nombreDestinatario.value = clienteOrigen.nombre;
+        telefonoDestinatario.value = obtenerTelefonoPrincipal(clienteOrigen)?.numero ?? '';
+        estadoInicial.value = serializarDatosFormulario();
+      } else if (typeof idClienteConsultado === 'string' && idClienteConsultado.trim()) {
+        errorAccion.value =
+          'No encontramos el cliente indicado. Elegí uno guardado o continuá como potencial.';
+      }
       return;
     }
 
@@ -307,7 +329,7 @@ function abrirVistaPrevia(): void {
   const idPresupuesto = presupuesto.value?.id ?? null;
   presupuestosStore.establecerBorradorVistaPrevia(
     obtenerDatosFormulario(),
-    ruta.path,
+    ruta.fullPath,
     idPresupuesto,
     estadoInicial.value,
   );
@@ -348,7 +370,9 @@ function solicitarCancelacion(): void {
 
 function confirmarCancelacion(): void {
   if (esNuevo.value) {
-    void router.replace('/');
+    void router.replace(
+      idClienteOrigen.value ? `/clientes/${encodeURIComponent(idClienteOrigen.value)}` : '/',
+    );
     return;
   }
 
@@ -371,7 +395,16 @@ async function guardarNuevoYFinalizar(): Promise<void> {
       position: 'top',
       classes: 'notificacion-exito',
     });
-    await router.replace('/presupuestos');
+    const clienteOrigenGuardado = idClienteOrigen.value;
+    const perteneceAlClienteOrigen =
+      clienteOrigenGuardado !== null &&
+      presupuesto.value.destinatario.tipo === 'guardado' &&
+      presupuesto.value.destinatario.idCliente === clienteOrigenGuardado;
+    await router.replace(
+      perteneceAlClienteOrigen
+        ? `/clientes/${encodeURIComponent(clienteOrigenGuardado)}/presupuestos`
+        : '/presupuestos',
+    );
   } catch (errorCapturado) {
     errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
   }

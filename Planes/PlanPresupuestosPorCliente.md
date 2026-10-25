@@ -55,13 +55,13 @@ El historial accesible desde una ficha muestra únicamente presupuestos realment
 
 ### Pasos de ejecución
 
-- [ ] Agregar en `src/router/routes.ts` la ruta hija `clientes/:idCliente/presupuestos` con nombre `historial-presupuestos-cliente`, antes de la ruta genérica de detalle de cliente, y reutilizar `PresupuestosPage.vue`.
+- [x] Agregar en `src/router/routes.ts` la ruta hija `clientes/:idCliente/presupuestos` con nombre `historial-presupuestos-cliente`, antes de la ruta genérica de detalle de cliente, y reutilizar `PresupuestosPage.vue`.
   - La ruta debe funcionar también al recargar o abrir un enlace directo.
-- [ ] Integrar `usePresupuestosStore` en `src/pages/ClienteDetallePage.vue` y cargar los presupuestos junto con los clientes al montar la ficha.
+- [x] Integrar `usePresupuestosStore` en `src/pages/ClienteDetallePage.vue` y cargar los presupuestos junto con los clientes al montar la ficha.
   - Definir `presupuestosDelCliente` como `computed<Presupuesto[]>`, derivado de `presupuestosStore.presupuestosOrdenados` y filtrado por `destinatario.tipo === 'guardado'` y `destinatario.idCliente === cliente.value?.id`.
   - Mostrar «Ver presupuestos» solo si existe `cliente`, terminó la carga sin error y `presupuestosDelCliente.length > 0`. Al pulsarlo, navegar a `/clientes/${cliente.id}/presupuestos`.
   - Mostrar el error de carga de presupuestos en la ficha para no interpretar un fallo como ausencia de historial. No mostrar un contador ni resultados antiguos de otro cliente mientras se carga.
-- [ ] Adaptar `src/pages/PresupuestosPage.vue` para reconocer `ruta.name === 'historial-presupuestos-cliente'` mediante `useRoute()` y consultar el cliente actual con `useClientesStore`.
+- [x] Adaptar `src/pages/PresupuestosPage.vue` para reconocer `ruta.name === 'historial-presupuestos-cliente'` mediante `useRoute()` y consultar el cliente actual con `useClientesStore`.
   - Mantener la lista general sin cambios funcionales en `/presupuestos`.
   - En contexto de cliente, cargar clientes y presupuestos si hace falta; derivar la lista del cliente por ID y aplicar la búsqueda existente únicamente dentro de ella. Mantener el orden actual por fecha.
   - Mostrar encabezado «Presupuestos de [nombre]», control «Volver al cliente», la tabla/tarjetas existentes y «Ver presupuesto» en cada fila. «Nuevo presupuesto» debe apuntar a `/presupuestos/nuevo?idCliente=${encodeURIComponent(cliente.id)}`.
@@ -76,13 +76,13 @@ La creación iniciada desde una ficha o su historial conserva la relación con e
 
 ### Pasos de ejecución
 
-- [ ] Agregar en modo lectura de `src/pages/ClienteDetallePage.vue` el botón «Nuevo presupuesto», visible aun cuando el cliente no tenga historial, con destino `/presupuestos/nuevo?idCliente=${encodeURIComponent(cliente.id)}`.
-- [ ] En `inicializarPantalla()` de `src/pages/NuevoPresupuestoPage.vue`, después de `cargarClientes()` y de `restablecerFormularioNuevo()`, leer `ruta.query.idCliente` solo cuando `esNuevo` y no se esté recuperando un borrador de vista previa.
+- [x] Agregar en modo lectura de `src/pages/ClienteDetallePage.vue` el botón «Nuevo presupuesto», visible aun cuando el cliente no tenga historial, con destino `/presupuestos/nuevo?idCliente=${encodeURIComponent(cliente.id)}`.
+- [x] En `inicializarPantalla()` de `src/pages/NuevoPresupuestoPage.vue`, después de `cargarClientes()` y de `restablecerFormularioNuevo()`, leer `ruta.query.idCliente` solo cuando `esNuevo` y no se esté recuperando un borrador de vista previa.
   - Aceptar únicamente un string no vacío que coincida con `clientesStore.obtenerClientePorId()`; ignorar arrays o valores inválidos.
   - Para un cliente existente, asignar `tipoDestinatario = 'guardado'`, `idCliente`, `nombreDestinatario = cliente.nombre` y `telefonoDestinatario = obtenerTelefonoPrincipal(cliente)?.numero ?? ''`. Actualizar `estadoInicial` después de completar los datos para que el formulario nuevo no se marque como modificado al abrirlo.
   - Respetar la edición posterior de nombre y teléfono dentro del presupuesto. No modificar el registro del cliente. Si no se pudo cargar clientes o el ID ya no existe, mostrar un aviso y evitar guardar una asociación inválida.
   - El botón normal de `/presupuestos/nuevo`, sin `idCliente`, debe continuar iniciando como «Potencial cliente».
-- [ ] Ajustar `confirmarCancelacion()` y `guardarNuevoYFinalizar()` solo para el flujo con cliente válido: al cancelar, volver a `/clientes/:idCliente`; al guardar, abrir `/clientes/:idCliente/presupuestos`. Conservar las rutas actuales en el flujo general y al editar presupuestos.
+- [x] Ajustar `confirmarCancelacion()` y `guardarNuevoYFinalizar()` solo para el flujo con cliente válido: al cancelar, volver a `/clientes/:idCliente`; al guardar, abrir `/clientes/:idCliente/presupuestos`. Conservar las rutas actuales en el flujo general y al editar presupuestos.
   - Comprobar que la ida y vuelta por vista previa restaura el borrador sin perder la asociación ni sobrescribir cambios del destinatario. Preservar el comportamiento de `consumirBorradorVistaPrevia()`.
 
 ## FASE 3: Compactar la ficha y ajustar ambas vistas al ancho disponible
@@ -93,11 +93,11 @@ Los botones se leen y se pulsan cómodamente en cualquier tamaño; Contacto comi
 
 ### Pasos de ejecución
 
-- [ ] Quitar en `src/pages/ClienteDetallePage.vue` el párrafo `.encabezado-detalle-cliente__telefono` bajo el nombre. Conservar intactos los teléfonos y WhatsApp de la tarjeta Contacto; retirar la variable `telefonoPrincipal` y sus estilos si dejan de tener consumidores.
-- [ ] En modo lectura de la ficha, colocar «Editar cliente» y «Ver presupuestos» en una misma fila visual cuando exista historial, y ubicar «Nuevo presupuesto» de forma visible sin comprimir los dos controles anteriores. En edición, conservar «Cancelar» y «Guardar cambios» sin accesos que puedan distraer o disparar una salida accidental.
+- [x] Quitar en `src/pages/ClienteDetallePage.vue` el párrafo `.encabezado-detalle-cliente__telefono` bajo el nombre. Conservar intactos los teléfonos y WhatsApp de la tarjeta Contacto; retirar la variable `telefonoPrincipal` y sus estilos si dejan de tener consumidores.
+- [x] En modo lectura de la ficha, colocar «Editar cliente» y «Ver presupuestos» en una misma fila visual cuando exista historial, y ubicar «Nuevo presupuesto» de forma visible sin comprimir los dos controles anteriores. En edición, conservar «Cancelar» y «Guardar cambios» sin accesos que puedan distraer o disparar una salida accidental.
   - Reducir el tamaño del botón «Editar cliente» mediante propiedades de Quasar y reglas específicas; conservar etiqueta completa y área táctil cómoda. No reducir fuente o icono por debajo de los tokens existentes.
   - En teléfono, permitir que los controles se adapten al ancho real: misma fila cuando quepan y distribución en filas si el nombre, la traducción o el ancho lo requieren; evitar cortes de texto y desplazamiento horizontal. En escritorio, mantener alineación clara con el perfil.
-- [ ] Ajustar en `src/css/app.css` el `padding-bottom` de `.encabezado-detalle-cliente` que separa las acciones de `.detalle-cliente__columnas`, y revisar el `gap` propio del encabezado. Conservar separación perceptible y reducir el hueco observado en la captura, sin agregar márgenes negativos. Usar variables existentes de `src/css/Variables.css`; cualquier token nuevo debe declararse allí.
+- [x] Ajustar en `src/css/app.css` el `padding-bottom` de `.encabezado-detalle-cliente` que separa las acciones de `.detalle-cliente__columnas`, y revisar el `gap` propio del encabezado. Conservar separación perceptible y reducir el hueco observado en la captura, sin agregar márgenes negativos. Usar variables existentes de `src/css/Variables.css`; cualquier token nuevo debe declararse allí.
 - [ ] Revisar el encabezado contextual de `PresupuestosPage.vue` en escritorio, tableta y teléfono: el título largo, «Volver al cliente» y «Nuevo presupuesto» deben adaptarse sin taparse. Reutilizar la tabla en escritorio y las tarjetas en móvil; evitar un segundo listado o estilos divergentes.
 
 ## FASE TESTING
@@ -127,11 +127,16 @@ Dejar escenarios concretos para que Leo compruebe el cambio cuando autorice la i
 
 ## Progreso del plan
 
-- [ ] Fase 1: Habilitar la consulta de presupuestos por cliente
-- [ ] Fase 2: Crear un presupuesto con el cliente autocompletado
+- [x] Fase 1: Habilitar la consulta de presupuestos por cliente
+- [x] Fase 2: Crear un presupuesto con el cliente autocompletado
 - [ ] Fase 3: Compactar la ficha y ajustar ambas vistas al ancho disponible
 - [ ] Fase Testing
 
 Fecha de creación: 24 de octubre de 2026
 Fecha de última actualización: 24 de octubre de 2026
-Estado: BORRADOR
+Estado: EN PROCESO
+
+## Avance de implementación
+
+- La consulta por ID, la navegación contextual, el autocompletado y el ajuste de espaciado ya están implementados.
+- Queda pendiente la revisión visual responsiva y las pruebas funcionales de Leo. No se ejecutaron la aplicación, pruebas, compilaciones ni linters por la restricción de `AGENTS.md`.
