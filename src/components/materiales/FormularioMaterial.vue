@@ -201,10 +201,7 @@ function guardarMaterial(): void {
                     v-model="precio.comercio"
                     dark
                     outlined
-                    label="Comercio o proveedor"
-                    :rules="[
-                      (valor) => Boolean(String(valor).trim()) || 'Ingresá el comercio o proveedor.',
-                    ]"
+                    label="Comercio o proveedor (opcional)"
                   />
 
                   <q-btn-toggle
@@ -217,29 +214,30 @@ function guardarMaterial(): void {
                     :options="OPCIONES_MODALIDAD"
                   />
 
-                  <div v-if="precio.modalidad === 'directo'" class="grilla-campos-precio">
-                    <div class="grupo-precio-moneda">
-                      <q-input
-                        v-model.number="precio.importe"
-                        dark
-                        outlined
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        label="Precio registrado"
-                        :prefix="precio.moneda"
-                        :rules="[
-                          (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
-                        ]"
-                      />
-                      <SelectorMoneda
-                        v-model="precio.moneda"
-                        class="selector-moneda-precio"
-                        :opciones="opcionesMonedaPrecio(precio)"
-                        etiqueta="Moneda"
-                        denso
-                      />
-                    </div>
+                  <div
+                    v-if="precio.modalidad === 'directo'"
+                    class="grilla-campos-precio grilla-campos-precio--directo"
+                  >
+                    <q-input
+                      v-model.number="precio.importe"
+                      class="campo-precio-directo"
+                      dark
+                      outlined
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      label="Precio registrado"
+                      :prefix="precio.moneda"
+                      :rules="[
+                        (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
+                      ]"
+                    />
+                    <SelectorMoneda
+                      v-model="precio.moneda"
+                      class="selector-moneda-precio"
+                      :opciones="opcionesMonedaPrecio(precio)"
+                      etiqueta="Moneda"
+                    />
                     <q-select
                       v-model="precio.unidadMedida"
                       dark
@@ -254,6 +252,7 @@ function guardarMaterial(): void {
                     <q-input
                       v-if="precio.unidadMedida === 'Otro'"
                       v-model="precio.unidadPersonalizada"
+                      class="campo-unidad-personalizada"
                       dark
                       outlined
                       label="Nombre de la unidad"
@@ -307,7 +306,6 @@ function guardarMaterial(): void {
                         class="selector-moneda-precio"
                         :opciones="opcionesMonedaPrecio(precio)"
                         etiqueta="Moneda"
-                        denso
                       />
                     </div>
 

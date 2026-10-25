@@ -155,7 +155,9 @@ async function eliminarMaterial(): Promise<void> {
             <div class="lista-detalle-material">
               <article v-for="precio in precios" :key="precio.id" class="fila-detalle-material">
                 <div class="fila-detalle-material__titulo">
-                  <strong class="fila-detalle-material__comercio">{{ precio.comercio }}</strong>
+                  <strong class="fila-detalle-material__comercio">
+                    {{ precio.comercio || 'Comercio no indicado' }}
+                  </strong>
                   <q-badge
                     v-if="precio.id === material.idPrecioPredeterminado"
                     class="insignia-principal"
