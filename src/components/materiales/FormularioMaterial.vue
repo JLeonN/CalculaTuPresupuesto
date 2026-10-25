@@ -33,12 +33,14 @@ const OPCIONES_MODALIDAD = [
 const nombre = ref('');
 const precios = ref<DatosPrecioMaterial[]>([]);
 const idPrecioPredeterminado = ref('');
+const ayudaPreciosVisible = ref<Record<string, boolean>>({});
 const esEdicion = computed(() => props.material !== undefined);
 
 watch(() => props.material, cargarDatosMaterial, { immediate: true });
 
 function cargarDatosMaterial(material: Material | undefined): void {
   nombre.value = material?.nombre ?? '';
+  ayudaPreciosVisible.value = {};
   precios.value = material
     ? material.precios.map((precio) => ({
         id: precio.id,
@@ -68,6 +70,10 @@ function agregarPrecio(): void {
   const precio = crearPrecioMaterial(props.monedaPrincipal);
   precios.value.push(precio);
   idPrecioPredeterminado.value ||= precio.id;
+}
+
+function alternarAyudaPrecio(idPrecio: string): void {
+  ayudaPreciosVisible.value[idPrecio] = !ayudaPreciosVisible.value[idPrecio];
 }
 
 function eliminarPrecio(idPrecio: string): void {
@@ -147,9 +153,6 @@ function guardarMaterial(): void {
           <div>
             <p class="etiqueta-seccion">Precios del material</p>
             <h2 id="titulo-precios-material" class="titulo-seccion">Precios</h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Marcá como predeterminado el precio que querés ver en la lista.
-            </p>
           </div>
           <q-btn
             class="boton-secundario"
@@ -176,22 +179,52 @@ function guardarMaterial(): void {
               <div class="encabezado-precio-material">
                 <strong>{{ precio.comercio.trim() || `Precio ${indice + 1}` }}</strong>
                 <div class="encabezado-precio-material__acciones">
-                  <q-radio
-                    v-model="idPrecioPredeterminado"
-                    class="selector-principal"
-                    :val="precio.id"
-                    label="Predeterminado"
-                  />
-                  <q-btn
-                    v-if="precios.length > 1"
-                    class="boton-icono-secundario"
-                    flat
-                    round
-                    dense
-                    icon="delete_outline"
-                    :aria-label="`Quitar precio ${indice + 1}`"
-                    @click="eliminarPrecio(precio.id)"
-                  />
+                  <div class="ayuda-precio-en-linea">
+                    <Transition name="despliegue-ayuda-precio">
+                      <div
+                        v-show="ayudaPreciosVisible[precio.id]"
+                        :id="`ayuda-precio-${precio.id}`"
+                        class="ayuda-precio-predeterminado"
+                        role="note"
+                      >
+                        Marcá como predeterminado el precio que querés ver en la lista.
+                      </div>
+                    </Transition>
+                    <q-btn
+                      class="boton-ayuda-precio"
+                      flat
+                      round
+                      dense
+                      type="button"
+                      icon="priority_high"
+                      :aria-label="
+                        ayudaPreciosVisible[precio.id]
+                          ? 'Ocultar ayuda sobre el precio predeterminado'
+                          : 'Mostrar ayuda sobre el precio predeterminado'
+                      "
+                      :aria-expanded="Boolean(ayudaPreciosVisible[precio.id])"
+                      :aria-controls="`ayuda-precio-${precio.id}`"
+                      @click="alternarAyudaPrecio(precio.id)"
+                    />
+                  </div>
+                  <div class="controles-precio-material">
+                    <q-radio
+                      v-model="idPrecioPredeterminado"
+                      class="selector-principal"
+                      :val="precio.id"
+                      label="Predeterminado"
+                    />
+                    <q-btn
+                      v-if="precios.length > 1"
+                      class="boton-icono-secundario"
+                      flat
+                      round
+                      dense
+                      icon="delete_outline"
+                      :aria-label="`Quitar precio ${indice + 1}`"
+                      @click="eliminarPrecio(precio.id)"
+                    />
+                  </div>
                 </div>
               </div>
 
