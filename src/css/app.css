@@ -779,6 +779,12 @@ input[type='number']::-webkit-outer-spin-button {
   border-radius: var(--radio-grande);
 }
 
+.paginacion-listado {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--espaciado-grande);
+}
+
 .tabla-clientes__encabezado,
 .tabla-clientes__fila {
   display: grid;

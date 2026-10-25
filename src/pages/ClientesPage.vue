@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import BuscadorListado from '@/components/BuscadorListado.vue';
+import PaginacionListado from '@/components/PaginacionListado.vue';
 import EnlaceWhatsapp from '@/components/clientes/EnlaceWhatsapp.vue';
+import { usePaginacionListado } from '@/composables/usePaginacionListado';
 import {
   obtenerLocalesConDatos,
   obtenerTelefonoPrincipal,
@@ -12,6 +14,10 @@ import { useClientesStore } from '@/stores/clientes';
 const clientesStore = useClientesStore();
 const terminoBusqueda = ref<string | null>('');
 const clientesFiltrados = computed(() => clientesStore.buscarClientes(terminoBusqueda.value ?? ''));
+const { paginaActual, totalPaginas, registrosPagina: clientesPagina } = usePaginacionListado(
+  clientesFiltrados,
+  [terminoBusqueda],
+);
 
 onMounted(() => {
   void clientesStore.cargarClientes();
@@ -82,7 +88,7 @@ function textoLocales(locales: LocalCliente[]): string {
             <span aria-label="Acciones" role="columnheader" />
           </div>
           <div
-            v-for="cliente in clientesFiltrados"
+            v-for="cliente in clientesPagina"
             :key="cliente.id"
             class="tabla-clientes__fila"
             role="row"
@@ -109,7 +115,7 @@ function textoLocales(locales: LocalCliente[]): string {
         </div>
 
         <div class="tarjetas-clientes">
-          <article v-for="cliente in clientesFiltrados" :key="cliente.id" class="tarjeta-cliente">
+          <article v-for="cliente in clientesPagina" :key="cliente.id" class="tarjeta-cliente">
             <div class="tarjeta-cliente__contenido">
               <h2>{{ cliente.nombre }}</h2>
               <div class="tarjeta-cliente__datos">
@@ -141,6 +147,7 @@ function textoLocales(locales: LocalCliente[]): string {
             </div>
           </article>
         </div>
+        <PaginacionListado v-model="paginaActual" :total-paginas="totalPaginas" />
       </section>
 
       <section v-else class="estado-vacio-clientes">

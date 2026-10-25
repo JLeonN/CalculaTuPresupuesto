@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import BuscadorListado from '@/components/BuscadorListado.vue';
+import PaginacionListado from '@/components/PaginacionListado.vue';
+import { usePaginacionListado } from '@/composables/usePaginacionListado';
 import {
   formatearPrecioVisible,
   obtenerPrecioPredeterminado,
@@ -22,6 +24,10 @@ const materialesFiltrados = computed(() =>
     criterioOrden.value,
     direccionOrden.value,
   ),
+);
+const { paginaActual, totalPaginas, registrosPagina: materialesPagina } = usePaginacionListado(
+  materialesFiltrados,
+  [terminoBusqueda, criterioOrden, direccionOrden],
 );
 
 onMounted(() => {
@@ -127,7 +133,7 @@ function localPrincipal(material: Material): string {
             <span aria-label="Acciones" role="columnheader" />
           </div>
           <div
-            v-for="material in materialesFiltrados"
+            v-for="material in materialesPagina"
             :key="material.id"
             class="tabla-materiales__fila"
             role="row"
@@ -148,7 +154,7 @@ function localPrincipal(material: Material): string {
 
         <div class="tarjetas-materiales">
           <article
-            v-for="material in materialesFiltrados"
+            v-for="material in materialesPagina"
             :key="material.id"
             class="tarjeta-material"
           >
@@ -170,6 +176,7 @@ function localPrincipal(material: Material): string {
             </div>
           </article>
         </div>
+        <PaginacionListado v-model="paginaActual" :total-paginas="totalPaginas" />
       </section>
 
       <section v-else class="estado-vacio-materiales">

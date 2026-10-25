@@ -2,10 +2,12 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import BuscadorListado from '@/components/BuscadorListado.vue';
+import PaginacionListado from '@/components/PaginacionListado.vue';
 import TextoDesplazable from '@/components/TextoDesplazable.vue';
 import InsigniaEstadoPresupuesto from '@/components/presupuestos/InsigniaEstadoPresupuesto.vue';
 import { formatearImporte } from '@/dominio/monedas';
 import { calcularTotalPresupuesto } from '@/dominio/presupuestos';
+import { usePaginacionListado } from '@/composables/usePaginacionListado';
 import { useClientesStore } from '@/stores/clientes';
 import { usePresupuestosStore } from '@/stores/presupuestos';
 
@@ -29,6 +31,10 @@ const presupuestosFiltrados = computed(() => {
       )
     : encontrados;
 });
+const { paginaActual, totalPaginas, registrosPagina: presupuestosPagina } = usePaginacionListado(
+  presupuestosFiltrados,
+  [terminoBusqueda, () => ruta.name, () => ruta.params.idCliente],
+);
 const rutaNuevoPresupuesto = computed(() =>
   esHistorialCliente.value && clienteActual.value
     ? `/presupuestos/nuevo?idCliente=${encodeURIComponent(clienteActual.value.id)}`
@@ -145,7 +151,7 @@ function formatearFecha(fecha: string): string {
             <span aria-label="Acciones" role="columnheader" />
           </div>
           <div
-            v-for="presupuesto in presupuestosFiltrados"
+            v-for="presupuesto in presupuestosPagina"
             :key="presupuesto.id"
             class="tabla-presupuestos__fila"
             role="row"
@@ -180,7 +186,7 @@ function formatearFecha(fecha: string): string {
 
         <div class="tarjetas-presupuestos">
           <article
-            v-for="presupuesto in presupuestosFiltrados"
+            v-for="presupuesto in presupuestosPagina"
             :key="presupuesto.id"
             class="tarjeta-presupuesto-guardado"
           >
@@ -218,6 +224,7 @@ function formatearFecha(fecha: string): string {
             </div>
           </article>
         </div>
+        <PaginacionListado v-model="paginaActual" :total-paginas="totalPaginas" />
       </section>
 
       <section v-else class="estado-vacio-presupuestos">
