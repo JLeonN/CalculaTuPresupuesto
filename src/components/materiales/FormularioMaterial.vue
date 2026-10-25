@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
 import {
   calcularCostoUnitario,
   crearPrecioMaterial,
+  obtenerPresentacion,
   obtenerUnidadMedida,
   PRESENTACIONES,
   UNIDADES_MEDIDA,
@@ -17,6 +18,7 @@ const props = defineProps<{
   material: Material | undefined;
   guardando: boolean;
   monedaPrincipal: Moneda;
+  agregarPrecioInicial: boolean;
 }>();
 
 const emitir = defineEmits<{
@@ -54,6 +56,12 @@ function cargarDatosMaterial(material: Material | undefined): void {
       }))
     : [crearPrecioMaterial(props.monedaPrincipal)];
   idPrecioPredeterminado.value = material?.idPrecioPredeterminado ?? precios.value[0]?.id ?? '';
+  if (material && props.agregarPrecioInicial) {
+    agregarPrecio();
+    void nextTick(() => {
+      document.getElementById('precio-recien-agregado')?.scrollIntoView({ block: 'start' });
+    });
+  }
 }
 
 function agregarPrecio(): void {
@@ -82,17 +90,9 @@ function textoCostoCalculado(precio: DatosPrecioMaterial): string {
   return `${formatearImporte(costo, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
 }
 
-function textoPrecioCantidadParcial(precio: DatosPrecioMaterial): string {
-  const importe = precio.precioCantidadParcial ?? 0;
-  if (importe <= 0) {
-    return 'Ingresá el precio para una cantidad parcial.';
-  }
-
-  return `${formatearImporte(importe, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
-}
-
-function tituloReferencia(precio: DatosPrecioMaterial): string {
-  return `Referencia por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
+function precioVista(precio: DatosPrecioMaterial): string {
+  const importe = precio.modalidad === 'directo' ? precio.importe : precio.precioCantidadParcial;
+  return importe !== null && importe > 0 ? formatearImporte(importe, precio.moneda) : 'Sin precio';
 }
 
 function opcionesValorVisible(precio: DatosPrecioMaterial) {
@@ -165,227 +165,256 @@ function guardarMaterial(): void {
           <article
             v-for="(precio, indice) in precios"
             :key="precio.id"
+            :id="
+              agregarPrecioInicial && indice === precios.length - 1
+                ? 'precio-recien-agregado'
+                : undefined
+            "
             class="bloque-repetible bloque-precio"
           >
             <div class="bloque-repetible__campos campos-precio-material">
               <div class="encabezado-precio-material">
-                <strong>Precio {{ indice + 1 }}</strong>
-                <q-radio
-                  v-model="idPrecioPredeterminado"
-                  class="selector-principal"
-                  :val="precio.id"
-                  label="Predeterminado"
-                />
+                <strong>{{ precio.comercio.trim() || `Precio ${indice + 1}` }}</strong>
+                <div class="encabezado-precio-material__acciones">
+                  <q-radio
+                    v-model="idPrecioPredeterminado"
+                    class="selector-principal"
+                    :val="precio.id"
+                    label="Predeterminado"
+                  />
+                  <q-btn
+                    v-if="precios.length > 1"
+                    class="boton-icono-secundario"
+                    flat
+                    round
+                    dense
+                    icon="delete_outline"
+                    :aria-label="`Quitar precio ${indice + 1}`"
+                    @click="eliminarPrecio(precio.id)"
+                  />
+                </div>
               </div>
 
-              <q-input
-                v-model="precio.comercio"
-                dark
-                outlined
-                label="Comercio o proveedor"
-                :rules="[
-                  (valor) => Boolean(String(valor).trim()) || 'Ingresá el comercio o proveedor.',
-                ]"
-              />
-
-              <q-btn-toggle
-                v-model="precio.modalidad"
-                class="selector-modalidad-precio"
-                no-caps
-                spread
-                unelevated
-                toggle-color="primary"
-                :options="OPCIONES_MODALIDAD"
-              />
-
-              <div v-if="precio.modalidad === 'directo'" class="grilla-campos-precio">
-                <div class="grupo-precio-moneda">
+              <div class="edicion-precio-material">
+                <div class="edicion-precio-material__campos">
                   <q-input
-                    v-model.number="precio.importe"
+                    v-model="precio.comercio"
                     dark
                     outlined
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    label="Precio"
-                    :prefix="precio.moneda"
+                    label="Comercio o proveedor"
                     :rules="[
-                      (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
+                      (valor) => Boolean(String(valor).trim()) || 'Ingresá el comercio o proveedor.',
                     ]"
                   />
-                  <SelectorMoneda
-                    v-model="precio.moneda"
-                    class="selector-moneda-precio"
-                    :opciones="opcionesMonedaPrecio(precio)"
-                    etiqueta="Moneda"
-                    denso
-                  />
-                </div>
-                <q-select
-                  v-model="precio.unidadMedida"
-                  dark
-                  outlined
-                  behavior="menu"
-                  menu-anchor="bottom left"
-                  menu-self="top left"
-                  popup-content-class="selector-opciones"
-                  label="Unidad de medida"
-                  :options="UNIDADES_MEDIDA"
-                />
-                <q-input
-                  v-if="precio.unidadMedida === 'Otro'"
-                  v-model="precio.unidadPersonalizada"
-                  dark
-                  outlined
-                  label="Nombre de la unidad"
-                  :rules="[
-                    (valor) => Boolean(String(valor).trim()) || 'Ingresá la unidad de medida.',
-                  ]"
-                />
-              </div>
 
-              <template v-else>
-                <div class="grilla-campos-precio">
-                  <q-select
-                    v-model="precio.presentacion"
-                    dark
-                    outlined
-                    behavior="menu"
-                    menu-anchor="bottom left"
-                    menu-self="top left"
-                    popup-content-class="selector-opciones"
-                    label="Presentación"
-                    :options="PRESENTACIONES"
-                  />
-                  <q-input
-                    v-if="precio.presentacion === 'Otro'"
-                    v-model="precio.presentacionPersonalizada"
-                    dark
-                    outlined
-                    label="Nombre de la presentación"
-                    :rules="[
-                      (valor) => Boolean(String(valor).trim()) || 'Ingresá la presentación.',
-                    ]"
-                  />
-                </div>
-
-                <div class="grupo-precio-moneda">
-                  <q-input
-                    v-model.number="precio.importe"
-                    dark
-                    outlined
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    label="Precio de la presentación"
-                    :prefix="precio.moneda"
-                    :rules="[
-                      (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
-                    ]"
-                  />
-                  <SelectorMoneda
-                    v-model="precio.moneda"
-                    class="selector-moneda-precio"
-                    :opciones="opcionesMonedaPrecio(precio)"
-                    etiqueta="Moneda"
-                    denso
-                  />
-                </div>
-
-                <div class="grilla-campos-precio">
-                  <q-input
-                    v-model.number="precio.cantidadContenido"
-                    dark
-                    outlined
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    label="Cantidad que contiene"
-                    :rules="[
-                      (valor) => validarPositivo(valor, 'Ingresá una cantidad mayor que cero.'),
-                    ]"
-                  />
-                  <q-select
-                    v-model="precio.unidadMedida"
-                    dark
-                    outlined
-                    behavior="menu"
-                    menu-anchor="bottom left"
-                    menu-self="top left"
-                    popup-content-class="selector-opciones"
-                    label="Unidad del contenido"
-                    :options="UNIDADES_MEDIDA"
-                  />
-                  <q-input
-                    v-if="precio.unidadMedida === 'Otro'"
-                    v-model="precio.unidadPersonalizada"
-                    dark
-                    outlined
-                    label="Nombre de la unidad"
-                    :rules="[
-                      (valor) => Boolean(String(valor).trim()) || 'Ingresá la unidad de medida.',
-                    ]"
-                  />
-                </div>
-
-                <q-input
-                  v-model.number="precio.precioCantidadParcial"
-                  dark
-                  outlined
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  :label="`Precio por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`"
-                  :prefix="precio.moneda"
-                  hint="Este precio se usará cuando el cliente necesite menos de una presentación completa."
-                  :rules="[
-                    (valor) =>
-                      validarPositivo(valor, 'Ingresá el precio para una cantidad parcial.'),
-                  ]"
-                />
-
-                <section class="resumen-precios-parciales" aria-live="polite">
-                  <p class="etiqueta-seccion">{{ tituloReferencia(precio) }}</p>
-                  <div
-                    class="resumen-precios-parciales__fila resumen-precios-parciales__fila--destacada"
-                  >
-                    <span>Precio para cantidad parcial</span>
-                    <strong>{{ textoPrecioCantidadParcial(precio) }}</strong>
-                  </div>
-                  <div class="resumen-precios-parciales__fila">
-                    <span>Costo calculado</span>
-                    <strong>{{ textoCostoCalculado(precio) }}</strong>
-                  </div>
-                  <p class="resumen-precios-parciales__ayuda">
-                    El costo calculado es únicamente informativo.
-                  </p>
-                </section>
-
-                <div>
-                  <span class="etiqueta-control-precio">Precio que se mostrará</span>
                   <q-btn-toggle
-                    v-model="precio.valorVisible"
+                    v-model="precio.modalidad"
                     class="selector-modalidad-precio"
                     no-caps
                     spread
                     unelevated
                     toggle-color="primary"
-                    :options="opcionesValorVisible(precio)"
+                    :options="OPCIONES_MODALIDAD"
                   />
-                </div>
-              </template>
-            </div>
 
-            <q-btn
-              v-if="precios.length > 1"
-              class="boton-icono-secundario"
-              flat
-              round
-              dense
-              icon="delete_outline"
-              :aria-label="`Quitar precio ${indice + 1}`"
-              @click="eliminarPrecio(precio.id)"
-            />
+                  <div v-if="precio.modalidad === 'directo'" class="grilla-campos-precio">
+                    <div class="grupo-precio-moneda">
+                      <q-input
+                        v-model.number="precio.importe"
+                        dark
+                        outlined
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        label="Precio registrado"
+                        :prefix="precio.moneda"
+                        :rules="[
+                          (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
+                        ]"
+                      />
+                      <SelectorMoneda
+                        v-model="precio.moneda"
+                        class="selector-moneda-precio"
+                        :opciones="opcionesMonedaPrecio(precio)"
+                        etiqueta="Moneda"
+                        denso
+                      />
+                    </div>
+                    <q-select
+                      v-model="precio.unidadMedida"
+                      dark
+                      outlined
+                      behavior="menu"
+                      menu-anchor="bottom left"
+                      menu-self="top left"
+                      popup-content-class="selector-opciones"
+                      label="Unidad de medida"
+                      :options="UNIDADES_MEDIDA"
+                    />
+                    <q-input
+                      v-if="precio.unidadMedida === 'Otro'"
+                      v-model="precio.unidadPersonalizada"
+                      dark
+                      outlined
+                      label="Nombre de la unidad"
+                      :rules="[
+                        (valor) => Boolean(String(valor).trim()) || 'Ingresá la unidad de medida.',
+                      ]"
+                    />
+                  </div>
+
+                  <template v-else>
+                    <div class="grilla-campos-precio">
+                      <q-select
+                        v-model="precio.presentacion"
+                        dark
+                        outlined
+                        behavior="menu"
+                        menu-anchor="bottom left"
+                        menu-self="top left"
+                        popup-content-class="selector-opciones"
+                        label="Presentación"
+                        :options="PRESENTACIONES"
+                      />
+                      <q-input
+                        v-if="precio.presentacion === 'Otro'"
+                        v-model="precio.presentacionPersonalizada"
+                        dark
+                        outlined
+                        label="Nombre de la presentación"
+                        :rules="[
+                          (valor) => Boolean(String(valor).trim()) || 'Ingresá la presentación.',
+                        ]"
+                      />
+                    </div>
+
+                    <div class="grupo-precio-moneda">
+                      <q-input
+                        v-model.number="precio.importe"
+                        dark
+                        outlined
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        label="Costo de compra de la presentación"
+                        :prefix="precio.moneda"
+                        :rules="[
+                          (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
+                        ]"
+                      />
+                      <SelectorMoneda
+                        v-model="precio.moneda"
+                        class="selector-moneda-precio"
+                        :opciones="opcionesMonedaPrecio(precio)"
+                        etiqueta="Moneda"
+                        denso
+                      />
+                    </div>
+
+                    <div class="grilla-campos-precio">
+                      <q-input
+                        v-model.number="precio.cantidadContenido"
+                        dark
+                        outlined
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        label="Cantidad que contiene"
+                        :rules="[
+                          (valor) => validarPositivo(valor, 'Ingresá una cantidad mayor que cero.'),
+                        ]"
+                      />
+                      <q-select
+                        v-model="precio.unidadMedida"
+                        dark
+                        outlined
+                        behavior="menu"
+                        menu-anchor="bottom left"
+                        menu-self="top left"
+                        popup-content-class="selector-opciones"
+                        label="Unidad del contenido"
+                        :options="UNIDADES_MEDIDA"
+                      />
+                      <q-input
+                        v-if="precio.unidadMedida === 'Otro'"
+                        v-model="precio.unidadPersonalizada"
+                        dark
+                        outlined
+                        label="Nombre de la unidad"
+                        :rules="[
+                          (valor) => Boolean(String(valor).trim()) || 'Ingresá la unidad de medida.',
+                        ]"
+                      />
+                    </div>
+
+                    <q-input
+                      v-model.number="precio.precioCantidadParcial"
+                      dark
+                      outlined
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      :label="`Precio base de venta por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`"
+                      :prefix="precio.moneda"
+                      hint="Este precio se usará cuando el cliente necesite menos de una presentación completa."
+                      :rules="[
+                        (valor) =>
+                          validarPositivo(valor, 'Ingresá el precio para una cantidad parcial.'),
+                      ]"
+                    />
+
+                    <div>
+                      <span class="etiqueta-control-precio">Precio principal en la lista</span>
+                      <q-btn-toggle
+                        v-model="precio.valorVisible"
+                        class="selector-modalidad-precio"
+                        no-caps
+                        spread
+                        unelevated
+                        toggle-color="primary"
+                        :options="opcionesValorVisible(precio)"
+                      />
+                    </div>
+                  </template>
+                </div>
+
+                <aside class="vista-previa-precio-material" aria-live="polite">
+                  <p class="etiqueta-seccion">Vista previa</p>
+                  <span class="dato-precio-material__etiqueta">
+                    {{ precio.modalidad === 'directo'
+                      ? 'Precio registrado'
+                      : 'Precio base de venta para cantidades parciales' }}
+                  </span>
+                  <strong class="vista-previa-precio-material__importe">
+                    {{ precioVista(precio) }}
+                  </strong>
+                  <span class="vista-previa-precio-material__unidad">
+                    / {{ obtenerUnidadMedida(precio).toLocaleLowerCase('es') }}
+                  </span>
+                  <template v-if="precio.modalidad === 'presentacion'">
+                    <div class="vista-previa-precio-material__datos">
+                      <div>
+                        <span class="dato-precio-material__etiqueta">Costo de compra</span>
+                        <strong>
+                          {{ precio.importe !== null && precio.importe > 0
+                            ? formatearImporte(precio.importe, precio.moneda)
+                            : 'Sin precio' }}
+                        </strong>
+                        <span>/ {{ obtenerPresentacion(precio).toLocaleLowerCase('es') }}</span>
+                      </div>
+                      <div>
+                        <span class="dato-precio-material__etiqueta">Costo aproximado</span>
+                        <strong>{{ textoCostoCalculado(precio) }}</strong>
+                      </div>
+                    </div>
+                    <p class="vista-previa-precio-material__ayuda">
+                      El costo calculado es una referencia interna. El precio de la presentación
+                      se puede ajustar en cada presupuesto.
+                    </p>
+                  </template>
+                </aside>
+              </div>
+            </div>
           </article>
         </div>
       </section>

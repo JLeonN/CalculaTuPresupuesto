@@ -16,6 +16,7 @@ const material = ref<Material>();
 const materialNoEncontrado = ref(false);
 const cargandoPagina = ref(true);
 const esEdicion = computed(() => typeof ruta.params.idMaterial === 'string');
+const agregarPrecioInicial = computed(() => esEdicion.value && ruta.query.agregarPrecio === '1');
 
 onMounted(async () => {
   cargandoPagina.value = true;
@@ -77,7 +78,7 @@ function cancelar(): void {
       />
 
       <header class="encabezado-formulario-material">
-        <p class="etiqueta-seccion">{{ esEdicion ? 'Actualizar costos' : 'Nuevo registro' }}</p>
+        <p class="etiqueta-seccion">Catálogo de materiales</p>
         <h1 class="titulo-pagina">
           {{ esEdicion ? 'Editar material' : 'Agregar material nuevo' }}
         </h1>
@@ -125,6 +126,7 @@ function cancelar(): void {
         :material="material"
         :guardando="materialesStore.guardando"
         :moneda-principal="configuracionStore.monedaPrincipal"
+        :agregar-precio-inicial="agregarPrecioInicial"
         @guardar="guardarMaterial"
         @cancelar="cancelar"
       />

@@ -4,7 +4,6 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import {
   calcularCostoUnitario,
-  formatearPrecioVisible,
   obtenerPresentacion,
   obtenerUnidadMedida,
   type Material,
@@ -66,7 +65,7 @@ function precioCantidadParcial(precio: PrecioMaterial): string {
     return 'Sin precio para cantidad parcial';
   }
 
-  return `${formatearImporte(importe, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
+  return formatearImporte(importe, precio.moneda);
 }
 
 async function eliminarMaterial(): Promise<void> {
@@ -111,7 +110,10 @@ async function eliminarMaterial(): Promise<void> {
           <div>
             <p class="etiqueta-seccion">Ficha del material</p>
             <h1 class="titulo-pagina">{{ material.nombre }}</h1>
-            <p class="texto-secundario">{{ precios.length }} precios registrados</p>
+            <p class="texto-secundario">
+              {{ precios.length }}
+              {{ precios.length === 1 ? 'precio registrado' : 'precios registrados' }}
+            </p>
           </div>
           <div class="acciones-encabezado-detalle">
             <q-btn
@@ -136,42 +138,66 @@ async function eliminarMaterial(): Promise<void> {
 
         <div class="detalle-material__contenedor">
           <section class="tarjeta-detalle-material" aria-labelledby="titulo-precios-detalle">
-            <p id="titulo-precios-detalle" class="etiqueta-seccion">Precios del material</p>
+            <div class="encabezado-precios-detalle">
+              <div>
+                <p class="etiqueta-seccion">Precios del material</p>
+                <h2 id="titulo-precios-detalle" class="titulo-seccion">Precios registrados</h2>
+              </div>
+              <q-btn
+                class="boton-secundario"
+                flat
+                no-caps
+                icon="add"
+                label="Agregar precio"
+                :to="`/materiales/${material.id}/editar?agregarPrecio=1`"
+              />
+            </div>
             <div class="lista-detalle-material">
               <article v-for="precio in precios" :key="precio.id" class="fila-detalle-material">
-                <div class="fila-detalle-material__contenido">
-                  <div class="fila-detalle-material__titulo">
-                    <strong class="fila-detalle-material__comercio">{{ precio.comercio }}</strong>
-                    <q-badge
-                      v-if="precio.id === material.idPrecioPredeterminado"
-                      class="insignia-principal"
-                    >
-                      Predeterminado
-                    </q-badge>
+                <div class="fila-detalle-material__titulo">
+                  <strong class="fila-detalle-material__comercio">{{ precio.comercio }}</strong>
+                  <q-badge
+                    v-if="precio.id === material.idPrecioPredeterminado"
+                    class="insignia-principal"
+                  >
+                    Predeterminado
+                  </q-badge>
+                </div>
+
+                <p class="fila-detalle-material__descripcion">{{ descripcionPrecio(precio) }}</p>
+
+                <div
+                  v-if="precio.modalidad === 'presentacion'"
+                  class="fila-detalle-material__metricas"
+                >
+                  <div class="metrica-material metrica-material--principal">
+                    <span class="dato-precio-material__etiqueta">
+                      Precio base de venta por {{ obtenerUnidadMedida(precio).toLocaleLowerCase('es') }}
+                    </span>
+                    <strong>{{ precioCantidadParcial(precio) }}</strong>
+                    <span>/ {{ obtenerUnidadMedida(precio).toLocaleLowerCase('es') }}</span>
+                    <span>Para cantidades menores a una presentación completa</span>
                   </div>
-
-                  <template v-if="precio.modalidad === 'presentacion'">
-                    <div class="dato-precio-material">
-                      <span class="dato-precio-material__etiqueta">Compra</span>
-                      <span>{{ descripcionPrecio(precio) }}</span>
-                      <strong>{{ precioCompraPresentacion(precio) }}</strong>
-                    </div>
-
-                    <div v-if="costoCalculado(precio)" class="dato-precio-material">
-                      <span class="dato-precio-material__etiqueta">Costo aproximado</span>
-                      <strong>{{ costoCalculado(precio) }}</strong>
-                    </div>
-
-                    <div class="dato-precio-material dato-precio-material--destacado">
-                      <span class="dato-precio-material__etiqueta">Venta al cliente</span>
-                      <strong>{{ precioCantidadParcial(precio) }}</strong>
-                    </div>
-                  </template>
-
-                  <div v-else class="dato-precio-material dato-precio-material--destacado">
-                    <span class="dato-precio-material__etiqueta">Precio registrado</span>
+                  <div class="metrica-material">
+                    <span class="dato-precio-material__etiqueta">Costo de compra</span>
+                    <strong>{{ precioCompraPresentacion(precio) }}</strong>
                     <span>{{ descripcionPrecio(precio) }}</span>
-                    <strong>{{ formatearPrecioVisible(precio) }}</strong>
+                  </div>
+                  <div v-if="costoCalculado(precio)" class="metrica-material">
+                    <span class="dato-precio-material__etiqueta">Costo aproximado</span>
+                    <strong>{{ costoCalculado(precio) }}</strong>
+                    <span>Referencia interna calculada</span>
+                  </div>
+                </div>
+
+                <div
+                  v-else
+                  class="fila-detalle-material__metricas fila-detalle-material__metricas--directo"
+                >
+                  <div class="metrica-material metrica-material--principal">
+                    <span class="dato-precio-material__etiqueta">Precio registrado</span>
+                    <strong>{{ formatearImporte(precio.importe ?? 0, precio.moneda) }}</strong>
+                    <span>/ {{ obtenerUnidadMedida(precio).toLocaleLowerCase('es') }}</span>
                   </div>
                 </div>
               </article>

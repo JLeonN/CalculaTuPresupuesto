@@ -46,6 +46,7 @@
   --tamano-texto-nombre-tarjeta: 1.375rem;
   --tamano-titulo-seccion: 1.5rem;
   --tamano-titulo-pagina: 2rem;
+  --tamano-precio-destacado: clamp(2.5rem, 3vw, 3.75rem);
   --tamano-titulo-inicio-minimo: 2.5rem;
   --tamano-titulo-inicio-maximo: 4.75rem;
   --peso-texto-medio: 600;

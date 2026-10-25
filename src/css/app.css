@@ -3631,8 +3631,7 @@ input[type='number']::-webkit-outer-spin-button {
   box-shadow: var(--sombra-control);
 }
 
-.tarjeta-material__datos,
-.fila-detalle-material__contenido {
+.tarjeta-material__datos {
   display: grid;
   min-width: 0;
   gap: var(--espaciado-pequeno);
@@ -3684,22 +3683,56 @@ input[type='number']::-webkit-outer-spin-button {
 .formulario-material__contenedor,
 .detalle-material__contenedor {
   display: grid;
-  padding: var(--espaciado-mediano);
-  gap: var(--espaciado-mediano);
-  background: var(--color-fondo-secundario);
-  border: var(--ancho-borde) solid var(--color-borde-principal);
-  border-radius: var(--radio-grande);
-  box-shadow: var(--sombra-principal);
+  gap: var(--espaciado-grande);
 }
 
 .bloque-precio {
-  align-items: start;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  scroll-margin-top: calc(var(--altura-encabezado-movil) + var(--espaciado-mediano));
 }
 
 .campos-precio-material,
+.edicion-precio-material__campos,
 .grilla-campos-precio {
   display: grid;
   gap: var(--espaciado-mediano);
+}
+
+.campos-precio-material {
+  gap: 0;
+}
+
+.encabezado-precio-material {
+  min-width: 0;
+  padding: var(--espaciado-mediano) var(--espaciado-grande);
+  border-bottom: var(--ancho-borde) solid var(--color-borde-principal);
+}
+
+.encabezado-precio-material > strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--tamano-texto-destacado);
+}
+
+.encabezado-precio-material__acciones {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--espaciado-pequeno);
+}
+
+.edicion-precio-material {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: var(--espaciado-grande);
+  padding: var(--espaciado-grande);
+}
+
+.edicion-precio-material__campos {
+  min-width: 0;
+  align-content: start;
 }
 
 .grilla-campos-precio {
@@ -3732,37 +3765,62 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: var(--tamano-texto-secundario);
 }
 
-.resumen-precios-parciales {
-  display: grid;
-  padding: var(--espaciado-mediano);
-  gap: var(--espaciado-mediano);
-  color: var(--color-texto-principal);
+.vista-previa-precio-material {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  min-width: 0;
+  padding: var(--espaciado-grande);
+  gap: var(--espaciado-pequeno);
   background: var(--color-superficie-interactiva);
   border: var(--ancho-borde) solid var(--color-borde-destacado);
   border-radius: var(--radio-mediano);
 }
 
-.resumen-precios-parciales__fila {
-  display: grid;
-  gap: var(--espaciado-minimo);
+.vista-previa-precio-material .etiqueta-seccion {
+  margin-bottom: var(--espaciado-mediano);
 }
 
-.resumen-precios-parciales__fila + .resumen-precios-parciales__fila {
+.vista-previa-precio-material__importe {
+  color: var(--color-accion-principal);
+  font-size: var(--tamano-precio-destacado);
+  line-height: var(--altura-linea-compacta);
+  overflow-wrap: anywhere;
+}
+
+.vista-previa-precio-material__unidad {
+  color: var(--color-texto-secundario);
+  font-size: var(--tamano-texto-destacado);
+}
+
+.vista-previa-precio-material__datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: var(--espaciado-mediano);
   padding-top: var(--espaciado-mediano);
+  gap: var(--espaciado-mediano);
   border-top: var(--ancho-borde) solid var(--color-borde-principal);
 }
 
-.resumen-precios-parciales__fila > span,
-.resumen-precios-parciales__ayuda {
+.vista-previa-precio-material__datos > div {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: var(--espaciado-pequeno);
+  overflow-wrap: anywhere;
+}
+
+.vista-previa-precio-material__datos strong {
+  font-size: var(--tamano-texto-destacado);
+}
+
+.vista-previa-precio-material__datos > div > span:last-child,
+.vista-previa-precio-material__ayuda {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
 }
 
-.resumen-precios-parciales__fila--destacada > strong {
-  color: var(--color-accion-principal);
-}
-
-.resumen-precios-parciales__ayuda {
+.vista-previa-precio-material__ayuda {
   margin: 0;
 }
 
@@ -3771,14 +3829,31 @@ input[type='number']::-webkit-outer-spin-button {
   padding: var(--espaciado-grande);
 }
 
+.encabezado-precios-detalle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaciado-mediano);
+}
+
+.encabezado-precios-detalle .etiqueta-seccion {
+  margin-bottom: var(--espaciado-pequeno);
+}
+
 .lista-detalle-material {
   display: grid;
-  margin-top: var(--espaciado-mediano);
+  margin-top: var(--espaciado-grande);
 }
 
 .fila-detalle-material {
-  min-height: var(--altura-control);
-  padding-block: var(--espaciado-mediano);
+  display: grid;
+  min-width: 0;
+  padding-block: var(--espaciado-grande);
+  gap: var(--espaciado-mediano);
+}
+
+.fila-detalle-material:first-child {
+  padding-top: 0;
 }
 
 .fila-detalle-material__titulo {
@@ -3792,17 +3867,38 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: var(--tamano-texto-destacado);
 }
 
-.dato-precio-material {
+.fila-detalle-material__descripcion {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.fila-detalle-material__metricas {
   display: grid;
-  padding-top: var(--espaciado-pequeno);
-  gap: var(--espaciado-minimo);
+  grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  background: var(--color-superficie-interactiva);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-mediano);
 }
 
-.dato-precio-material + .dato-precio-material {
-  margin-top: var(--espaciado-pequeno);
+.fila-detalle-material__metricas--directo {
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.dato-precio-material > span:not(.dato-precio-material__etiqueta) {
+.metrica-material {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--espaciado-grande);
+  gap: var(--espaciado-pequeno);
+  overflow-wrap: anywhere;
+}
+
+.metrica-material + .metrica-material {
+  border-left: var(--ancho-borde) solid var(--color-borde-principal);
+}
+
+.metrica-material > span:not(.dato-precio-material__etiqueta) {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
 }
@@ -3815,23 +3911,39 @@ input[type='number']::-webkit-outer-spin-button {
   text-transform: uppercase;
 }
 
-.dato-precio-material--destacado > strong {
+.metrica-material > strong {
+  font-size: var(--tamano-texto-destacado);
+}
+
+.metrica-material--principal > strong {
   color: var(--color-accion-principal);
-  font-size: var(--tamano-texto-base);
+  font-size: var(--tamano-precio-destacado);
+  line-height: var(--altura-linea-compacta);
 }
 
 .zona-peligro-material {
   align-items: end;
-  border-color: var(--color-error);
+  padding: var(--espaciado-mediano) 0;
+  background: transparent;
+  border: 0;
+  border-top: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: 0;
 }
 
 .zona-peligro-material .texto-secundario {
   margin: var(--espaciado-pequeno) 0 0;
 }
 
+@media (max-width: 1023px) {
+  .edicion-precio-material {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 767px) {
   .encabezado-modulo-materiales,
   .encabezado-detalle-material,
+  .encabezado-precios-detalle,
   .zona-peligro-material,
   .encabezado-precio-material {
     align-items: stretch;
@@ -3871,6 +3983,46 @@ input[type='number']::-webkit-outer-spin-button {
     max-width: none;
   }
 
+  .fila-detalle-material__metricas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fila-detalle-material__metricas--directo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fila-detalle-material__metricas:not(.fila-detalle-material__metricas--directo)
+    .metrica-material--principal {
+    grid-column: 1 / -1;
+    border-bottom: var(--ancho-borde) solid var(--color-borde-principal);
+  }
+
+  .metrica-material + .metrica-material {
+    border-left: 0;
+  }
+
+  .metrica-material:nth-child(3) {
+    border-left: var(--ancho-borde) solid var(--color-borde-principal);
+  }
+
+  .metrica-material,
+  .vista-previa-precio-material {
+    padding: var(--espaciado-mediano);
+  }
+
+  .encabezado-precio-material,
+  .edicion-precio-material {
+    padding: var(--espaciado-mediano);
+  }
+
+  .vista-previa-precio-material__datos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formulario-material .acciones-formulario > .q-btn {
+    flex: 1 1 0;
+  }
+
   .resumen-presupuesto__controles,
   .fila-presupuesto__aviso-moneda {
     align-items: stretch;
@@ -3879,10 +4031,5 @@ input[type='number']::-webkit-outer-spin-button {
 
   .fila-presupuesto__confirmar-moneda {
     width: 100%;
-  }
-
-  .formulario-material__contenedor,
-  .detalle-material__contenedor {
-    padding: var(--espaciado-pequeno);
   }
 }
