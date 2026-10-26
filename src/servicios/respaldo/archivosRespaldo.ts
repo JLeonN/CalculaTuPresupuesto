@@ -13,9 +13,8 @@ export function crearNombreArchivoRespaldo(fecha = new Date()): string {
     String(fecha.getHours()).padStart(2, '0'),
     String(fecha.getMinutes()).padStart(2, '0'),
     String(fecha.getSeconds()).padStart(2, '0'),
-    String(fecha.getMilliseconds()).padStart(3, '0'),
   ].join('-');
-  return `Respaldo-CalculaTuPresupuesto-${sello}-${hora}.json`;
+  return `Respaldo CalculaTuPresupuesto ${sello} ${hora}.json`;
 }
 
 export async function descargarArchivoRespaldo(
