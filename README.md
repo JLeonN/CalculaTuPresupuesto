@@ -82,3 +82,11 @@ Ya existen implementaciones locales de clientes, materiales, presupuestos, confi
 El paquete npm usa `calcula-tu-presupuesto`, la ruta pública es `/CalculaTuPresupuesto/` y Android usa `com.calculatupresupuesto.app`.
 
 Los repositorios locales escriben bajo claves `calcula-tu-presupuesto:*`. Durante la lectura, un adaptador privado reconoce las claves históricas `mallic-tesla:*`, copia su contenido exacto, verifica la copia y solo entonces elimina la clave anterior.
+
+## Copias de seguridad
+
+En **Configuración > Seguridad**, una sesión iniciada permite descargar o importar una copia JSON. Incluye todos los clientes, materiales, presupuestos y la configuración que se haya guardado, con sus identificadores y datos anidados. No incluye la sesión, las credenciales de acceso ni preferencias de interfaz.
+
+La importación compara identificadores y agrega solamente registros faltantes. Si un cliente, material o presupuesto ya existe, conserva el registro local completo, aunque la copia tenga otra versión de sus datos. Tampoco borra los registros locales que no aparecen en el archivo. Antes de importar muestra un resumen y pide confirmación. Una importación interrumpida se puede repetir con el mismo archivo para completar lo pendiente.
+
+En Android se debe elegir un destino externo desde la hoja de compartir, por ejemplo Archivos o una unidad propia. Una copia que solo permanezca dentro de la aplicación puede perderse al desinstalarla. El JSON contiene teléfonos y puede contener datos bancarios: guardarlo en un lugar privado. El formato de respaldo tiene versión propia y no depende de las claves locales; el futuro plan de Firebase deberá leerlo bajo el `uid` autenticado y con reglas de acceso, sin instalar Firebase en este módulo.

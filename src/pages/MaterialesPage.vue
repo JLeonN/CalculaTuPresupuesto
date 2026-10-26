@@ -179,7 +179,7 @@ function localPrincipal(material: Material): string {
         <PaginacionListado v-model="paginaActual" :total-paginas="totalPaginas" />
       </section>
 
-      <section v-else class="estado-vacio-materiales">
+      <section v-else-if="!materialesStore.error" class="estado-vacio-materiales">
         <q-icon name="inventory_2" aria-hidden="true" />
         <h2 class="titulo-seccion">
           {{ terminoBusqueda ? 'No encontramos coincidencias' : 'Todavía no agregaste materiales' }}

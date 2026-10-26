@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import FormularioConfiguracion from '@/components/configuracion/FormularioConfiguracion.vue';
+import PanelCopiasSeguridad from '@/components/configuracion/PanelCopiasSeguridad.vue';
 import type { DatosConfiguracion } from '@/dominio/configuracion';
 import { useConfiguracionStore } from '@/stores/configuracion';
+import { useClientesStore } from '@/stores/clientes';
+import { useMaterialesStore } from '@/stores/materiales';
+import { usePresupuestosStore } from '@/stores/presupuestos';
 
 const $q = useQuasar();
 const configuracionStore = useConfiguracionStore();
+const clientesStore = useClientesStore();
+const materialesStore = useMaterialesStore();
+const presupuestosStore = usePresupuestosStore();
+const cambiosPendientes = ref(false);
 
 onMounted(() => {
   void configuracionStore.asegurarConfiguracionCargada();
@@ -22,6 +30,23 @@ async function guardarConfiguracion(datos: DatosConfiguracion): Promise<void> {
     });
   } catch {
     // El store mantiene un mensaje listo para mostrar en esta pantalla.
+  }
+}
+
+async function actualizarDatosImportados(recargarConfiguracion: boolean): Promise<void> {
+  await Promise.all([
+    clientesStore.cargarClientes(),
+    materialesStore.cargarMateriales(),
+    presupuestosStore.cargarPresupuestos(),
+    recargarConfiguracion ? configuracionStore.cargarConfiguracion() : Promise.resolve(),
+  ]);
+  if (
+    clientesStore.error ||
+    materialesStore.error ||
+    presupuestosStore.error ||
+    (recargarConfiguracion && configuracionStore.error)
+  ) {
+    throw new Error('Los datos se guardaron, pero no se pudieron actualizar todos los listados. Recargá la aplicación.');
   }
 }
 </script>
@@ -50,6 +75,11 @@ async function guardarConfiguracion(datos: DatosConfiguracion): Promise<void> {
         :configuracion="configuracionStore.configuracion"
         :guardando="configuracionStore.guardando"
         @guardar="guardarConfiguracion"
+        @cambios-pendientes="cambiosPendientes = $event"
+      />
+      <PanelCopiasSeguridad
+        :cambios-pendientes="cambiosPendientes"
+        :actualizar-datos="actualizarDatosImportados"
       />
     </main>
   </q-page>

@@ -229,11 +229,29 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
   if (!esRegistro(valor) || typeof valor.id !== 'string' || !Array.isArray(valor.lineas)) {
     return null;
   }
+  if (
+    (valor.moneda !== undefined && !esMoneda(valor.moneda)) ||
+    (valor.estado !== undefined && !esEstadoPresupuesto(valor.estado)) ||
+    (valor.fechaPresupuesto !== undefined && typeof valor.fechaPresupuesto !== 'string') ||
+    (valor.fechaCreacion !== undefined && typeof valor.fechaCreacion !== 'string') ||
+    (valor.fechaActualizacion !== undefined && typeof valor.fechaActualizacion !== 'string') ||
+    (valor.fechaCambioEstado !== undefined &&
+      valor.fechaCambioEstado !== null &&
+      (typeof valor.fechaCambioEstado !== 'string' ||
+        Number.isNaN(Date.parse(valor.fechaCambioEstado))))
+  ) return null;
 
   const destinatario = recuperarDestinatario(valor.destinatario);
   const lineas = valor.lineas.map(recuperarLineaPresupuesto).filter(esLineaRecuperada);
+  const configuracionDocumento = recuperarConfiguracionDocumento(valor.configuracionDocumento);
 
-  if (destinatario === null || lineas.length !== valor.lineas.length) {
+  if (
+    destinatario === null ||
+    lineas.length !== valor.lineas.length ||
+    (valor.configuracionDocumento !== undefined &&
+      valor.configuracionDocumento !== null &&
+      configuracionDocumento === null)
+  ) {
     return null;
   }
 
@@ -260,7 +278,7 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     porcentajeAdicionalMateriales,
     formatoDocumento,
     lineas,
-    configuracionDocumento: recuperarConfiguracionDocumento(valor.configuracionDocumento),
+    configuracionDocumento,
     estado,
     fechaCambioEstado: recuperarFechaCambioEstado(valor.fechaCambioEstado, estado),
     fechaCreacion: obtenerTexto(valor.fechaCreacion) || ahora,
@@ -274,21 +292,21 @@ export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
   }
 
   return (
-    typeof valor.id === 'string' &&
-    typeof valor.fechaPresupuesto === 'string' &&
+    typeof valor.id === 'string' && valor.id.trim() !== '' &&
+    typeof valor.fechaPresupuesto === 'string' && valor.fechaPresupuesto.trim() !== '' &&
     esMoneda(valor.moneda) &&
     esPorcentajeAdicionalMateriales(valor.porcentajeAdicionalMateriales) &&
     esFormatoDocumentoPresupuesto(valor.formatoDocumento) &&
     esDestinatarioGuardado(valor.destinatario) &&
     Array.isArray(valor.lineas) &&
     valor.lineas.every(esLineaPresupuestoGuardada) &&
+    new Set(valor.lineas.map((linea: LineaPresupuesto) => linea.id)).size === valor.lineas.length &&
     (valor.configuracionDocumento === null ||
-      valor.configuracionDocumento === undefined ||
-      recuperarConfiguracionDocumento(valor.configuracionDocumento) !== null) &&
+      esConfiguracionDocumentoGuardada(valor.configuracionDocumento)) &&
     esEstadoPresupuesto(valor.estado) &&
     (valor.fechaCambioEstado === null || typeof valor.fechaCambioEstado === 'string') &&
-    typeof valor.fechaCreacion === 'string' &&
-    typeof valor.fechaActualizacion === 'string'
+    typeof valor.fechaCreacion === 'string' && valor.fechaCreacion.trim() !== '' &&
+    typeof valor.fechaActualizacion === 'string' && valor.fechaActualizacion.trim() !== ''
   );
 }
 
@@ -680,7 +698,13 @@ function recuperarRedesSociales(valor: unknown): RedSocialConfiguracion[] | null
 }
 
 function recuperarDestinatario(valor: unknown): DatosDestinatarioPresupuesto | null {
-  if (!esRegistro(valor)) {
+  if (
+    !esRegistro(valor) ||
+    (valor.tipo !== undefined && valor.tipo !== 'guardado' && valor.tipo !== 'potencial') ||
+    (valor.idCliente !== undefined && valor.idCliente !== null && typeof valor.idCliente !== 'string') ||
+    (valor.nombre !== undefined && typeof valor.nombre !== 'string') ||
+    (valor.telefono !== undefined && typeof valor.telefono !== 'string')
+  ) {
     return null;
   }
 
@@ -702,14 +726,37 @@ function recuperarLineaPresupuesto(valor: unknown): LineaPresupuesto | null {
     return null;
   }
 
-  const opcionesUnidad = Array.isArray(valor.opcionesUnidad)
-    ? valor.opcionesUnidad.map(recuperarOpcionUnidad).filter(esOpcionRecuperada)
+  if (
+    (valor.id !== undefined && typeof valor.id !== 'string') ||
+    (valor.comprado !== undefined && typeof valor.comprado !== 'boolean') ||
+    (valor.origen !== undefined && !esOrigenLineaPresupuesto(valor.origen)) ||
+    (valor.idMaterial !== undefined && valor.idMaterial !== null && typeof valor.idMaterial !== 'string') ||
+    (valor.nombre !== undefined && typeof valor.nombre !== 'string') ||
+    (valor.unidad !== undefined && typeof valor.unidad !== 'string') ||
+    (valor.idPrecioSeleccionado !== undefined &&
+      valor.idPrecioSeleccionado !== null &&
+      typeof valor.idPrecioSeleccionado !== 'string') ||
+    (valor.opcionesUnidad !== undefined && !Array.isArray(valor.opcionesUnidad)) ||
+    (valor.opcionesPrecio !== undefined && !Array.isArray(valor.opcionesPrecio)) ||
+    !esNumeroEditableRecuperable(valor.cantidad) ||
+    !esNumeroEditableRecuperable(valor.precioUnitario) ||
+    (valor.moneda !== undefined && !esMoneda(valor.moneda))
+  ) return null;
+
+  const opcionesUnidadRecuperadas = Array.isArray(valor.opcionesUnidad)
+    ? valor.opcionesUnidad.map(recuperarOpcionUnidad)
     : [];
-  const opcionesPrecio = Array.isArray(valor.opcionesPrecio)
-    ? valor.opcionesPrecio
-        .map(recuperarOpcionPrecio)
-        .filter((opcion): opcion is OpcionPrecioPresupuesto => opcion !== null)
+  const opcionesPrecioRecuperadas = Array.isArray(valor.opcionesPrecio)
+    ? valor.opcionesPrecio.map(recuperarOpcionPrecio)
     : [];
+  if (
+    opcionesUnidadRecuperadas.some((opcion) => opcion === null) ||
+    opcionesPrecioRecuperadas.some((opcion) => opcion === null)
+  ) return null;
+  const opcionesUnidad = opcionesUnidadRecuperadas.filter(esOpcionRecuperada);
+  const opcionesPrecio = opcionesPrecioRecuperadas.filter(
+    (opcion): opcion is OpcionPrecioPresupuesto => opcion !== null,
+  );
 
   return {
     id: typeof valor.id === 'string' ? valor.id : crearIdentificadorMaterial(),
@@ -730,7 +777,7 @@ function recuperarLineaPresupuesto(valor: unknown): LineaPresupuesto | null {
 }
 
 function recuperarOpcionUnidad(valor: unknown): OpcionUnidadPresupuesto | null {
-  if (!esRegistro(valor)) {
+  if (!esRegistro(valor) || !esNumeroEditableRecuperable(valor.precioUnitario)) {
     return null;
   }
 
@@ -746,21 +793,37 @@ function recuperarOpcionUnidad(valor: unknown): OpcionUnidadPresupuesto | null {
 }
 
 function recuperarOpcionPrecio(valor: unknown): OpcionPrecioPresupuesto | null {
-  if (!esRegistro(valor) || typeof valor.id !== 'string' || !esMoneda(valor.moneda)) {
+  if (
+    !esRegistro(valor) ||
+    typeof valor.id !== 'string' ||
+    (valor.moneda !== undefined && !esMoneda(valor.moneda)) ||
+    !esNumeroEditableRecuperable(valor.precioUnitario) ||
+    (valor.unidad !== undefined && typeof valor.unidad !== 'string') ||
+    (valor.opcionesUnidad !== undefined && !Array.isArray(valor.opcionesUnidad))
+  ) {
     return null;
   }
 
-  const opcionesUnidad = Array.isArray(valor.opcionesUnidad)
-    ? valor.opcionesUnidad.map(recuperarOpcionUnidad).filter(esOpcionRecuperada)
+  const opcionesUnidadRecuperadas = Array.isArray(valor.opcionesUnidad)
+    ? valor.opcionesUnidad.map(recuperarOpcionUnidad)
     : [];
+  if (opcionesUnidadRecuperadas.some((opcion) => opcion === null)) return null;
+  const opcionesUnidad = opcionesUnidadRecuperadas.filter(esOpcionRecuperada);
 
   return {
     id: valor.id,
-    moneda: valor.moneda,
+    moneda: esMoneda(valor.moneda) ? valor.moneda : MONEDA_INICIAL,
     unidad: obtenerTexto(valor.unidad).trim() || 'Unidad',
     precioUnitario: normalizarNumeroEditable(valor.precioUnitario, null),
     opcionesUnidad,
   };
+}
+
+function esNumeroEditableRecuperable(valor: unknown): boolean {
+  if (valor === null || valor === undefined || valor === '') return true;
+  if (typeof valor !== 'number' && typeof valor !== 'string') return false;
+  const numero = Number(valor);
+  return Number.isFinite(numero) && numero >= 0;
 }
 
 function normalizarNumeroEditable(valor: unknown, valorVacio: number | null): number | null {
@@ -789,7 +852,7 @@ function esDestinatarioGuardado(valor: unknown): valor is DatosDestinatarioPresu
 function esLineaPresupuestoGuardada(valor: unknown): valor is LineaPresupuesto {
   return (
     esRegistro(valor) &&
-    typeof valor.id === 'string' &&
+    typeof valor.id === 'string' && valor.id.trim() !== '' &&
     TIPOS_CONCEPTO_PRESUPUESTO.some((tipo) => tipo === valor.tipo) &&
     typeof valor.comprado === 'boolean' &&
     ORIGENES_LINEA_PRESUPUESTO.some((origen) => origen === valor.origen) &&
@@ -798,8 +861,61 @@ function esLineaPresupuestoGuardada(valor: unknown): valor is LineaPresupuesto {
     esNumeroOpcional(valor.cantidad) &&
     typeof valor.unidad === 'string' &&
     Array.isArray(valor.opcionesUnidad) &&
+    valor.opcionesUnidad.every(esOpcionUnidadGuardada) &&
+    Array.isArray(valor.opcionesPrecio) &&
+    valor.opcionesPrecio.every(esOpcionPrecioGuardada) &&
+    new Set(valor.opcionesPrecio.map((opcion: OpcionPrecioPresupuesto) => opcion.id)).size ===
+      valor.opcionesPrecio.length &&
+    (valor.idPrecioSeleccionado === null || typeof valor.idPrecioSeleccionado === 'string') &&
     esNumeroOpcional(valor.precioUnitario) &&
     esMoneda(valor.moneda)
+  );
+}
+
+function esOpcionUnidadGuardada(valor: unknown): valor is OpcionUnidadPresupuesto {
+  return (
+    esRegistro(valor) &&
+    typeof valor.unidad === 'string' && valor.unidad.trim() !== '' &&
+    esNumeroOpcional(valor.precioUnitario)
+  );
+}
+
+function esOpcionPrecioGuardada(valor: unknown): valor is OpcionPrecioPresupuesto {
+  return (
+    esRegistro(valor) &&
+    typeof valor.id === 'string' && valor.id.trim() !== '' &&
+    esMoneda(valor.moneda) &&
+    typeof valor.unidad === 'string' &&
+    esNumeroOpcional(valor.precioUnitario) &&
+    Array.isArray(valor.opcionesUnidad) &&
+    valor.opcionesUnidad.every(esOpcionUnidadGuardada)
+  );
+}
+
+function esConfiguracionDocumentoGuardada(valor: unknown): valor is ConfiguracionDocumentoPresupuesto {
+  if (!esRegistro(valor)) return false;
+  const metodosPago = recuperarMetodosPago(valor.metodosPago);
+  const redesSociales = recuperarRedesSociales(valor.redesSociales);
+  return (
+    typeof valor.nombreEmpresa === 'string' &&
+    typeof valor.nombreResponsable === 'string' &&
+    typeof valor.telefono === 'string' &&
+    typeof valor.correo === 'string' &&
+    typeof valor.direccion === 'string' &&
+    typeof valor.rut === 'string' &&
+    typeof valor.mensajeFinal === 'string' &&
+    recuperarLogoConfiguracion(valor.logo) !== undefined &&
+    metodosPago !== null &&
+    identificadoresUnicosDocumento(metodosPago) &&
+    redesSociales !== null &&
+    identificadoresUnicosDocumento(redesSociales)
+  );
+}
+
+function identificadoresUnicosDocumento(registros: { id: string }[]): boolean {
+  return (
+    registros.every((registro) => registro.id.trim() !== '') &&
+    new Set(registros.map((registro) => registro.id)).size === registros.length
   );
 }
 

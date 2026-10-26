@@ -16,10 +16,14 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
   constructor(private readonly almacenamiento: AlmacenamientoClaveValor) {}
 
   async obtener(): Promise<Configuracion> {
+    return (await this.obtenerGuardada()) ?? crearConfiguracionInicial();
+  }
+
+  async obtenerGuardada(): Promise<Configuracion | null> {
     const datosGuardados = await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.configuracion);
 
     if (datosGuardados === null) {
-      return crearConfiguracionInicial();
+      return null;
     }
 
     let configuracionGuardada: unknown;
@@ -27,7 +31,7 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
     try {
       configuracionGuardada = JSON.parse(datosGuardados) as unknown;
     } catch {
-      return crearConfiguracionInicial();
+      throw new Error('La configuración guardada tiene un formato ilegible.');
     }
 
     let configuracionRecuperada: Configuracion;
@@ -50,14 +54,20 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
         configuracionSinPorcentajeMigrada !== null ||
         configuracionModernaMigrada !== null ||
         configuracionAnteriorMigrada !== null;
-      configuracionRecuperada =
+      const configuracionMigrada =
         configuracionSinPorcentajeMigrada ??
         configuracionModernaMigrada ??
-        configuracionAnteriorMigrada ??
-        crearConfiguracionInicial();
+        configuracionAnteriorMigrada;
+      if (configuracionMigrada === null) {
+        throw new Error('La configuración guardada no se pudo recuperar de forma segura.');
+      }
+      configuracionRecuperada = configuracionMigrada;
     }
 
     const configuracionMigrada = migrarMensajeFinalPredeterminado(configuracionRecuperada);
+    if (!esConfiguracionGuardada(configuracionMigrada)) {
+      throw new Error('La configuración guardada no se pudo recuperar de forma segura.');
+    }
 
     if (configuracionNecesitaMigracion || configuracionMigrada !== configuracionRecuperada) {
       try {
@@ -71,9 +81,22 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
   }
 
   async guardar(configuracion: Configuracion): Promise<void> {
+    if (!esConfiguracionGuardada(configuracion)) {
+      throw new Error('La configuración que intentás guardar es inválida.');
+    }
+    const valor = JSON.stringify(configuracion);
     await this.almacenamiento.guardar(
       CLAVES_ALMACENAMIENTO.configuracion,
-      JSON.stringify(configuracion),
+      valor,
     );
+    if (await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.configuracion) !== valor) {
+      throw new Error('No se pudo verificar el guardado de la configuración.');
+    }
+  }
+
+  async guardarSiAusente(configuracion: Configuracion): Promise<boolean> {
+    if (await this.obtenerGuardada() !== null) return false;
+    await this.guardar(configuracion);
+    return true;
   }
 }

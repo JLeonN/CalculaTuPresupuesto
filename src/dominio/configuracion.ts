@@ -200,7 +200,28 @@ export function migrarConfiguracionSinMonedaPrincipal(valor: unknown): Configura
 }
 
 export function migrarConfiguracionAnterior(valor: unknown): Configuracion | null {
-  if (!esRegistro(valor)) {
+  if (
+    !esRegistro(valor) ||
+    typeof valor.nombreEmpresa !== 'string' ||
+    typeof valor.nombreResponsable !== 'string' ||
+    !('precioManoObraHora' in valor || 'datosTransferenciaBancaria' in valor) ||
+    'tarifasManoObra' in valor ||
+    'monedaPrincipal' in valor ||
+    ['telefono', 'correo', 'direccion', 'rut', 'mensajeFinal'].some(
+      (campo) => valor[campo] !== undefined && typeof valor[campo] !== 'string',
+    ) ||
+    (valor.datosTransferenciaBancaria !== undefined &&
+      typeof valor.datosTransferenciaBancaria !== 'string') ||
+    (valor.precioManoObraHora !== undefined && !esPrecioGuardado(valor.precioManoObraHora)) ||
+    (valor.precioTrasladoKilometro !== undefined &&
+      !esPrecioGuardado(valor.precioTrasladoKilometro)) ||
+    (valor.logo !== undefined && !esLogoGuardado(valor.logo)) ||
+    (valor.metodosPago !== undefined && !esListaMetodosPago(valor.metodosPago)) ||
+    (valor.redesSociales !== undefined && !esListaRedesSociales(valor.redesSociales)) ||
+    (valor.fechaActualizacion !== undefined &&
+      valor.fechaActualizacion !== null &&
+      typeof valor.fechaActualizacion !== 'string')
+  ) {
     return null;
   }
 
@@ -321,18 +342,33 @@ function esEstructuraConfiguracionComun(valor: unknown): valor is Record<string,
   return (
     camposTexto.every((campo) => typeof valor[campo] === 'string') &&
     esListaTarifasManoObra(valor.tarifasManoObra) &&
+    identificadoresConfiguracionUnicos(valor.tarifasManoObra) &&
     esPrecioGuardado(valor.precioTrasladoKilometro) &&
     esLogoGuardado(valor.logo) &&
     esListaMetodosPago(valor.metodosPago) &&
+    identificadoresConfiguracionUnicos(valor.metodosPago) &&
     esListaRedesSociales(valor.redesSociales) &&
+    identificadoresConfiguracionUnicos(valor.redesSociales) &&
     (valor.fechaActualizacion === null || typeof valor.fechaActualizacion === 'string')
+  );
+}
+
+function identificadoresConfiguracionUnicos(registros: { id: string }[]): boolean {
+  return (
+    registros.every((registro) => registro.id.trim() !== '') &&
+    new Set(registros.map((registro) => registro.id)).size === registros.length
   );
 }
 
 function esConfiguracionGuardadaSinMonedaPrincipal(
   valor: unknown,
 ): valor is ConfiguracionModernaRecuperable {
-  return esEstructuraConfiguracionComun(valor) && !esMoneda(valor.monedaPrincipal);
+  return (
+    esEstructuraConfiguracionComun(valor) &&
+    valor.monedaPrincipal === undefined &&
+    (valor.porcentajeAdicionalMateriales === undefined ||
+      esPorcentajeAdicionalMateriales(valor.porcentajeAdicionalMateriales))
+  );
 }
 
 function esConfiguracionGuardadaSinPorcentajeAdicionalMateriales(
@@ -341,7 +377,7 @@ function esConfiguracionGuardadaSinPorcentajeAdicionalMateriales(
   return (
     esEstructuraConfiguracionComun(valor) &&
     esMoneda(valor.monedaPrincipal) &&
-    !esPorcentajeAdicionalMateriales(valor.porcentajeAdicionalMateriales)
+    valor.porcentajeAdicionalMateriales === undefined
   );
 }
 

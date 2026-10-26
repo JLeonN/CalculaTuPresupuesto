@@ -1,4 +1,4 @@
-import { formatearImporte, MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
+import { esMoneda, formatearImporte, MONEDA_INICIAL, type Moneda } from '@/dominio/monedas';
 
 export const UNIDADES_MEDIDA = ['Unidad', 'Metro', 'Kilogramo', 'Litro', 'Rollo', 'Otro'] as const;
 export const PRESENTACIONES = ['Caja', 'Paquete', 'Rollo', 'Bolsa', 'Bobina', 'Otro'] as const;
@@ -39,6 +39,87 @@ export interface Material extends Omit<DatosMaterial, 'precios'> {
   precios: PrecioMaterial[];
   fechaCreacion: string;
   fechaActualizacion: string;
+}
+
+export function recuperarMaterialGuardado(valor: unknown): Material | null {
+  if (!esRegistroMaterial(valor) || !Array.isArray(valor.precios)) return null;
+
+  // Los precios anteriores a la función de cantidad parcial no incluían este campo.
+  // La adaptación ocurre en memoria: el dato original permanece intacto en el almacenamiento.
+  const materialAdaptado = {
+    ...valor,
+    precios: valor.precios.map((precio: unknown) =>
+      esRegistroMaterial(precio) && !('precioCantidadParcial' in precio)
+        ? { ...precio, precioCantidadParcial: recuperarPrecioParcialAnterior(precio) }
+        : precio,
+    ),
+  };
+
+  return esMaterialGuardado(materialAdaptado) ? materialAdaptado : null;
+}
+
+function recuperarPrecioParcialAnterior(precio: Record<string, unknown>): number | null {
+  if (
+    precio.modalidad !== 'presentacion' ||
+    typeof precio.importe !== 'number' ||
+    !Number.isFinite(precio.importe) ||
+    typeof precio.cantidadContenido !== 'number' ||
+    !Number.isFinite(precio.cantidadContenido) ||
+    precio.cantidadContenido <= 0
+  ) return null;
+
+  return precio.importe / precio.cantidadContenido;
+}
+
+export function esMaterialGuardado(valor: unknown): valor is Material {
+  if (
+    !esRegistroMaterial(valor) ||
+    !esTextoNoVacio(valor.id) ||
+    !esTextoNoVacio(valor.nombre) ||
+    typeof valor.idPrecioPredeterminado !== 'string' ||
+    !esTextoNoVacio(valor.fechaCreacion) ||
+    !esTextoNoVacio(valor.fechaActualizacion) ||
+    !Array.isArray(valor.precios) ||
+    !valor.precios.every(esPrecioMaterialGuardado)
+  ) return false;
+
+  const ids = valor.precios.map((precio: PrecioMaterial) => precio.id);
+  return (
+    new Set(ids).size === ids.length &&
+    (valor.idPrecioPredeterminado === '' || ids.includes(valor.idPrecioPredeterminado))
+  );
+}
+
+function esPrecioMaterialGuardado(valor: unknown): valor is PrecioMaterial {
+  return (
+    esRegistroMaterial(valor) &&
+    esTextoNoVacio(valor.id) &&
+    typeof valor.comercio === 'string' &&
+    esMoneda(valor.moneda) &&
+    (valor.modalidad === 'directo' || valor.modalidad === 'presentacion') &&
+    esImporteOpcional(valor.importe) &&
+    UNIDADES_MEDIDA.some((unidad) => unidad === valor.unidadMedida) &&
+    typeof valor.unidadPersonalizada === 'string' &&
+    PRESENTACIONES.some((presentacion) => presentacion === valor.presentacion) &&
+    typeof valor.presentacionPersonalizada === 'string' &&
+    esImporteOpcional(valor.cantidadContenido) &&
+    esImporteOpcional(valor.precioCantidadParcial) &&
+    (valor.valorVisible === 'total' || valor.valorVisible === 'unitario') &&
+    esTextoNoVacio(valor.fechaCreacion) &&
+    esTextoNoVacio(valor.fechaActualizacion)
+  );
+}
+
+function esRegistroMaterial(valor: unknown): valor is Record<string, unknown> {
+  return typeof valor === 'object' && valor !== null && !Array.isArray(valor);
+}
+
+function esTextoNoVacio(valor: unknown): valor is string {
+  return typeof valor === 'string' && valor.trim() !== '';
+}
+
+function esImporteOpcional(valor: unknown): valor is number | null {
+  return valor === null || (typeof valor === 'number' && Number.isFinite(valor) && valor >= 0);
 }
 
 export function crearIdentificadorMaterial(): string {

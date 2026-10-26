@@ -1,4 +1,4 @@
-import { recuperarPresupuestoGuardado, type Presupuesto } from '@/dominio/presupuestos';
+import { esPresupuestoGuardado, recuperarPresupuestoGuardado, type Presupuesto } from '@/dominio/presupuestos';
 import { CLAVES_ALMACENAMIENTO } from '@/configuracion/clavesAlmacenamiento';
 import type { AlmacenamientoClaveValor } from '@/repositorios/clientes/AlmacenamientoClaveValor';
 import type { RepositorioPresupuestos } from './RepositorioPresupuestos';
@@ -28,13 +28,33 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
 
     const presupuestosRecuperados = presupuestos.map(recuperarPresupuestoGuardado);
 
-    if (presupuestosRecuperados.some((presupuesto) => presupuesto === null)) {
+    if (
+      presupuestosRecuperados.some((presupuesto) => presupuesto === null) ||
+      presupuestosRecuperados.some((presupuesto) => presupuesto !== null && !esPresupuestoGuardado(presupuesto)) ||
+      new Set(presupuestosRecuperados.map((presupuesto) => presupuesto?.id)).size !==
+        presupuestosRecuperados.length
+    ) {
       throw new Error('Hay presupuestos guardados que no se pudieron recuperar de forma segura.');
     }
 
     return presupuestosRecuperados.filter(
       (presupuesto): presupuesto is Presupuesto => presupuesto !== null,
     );
+  }
+
+  async agregarFaltantes(presupuestosEntrantes: readonly Presupuesto[]): Promise<number> {
+    if (
+      !presupuestosEntrantes.every(esPresupuestoGuardado) ||
+      new Set(presupuestosEntrantes.map((presupuesto) => presupuesto.id)).size !== presupuestosEntrantes.length
+    ) {
+      throw new Error('La copia contiene presupuestos inválidos.');
+    }
+    const presupuestos = await this.obtenerTodos();
+    const ids = new Set(presupuestos.map((presupuesto) => presupuesto.id));
+    const faltantes = presupuestosEntrantes.filter((presupuesto) => !ids.has(presupuesto.id));
+    if (faltantes.length === 0) return 0;
+    await this.guardarTodos([...presupuestos, ...structuredClone(faltantes)]);
+    return faltantes.length;
   }
 
   async guardar(presupuesto: Presupuesto): Promise<void> {
@@ -49,9 +69,14 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
       presupuestos.splice(indicePresupuesto, 1, presupuesto);
     }
 
-    await this.almacenamiento.guardar(
-      CLAVES_ALMACENAMIENTO.presupuestos,
-      JSON.stringify(presupuestos),
-    );
+    await this.guardarTodos(presupuestos);
+  }
+
+  private async guardarTodos(presupuestos: Presupuesto[]): Promise<void> {
+    const valor = JSON.stringify(presupuestos);
+    await this.almacenamiento.guardar(CLAVES_ALMACENAMIENTO.presupuestos, valor);
+    if (await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.presupuestos) !== valor) {
+      throw new Error('No se pudo verificar el guardado de presupuestos.');
+    }
   }
 }

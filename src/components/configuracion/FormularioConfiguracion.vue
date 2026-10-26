@@ -28,6 +28,7 @@ const props = defineProps<{
 
 const emitir = defineEmits<{
   guardar: [datos: DatosConfiguracion];
+  cambiosPendientes: [valor: boolean];
 }>();
 
 const entradaLogo = ref<HTMLInputElement>();
@@ -47,6 +48,7 @@ const mensajeFinal = ref('');
 const metodosPago = ref<MetodoPagoConfiguracion[]>([]);
 const redesSociales = ref<RedSocialConfiguracion[]>([]);
 const errorLogo = ref('');
+const estadoInicial = ref('');
 const opcionesMonedas = obtenerOpcionesMonedasDisponibles();
 const monedaPrincipalCambio = computed(
   () => monedaPrincipal.value !== monedaPrincipalCargada.value,
@@ -57,6 +59,9 @@ const caracteresPorcentaje = computed(() =>
 const logoVistaPrevia = computed(() => logo.value?.datosUrl || LOGO_PREDETERMINADO);
 const textoAlternativoLogo = computed(() =>
   logo.value ? `Logo ${logo.value.nombre}` : `Logo de ${NOMBRE_APLICACION}`,
+);
+const cambiosPendientes = computed(
+  () => estadoInicial.value !== JSON.stringify(obtenerEstadoActual()),
 );
 
 watch(
@@ -96,9 +101,31 @@ watch(
       ? redesGuardadas.map((redSocial) => ({ ...redSocial }))
       : [crearRedSocialConfiguracion()];
     errorLogo.value = '';
+    estadoInicial.value = JSON.stringify(obtenerEstadoActual());
   },
   { immediate: true },
 );
+
+watch(cambiosPendientes, (valor) => emitir('cambiosPendientes', valor), { immediate: true });
+
+function obtenerEstadoActual(): object {
+  return {
+    nombreEmpresa: nombreEmpresa.value,
+    nombreResponsable: nombreResponsable.value,
+    telefono: telefono.value,
+    correo: correo.value,
+    direccion: direccion.value,
+    rut: rut.value,
+    logo: logo.value,
+    tarifasManoObra: tarifasManoObra.value,
+    precioTrasladoKilometro: precioTrasladoKilometro.value,
+    porcentajeAdicionalMateriales: porcentajeAdicionalMaterialesEntrada.value,
+    monedaPrincipal: monedaPrincipal.value,
+    mensajeFinal: mensajeFinal.value,
+    metodosPago: metodosPago.value,
+    redesSociales: redesSociales.value,
+  };
+}
 
 function abrirSelectorLogo(): void {
   entradaLogo.value?.click();

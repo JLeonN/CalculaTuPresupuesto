@@ -35,6 +35,62 @@ export interface DatosCliente {
   notas: string;
 }
 
+export function esClienteGuardado(valor: unknown): valor is Cliente {
+  if (!esRegistroCliente(valor)) return false;
+  if (
+    !esTextoNoVacio(valor.id) ||
+    !esTextoNoVacio(valor.nombre) ||
+    typeof valor.correo !== 'string' ||
+    typeof valor.notas !== 'string' ||
+    !esTextoNoVacio(valor.fechaCreacion) ||
+    !esTextoNoVacio(valor.fechaActualizacion) ||
+    !Array.isArray(valor.telefonos) ||
+    !Array.isArray(valor.locales)
+  ) return false;
+
+  if (
+    !valor.telefonos.every(esTelefonoGuardado) ||
+    !valor.locales.every(esLocalGuardado) ||
+    !identificadoresUnicos(valor.locales)
+  ) return false;
+  const telefonos = [...valor.telefonos, ...valor.locales.flatMap((local) => local.telefonos)];
+  return identificadoresUnicos(telefonos);
+}
+
+function esLocalGuardado(valor: unknown): valor is LocalCliente {
+  return (
+    esRegistroCliente(valor) &&
+    esTextoNoVacio(valor.id) &&
+    typeof valor.nombre === 'string' &&
+    typeof valor.direccion === 'string' &&
+    Array.isArray(valor.telefonos) &&
+    valor.telefonos.every(esTelefonoGuardado) &&
+    identificadoresUnicos(valor.telefonos)
+  );
+}
+
+function esTelefonoGuardado(valor: unknown): valor is TelefonoCliente {
+  return (
+    esRegistroCliente(valor) &&
+    esTextoNoVacio(valor.id) &&
+    typeof valor.numero === 'string' &&
+    ETIQUETAS_TELEFONO.some((etiqueta) => etiqueta === valor.etiqueta) &&
+    typeof valor.esPrincipal === 'boolean'
+  );
+}
+
+function esRegistroCliente(valor: unknown): valor is Record<string, unknown> {
+  return typeof valor === 'object' && valor !== null && !Array.isArray(valor);
+}
+
+function esTextoNoVacio(valor: unknown): valor is string {
+  return typeof valor === 'string' && valor.trim() !== '';
+}
+
+function identificadoresUnicos(registros: { id: string }[]): boolean {
+  return new Set(registros.map((registro) => registro.id)).size === registros.length;
+}
+
 export function crearIdentificador(): string {
   return crypto.randomUUID();
 }
