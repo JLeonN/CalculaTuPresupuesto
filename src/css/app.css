@@ -360,6 +360,15 @@ input[type='number']::-webkit-outer-spin-button {
   border-radius: var(--radio-mediano);
 }
 
+.marca-escritorio .logo-empresa {
+  padding: 0;
+  background: transparent;
+}
+
+.marca-escritorio .logo-empresa__imagen {
+  object-fit: cover;
+}
+
 .marca-escritorio__texto {
   display: flex;
   flex-direction: column;
@@ -510,6 +519,15 @@ input[type='number']::-webkit-outer-spin-button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.presentacion-inicio__marca .logo-empresa {
+  padding: 0;
+  background: transparent;
+}
+
+.presentacion-inicio__marca .logo-empresa__imagen {
+  object-fit: cover;
 }
 
 .seccion-accesos {
