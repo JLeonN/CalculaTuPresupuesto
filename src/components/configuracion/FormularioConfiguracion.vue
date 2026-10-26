@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
 import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
 import { obtenerIconoRedSocial } from '@/configuracion/iconosRedesSociales';
@@ -47,6 +47,10 @@ const porcentajeAdicionalMaterialesEntrada = ref<string | number | null>('0');
 const monedaPrincipal = ref<Moneda>(MONEDA_INICIAL);
 const monedaPrincipalCargada = ref<Moneda>(MONEDA_INICIAL);
 const mensajeFinal = ref('');
+const contenedorMensajeFinal = ref<HTMLElement | null>(null);
+let observadorAnchoMensaje: ResizeObserver | null = null;
+let anchoMensajeAnterior = 0;
+let fotogramaAjusteMensaje = 0;
 const metodosPago = ref<MetodoPagoConfiguracion[]>([]);
 const redesSociales = ref<RedSocialConfiguracion[]>([]);
 const errorLogo = ref('');
@@ -109,6 +113,49 @@ watch(
 );
 
 watch(cambiosPendientes, (valor) => emitir('cambiosPendientes', valor), { immediate: true });
+
+watch([mensajeFinal, () => props.categoriaActiva], programarAjusteMensaje);
+
+onMounted(() => {
+  if (typeof ResizeObserver !== 'undefined' && contenedorMensajeFinal.value) {
+    observadorAnchoMensaje = new ResizeObserver(([entrada]) => {
+      const anchoActual = entrada?.contentRect.width ?? 0;
+      if (anchoActual !== anchoMensajeAnterior) {
+        anchoMensajeAnterior = anchoActual;
+        programarAjusteMensaje();
+      }
+    });
+    observadorAnchoMensaje.observe(contenedorMensajeFinal.value);
+  }
+  programarAjusteMensaje();
+});
+
+onBeforeUnmount(() => {
+  observadorAnchoMensaje?.disconnect();
+  cancelAnimationFrame(fotogramaAjusteMensaje);
+});
+
+function programarAjusteMensaje(): void {
+  void nextTick(() => {
+    if (props.categoriaActiva !== 'comunicacion') return;
+    cancelAnimationFrame(fotogramaAjusteMensaje);
+    fotogramaAjusteMensaje = requestAnimationFrame(ajustarAlturaMensaje);
+  });
+}
+
+function ajustarAlturaMensaje(): void {
+  const campo = contenedorMensajeFinal.value?.querySelector('textarea');
+  if (!campo) return;
+
+  const alturaActual = campo.getBoundingClientRect().height;
+  campo.style.transition = 'none';
+  campo.style.height = 'auto';
+  const alturaNecesaria = campo.scrollHeight;
+  campo.style.height = `${alturaActual}px`;
+  void campo.offsetHeight;
+  campo.style.transition = '';
+  campo.style.height = `${alturaNecesaria}px`;
+}
 
 function obtenerEstadoActual(): object {
   return {
@@ -697,6 +744,7 @@ function mostrarCategoriaConError(componente: unknown): void {
       </div>
 
       <section
+        ref="contenedorMensajeFinal"
         v-show="categoriaActiva === 'comunicacion'"
         class="seccion-formulario"
         data-categoria-configuracion="comunicacion"
@@ -718,7 +766,7 @@ function mostrarCategoriaConError(componente: unknown): void {
           dark
           outlined
           type="textarea"
-          autogrow
+          rows="1"
           label="Mensaje final predeterminado"
         />
       </section>

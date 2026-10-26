@@ -3689,6 +3689,13 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: var(--tamano-texto-destacado);
 }
 
+.formulario-configuracion .campo-notas-generales .q-field__native {
+  min-height: var(--altura-control);
+  resize: none;
+  overflow-y: hidden;
+  transition: height var(--duracion-transicion) ease;
+}
+
 .formulario-configuracion .texto-ayuda-formulario {
   margin-bottom: 0;
 }
