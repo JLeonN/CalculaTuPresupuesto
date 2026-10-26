@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import SelectorMoneda from '@/components/monedas/SelectorMoneda.vue';
 import { LOGO_PREDETERMINADO, NOMBRE_APLICACION } from '@/configuracion/identidadAplicacion';
 import { obtenerIconoRedSocial } from '@/configuracion/iconosRedesSociales';
@@ -24,11 +24,13 @@ const TIPOS_LOGO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
 const props = defineProps<{
   configuracion: Configuracion;
   guardando: boolean;
+  categoriaActiva: 'empresa' | 'valores' | 'cobros' | 'comunicacion' | 'copias';
 }>();
 
 const emitir = defineEmits<{
   guardar: [datos: DatosConfiguracion];
   cambiosPendientes: [valor: boolean];
+  'update:categoriaActiva': [valor: 'empresa' | 'valores' | 'cobros' | 'comunicacion' | 'copias'];
 }>();
 
 const entradaLogo = ref<HTMLInputElement>();
@@ -287,12 +289,34 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
     evento.target.select();
   }
 }
+
+function mostrarCategoriaConError(componente: unknown): void {
+  if (!componente || typeof componente !== 'object' || !('$el' in componente)) return;
+  const elemento = componente.$el;
+  if (!(elemento instanceof Element)) return;
+  const seccion = elemento.closest<HTMLElement>('[data-categoria-configuracion]');
+  const categoria = seccion?.dataset.categoriaConfiguracion;
+  if (categoria === 'empresa' || categoria === 'valores' || categoria === 'cobros') {
+    emitir('update:categoriaActiva', categoria);
+    void nextTick(() => elemento.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')?.focus());
+  }
+}
 </script>
 
 <template>
-  <q-form class="formulario-configuracion" greedy @submit="guardarConfiguracion">
+  <q-form
+    class="formulario-configuracion"
+    greedy
+    @submit="guardarConfiguracion"
+    @validation-error="mostrarCategoriaConError"
+  >
     <div class="formulario-configuracion__contenedor">
-      <section class="seccion-formulario" aria-labelledby="titulo-empresa-configuracion">
+      <section
+        v-show="categoriaActiva === 'empresa'"
+        class="seccion-formulario"
+        data-categoria-configuracion="empresa"
+        aria-labelledby="titulo-empresa-configuracion"
+      >
         <div class="encabezado-seccion-formulario">
           <div>
             <p class="etiqueta-seccion">Identidad y contacto</p>
@@ -308,6 +332,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
             v-model="nombreEmpresa"
             dark
             outlined
+            hide-bottom-space
             label="Nombre de la empresa"
             :rules="[
               (valor) => Boolean(String(valor).trim()) || 'Ingresá el nombre de la empresa.',
@@ -317,6 +342,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
             v-model="nombreResponsable"
             dark
             outlined
+            hide-bottom-space
             label="Nombre del responsable"
             :rules="[
               (valor) => Boolean(String(valor).trim()) || 'Ingresá el nombre del responsable.',
@@ -327,6 +353,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
             v-model="correo"
             dark
             outlined
+            hide-bottom-space
             type="email"
             label="Correo electrónico"
             :rules="[validarCorreo]"
@@ -380,7 +407,11 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
         </div>
       </section>
 
-      <div class="grupo-configuracion grupo-configuracion--valores">
+      <div
+        v-show="categoriaActiva === 'valores'"
+        class="grupo-configuracion grupo-configuracion--valores"
+        data-categoria-configuracion="valores"
+      >
         <section class="seccion-formulario" aria-labelledby="titulo-mano-obra-configuracion">
           <div class="encabezado-seccion-formulario">
             <div>
@@ -411,6 +442,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
                   v-model="tarifa.nombre"
                   dark
                   outlined
+                  hide-bottom-space
                   label="Tipo de trabajo"
                   :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá un nombre.']"
                 />
@@ -418,6 +450,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
                   v-model.number="tarifa.precioHora"
                   dark
                   outlined
+                  hide-bottom-space
                   type="number"
                   min="0"
                   step="0.01"
@@ -458,6 +491,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
                 v-model.number="precioTrasladoKilometro"
                 dark
                 outlined
+                hide-bottom-space
                 type="number"
                 min="0"
                 step="0.01"
@@ -492,6 +526,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
                 :style="{ '--caracteres-porcentaje': caracteresPorcentaje }"
                 dark
                 outlined
+                hide-bottom-space
                 type="text"
                 inputmode="decimal"
                 label="Porcentaje adicional"
@@ -533,7 +568,11 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
         </div>
       </div>
 
-      <div class="grupo-configuracion grupo-configuracion--contacto">
+      <div
+        v-show="categoriaActiva === 'cobros'"
+        class="grupo-configuracion grupo-configuracion--contacto"
+        data-categoria-configuracion="cobros"
+      >
         <section class="seccion-formulario" aria-labelledby="titulo-pagos-configuracion">
           <div class="encabezado-seccion-formulario">
             <div>
@@ -657,7 +696,12 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
         </section>
       </div>
 
-      <section class="seccion-formulario" aria-labelledby="titulo-mensaje-configuracion">
+      <section
+        v-show="categoriaActiva === 'comunicacion'"
+        class="seccion-formulario"
+        data-categoria-configuracion="comunicacion"
+        aria-labelledby="titulo-mensaje-configuracion"
+      >
         <div class="encabezado-seccion-formulario">
           <div>
             <p class="etiqueta-seccion">Comunicación</p>
@@ -686,7 +730,7 @@ function seleccionarContenidoPorcentaje(evento: Event): void {
           no-caps
           type="submit"
           icon="save"
-          label="Guardar configuración"
+          label="Guardar cambios"
           :loading="guardando"
           :disable="guardando"
         />

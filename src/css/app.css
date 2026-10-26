@@ -2888,7 +2888,20 @@ input[type='number']::-webkit-outer-spin-button {
 .selector-red-social__seleccion {
   display: inline-flex;
   align-items: center;
+  min-width: 0;
+  max-width: 100%;
   gap: var(--espaciado-pequeno);
+}
+
+.selector-red-social__seleccion span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Quasar reserva 50 px para buscar; en columnas estrechas desplaza la selección a otra línea. */
+.selector-red-social .q-field__input {
+  min-width: 0 !important;
 }
 
 .documento-presupuesto__redes span {
@@ -3340,31 +3353,6 @@ input[type='number']::-webkit-outer-spin-button {
   margin-bottom: var(--espaciado-mediano);
 }
 
-/* El ancho mínimo deja espacio para dos tarjetas y sus campos dentro del formulario. */
-@container (min-width: 52rem) {
-  .grupo-configuracion--valores,
-  .grupo-configuracion--contacto {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
-  }
-
-  .grupo-configuracion--valores .campos-tarifa-mano-obra,
-  .grupo-configuracion--contacto .campos-metodo-pago,
-  .grupo-configuracion--contacto .campos-red-social {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .grupo-configuracion--valores > .seccion-formulario:first-child .encabezado-seccion-formulario,
-  .grupo-configuracion--contacto .encabezado-seccion-formulario {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .grupo-configuracion .encabezado-seccion-formulario .q-btn {
-    align-self: start;
-  }
-}
-
 .grilla-configuracion,
 .campos-tarifa-mano-obra,
 .campos-metodo-pago,
@@ -3580,6 +3568,250 @@ input[type='number']::-webkit-outer-spin-button {
 
   .selector-logo-configuracion__botones {
     justify-content: space-between;
+  }
+}
+
+.encabezado-configuracion {
+  padding-block: var(--espaciado-pequeno) var(--espaciado-mediano);
+}
+
+.encabezado-configuracion .texto-secundario {
+  margin-top: var(--espaciado-pequeno);
+}
+
+.contenedor-configuracion {
+  container-type: inline-size;
+}
+
+.configuracion-cambios-pendientes {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaciado-minimo);
+  color: var(--color-advertencia);
+  font-size: var(--tamano-texto-secundario);
+}
+
+.espacio-configuracion {
+  display: grid;
+  grid-template-columns: var(--ancho-navegacion-configuracion) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--espaciado-mediano);
+}
+
+.espacio-configuracion__contenido {
+  min-width: 0;
+}
+
+.navegacion-configuracion {
+  display: grid;
+  padding: var(--espaciado-pequeno);
+  gap: var(--espaciado-minimo);
+  background: var(--color-fondo-secundario);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-mediano);
+}
+
+.navegacion-configuracion__item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--altura-control);
+  padding: var(--espaciado-control);
+  gap: var(--espaciado-control);
+  color: var(--color-texto-secundario);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: var(--ancho-borde) solid transparent;
+  border-radius: var(--radio-pequeno);
+  font: inherit;
+}
+
+.navegacion-configuracion__item:hover {
+  background: var(--color-superficie-interactiva);
+}
+
+.navegacion-configuracion__item:focus-visible {
+  outline: var(--ancho-borde-foco) solid var(--color-foco);
+  outline-offset: var(--ancho-borde);
+}
+
+.navegacion-configuracion__item--activo {
+  color: var(--color-accion-principal);
+  background: var(--color-accion-suave);
+  border-color: var(--color-accion-borde);
+}
+
+.navegacion-configuracion__item > .q-icon {
+  flex: 0 0 auto;
+  font-size: var(--tamano-icono-navegacion);
+}
+
+.navegacion-configuracion__texto {
+  display: grid;
+  min-width: 0;
+  gap: var(--espaciado-minimo);
+}
+
+.navegacion-configuracion__texto strong {
+  font-size: var(--tamano-texto-secundario);
+  line-height: var(--altura-linea-compacta);
+}
+
+.navegacion-configuracion__texto small {
+  color: var(--color-texto-suave);
+  font-size: var(--tamano-texto-pequeno);
+}
+
+.formulario-configuracion__contenedor {
+  padding: 0;
+  gap: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.formulario-configuracion .seccion-formulario,
+.espacio-configuracion .panel-copias {
+  padding: var(--espaciado-mediano);
+  border-radius: var(--radio-mediano);
+}
+
+.formulario-configuracion .encabezado-seccion-formulario {
+  margin-bottom: var(--espaciado-mediano);
+}
+
+.formulario-configuracion .etiqueta-seccion {
+  margin-bottom: var(--espaciado-pequeno);
+}
+
+.formulario-configuracion .titulo-seccion {
+  font-size: var(--tamano-texto-destacado);
+}
+
+.formulario-configuracion .texto-ayuda-formulario {
+  margin-bottom: 0;
+}
+
+.formulario-configuracion .grilla-configuracion,
+.formulario-configuracion .grupo-configuracion,
+.formulario-configuracion .grupo-configuracion__columna,
+.formulario-configuracion .lista-campos-repetibles,
+.formulario-configuracion .bloque-repetible__campos {
+  gap: var(--espaciado-control);
+}
+
+.formulario-configuracion .grupo-configuracion--valores {
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+}
+
+.formulario-configuracion .grupo-configuracion--contacto {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.formulario-configuracion .campos-tarifa-mano-obra,
+.formulario-configuracion .campos-metodo-pago,
+.formulario-configuracion .campos-red-social {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.formulario-configuracion .grupo-configuracion .encabezado-seccion-formulario {
+  flex-direction: row;
+  align-items: start;
+}
+
+.formulario-configuracion .grupo-configuracion__columna > .seccion-formulario {
+  padding: var(--espaciado-mediano);
+}
+
+.formulario-configuracion .bloque-repetible {
+  align-items: center;
+  padding: var(--espaciado-control);
+}
+
+.formulario-configuracion .selector-logo-configuracion {
+  grid-template-columns: var(--tamano-logo-mediano) minmax(0, 1fr);
+  margin-top: var(--espaciado-mediano);
+  padding: var(--espaciado-control);
+  gap: var(--espaciado-mediano);
+}
+
+.formulario-configuracion .selector-logo-configuracion__vista {
+  width: var(--tamano-logo-mediano);
+  height: var(--tamano-logo-mediano);
+}
+
+.formulario-configuracion .acciones-formulario {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding: var(--espaciado-control) 0;
+  background: var(--color-fondo-principal);
+}
+
+.espacio-configuracion .panel-copias {
+  margin-top: 0;
+}
+
+@container (max-width: 65rem) {
+  .espacio-configuracion {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .navegacion-configuracion {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .navegacion-configuracion__item {
+    flex: 0 0 auto;
+    width: auto;
+  }
+}
+
+@container (max-width: 52rem) {
+  .formulario-configuracion .grupo-configuracion--valores,
+  .formulario-configuracion .grupo-configuracion--contacto {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 63.9375rem) {
+  .formulario-configuracion .acciones-formulario {
+    bottom: calc(var(--altura-navegacion-movil) + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 43.75rem) {
+  .navegacion-configuracion__texto small {
+    display: none;
+  }
+
+  .navegacion-configuracion__item {
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--espaciado-minimo);
+    text-align: center;
+  }
+
+  .formulario-configuracion .grilla-configuracion,
+  .formulario-configuracion .campos-tarifa-mano-obra,
+  .formulario-configuracion .campos-metodo-pago,
+  .formulario-configuracion .campos-red-social {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formulario-configuracion .grupo-configuracion .encabezado-seccion-formulario {
+    flex-direction: column;
+  }
+
+  .formulario-configuracion .selector-logo-configuracion {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formulario-configuracion .acciones-formulario .q-btn {
+    width: 100%;
   }
 }
 
