@@ -22,7 +22,10 @@ export class ErrorResumenImportacionCambiado extends Error {
 }
 
 export class ErrorImportacionParcial extends Error {
-  constructor(readonly gruposCompletados: readonly string[], causa: unknown) {
+  constructor(
+    readonly gruposCompletados: readonly string[],
+    causa: unknown,
+  ) {
     super(
       gruposCompletados.length > 0
         ? `La importación se interrumpió después de completar ${gruposCompletados.join(', ')}. El grupo siguiente también pudo guardarse. Volvé a importar el mismo archivo para completar lo pendiente.`

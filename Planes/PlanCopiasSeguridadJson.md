@@ -41,26 +41,26 @@ Agregar en Configuración una sección «Seguridad» para guardar y recuperar ma
 
 ## Mapa de cambios
 
-| Archivo | Acción | Símbolos principales | Propósito |
-| --- | --- | --- | --- |
-| `src/dominio/clientes.ts` | Modificar | `esClienteGuardado` | Validar clientes y estructuras anidadas. |
-| `src/dominio/materiales.ts` | Modificar | `esMaterialGuardado` | Validar materiales y todos sus precios. |
-| `src/dominio/presupuestos.ts` | Modificar | `esPresupuestoGuardado` | Completar la validación de líneas, opciones y configuración histórica. |
-| `src/dominio/configuracion.ts` | Modificar | `migrarConfiguracionAnterior`, guardia de formato anterior | Rechazar objetos arbitrarios sin romper migraciones válidas. |
-| `src/dominio/respaldo.ts` | Crear | `RespaldoDatos`, `ResumenImportacion`, `crearRespaldo`, `validarRespaldo`, `compararRespaldo` | Contrato versionado, validación integral y comparación pura. |
-| `src/repositorios/clientes/RepositorioClientes.ts`, `RepositorioClientesLocal.ts` | Modificar | `agregarFaltantes`, `obtenerTodos` | Lectura segura e inserción por lotes sin sobreescritura. |
-| `src/repositorios/materiales/RepositorioMateriales.ts`, `RepositorioMaterialesLocal.ts` | Modificar | `agregarFaltantes`, `obtenerTodos` | Misma garantía para materiales. |
-| `src/repositorios/presupuestos/RepositorioPresupuestos.ts`, `RepositorioPresupuestosLocal.ts` | Modificar | `agregarFaltantes`, `obtenerTodos` | Misma garantía para presupuestos, preservando la recuperación histórica. |
-| `src/repositorios/configuracion/RepositorioConfiguracion.ts`, `RepositorioConfiguracionLocal.ts` | Modificar | `obtenerGuardada`, `guardarSiAusente` | Distinguir configuración nunca guardada de configuración existente. |
-| `src/servicios/respaldo/ServicioRespaldo.ts` | Crear | `generarRespaldo`, `previsualizarImportacion`, `importarFaltantes` | Coordinar repositorios sin depender de claves o de Pinia. |
-| `src/servicios/respaldo/archivosRespaldo.ts` | Crear | `descargarArchivoRespaldo`, `crearNombreArchivoRespaldo` | Descargar en web o abrir destino externo en Android. |
-| `src/components/configuracion/PanelCopiasSeguridad.vue` | Crear | `descargarCopia`, `seleccionarCopia`, `confirmarImportacion` | Interfaz y estados de respaldo, importación y confirmación. |
-| `src/pages/ConfiguracionPage.vue` | Modificar | montaje de `PanelCopiasSeguridad` | Agregar sección «Seguridad» después del formulario. |
-| `src/components/configuracion/FormularioConfiguracion.vue` | Modificar | `cambiosPendientes` | Avisar a la página si hay edición sin guardar antes de importar. |
-| `src/components/autenticacion/ModalInicioSesion.vue` | Modificar | texto de ayuda | Incluir copias de seguridad entre las acciones que requieren sesión. |
-| `src/css/app.css` | Modificar | clases del panel | Adaptar controles, resumen y mensajes a teléfono y escritorio. |
-| `src/css/Variables.css` | Modificar solo si hace falta | tokens semánticos | Evitar valores visuales reutilizables dispersos. |
-| `README.md` | Modificar | sección de copias de seguridad | Documentar alcance, resguardo externo y futura migración. |
+| Archivo                                                                                          | Acción                       | Símbolos principales                                                                          | Propósito                                                                |
+| ------------------------------------------------------------------------------------------------ | ---------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `src/dominio/clientes.ts`                                                                        | Modificar                    | `esClienteGuardado`                                                                           | Validar clientes y estructuras anidadas.                                 |
+| `src/dominio/materiales.ts`                                                                      | Modificar                    | `esMaterialGuardado`                                                                          | Validar materiales y todos sus precios.                                  |
+| `src/dominio/presupuestos.ts`                                                                    | Modificar                    | `esPresupuestoGuardado`                                                                       | Completar la validación de líneas, opciones y configuración histórica.   |
+| `src/dominio/configuracion.ts`                                                                   | Modificar                    | `migrarConfiguracionAnterior`, guardia de formato anterior                                    | Rechazar objetos arbitrarios sin romper migraciones válidas.             |
+| `src/dominio/respaldo.ts`                                                                        | Crear                        | `RespaldoDatos`, `ResumenImportacion`, `crearRespaldo`, `validarRespaldo`, `compararRespaldo` | Contrato versionado, validación integral y comparación pura.             |
+| `src/repositorios/clientes/RepositorioClientes.ts`, `RepositorioClientesLocal.ts`                | Modificar                    | `agregarFaltantes`, `obtenerTodos`                                                            | Lectura segura e inserción por lotes sin sobreescritura.                 |
+| `src/repositorios/materiales/RepositorioMateriales.ts`, `RepositorioMaterialesLocal.ts`          | Modificar                    | `agregarFaltantes`, `obtenerTodos`                                                            | Misma garantía para materiales.                                          |
+| `src/repositorios/presupuestos/RepositorioPresupuestos.ts`, `RepositorioPresupuestosLocal.ts`    | Modificar                    | `agregarFaltantes`, `obtenerTodos`                                                            | Misma garantía para presupuestos, preservando la recuperación histórica. |
+| `src/repositorios/configuracion/RepositorioConfiguracion.ts`, `RepositorioConfiguracionLocal.ts` | Modificar                    | `obtenerGuardada`, `guardarSiAusente`                                                         | Distinguir configuración nunca guardada de configuración existente.      |
+| `src/servicios/respaldo/ServicioRespaldo.ts`                                                     | Crear                        | `generarRespaldo`, `previsualizarImportacion`, `importarFaltantes`                            | Coordinar repositorios sin depender de claves o de Pinia.                |
+| `src/servicios/respaldo/archivosRespaldo.ts`                                                     | Crear                        | `descargarArchivoRespaldo`, `crearNombreArchivoRespaldo`                                      | Descargar en web o abrir destino externo en Android.                     |
+| `src/components/configuracion/PanelCopiasSeguridad.vue`                                          | Crear                        | `descargarCopia`, `seleccionarCopia`, `confirmarImportacion`                                  | Interfaz y estados de respaldo, importación y confirmación.              |
+| `src/pages/ConfiguracionPage.vue`                                                                | Modificar                    | montaje de `PanelCopiasSeguridad`                                                             | Agregar sección «Seguridad» después del formulario.                      |
+| `src/components/configuracion/FormularioConfiguracion.vue`                                       | Modificar                    | `cambiosPendientes`                                                                           | Avisar a la página si hay edición sin guardar antes de importar.         |
+| `src/components/autenticacion/ModalInicioSesion.vue`                                             | Modificar                    | texto de ayuda                                                                                | Incluir copias de seguridad entre las acciones que requieren sesión.     |
+| `src/css/app.css`                                                                                | Modificar                    | clases del panel                                                                              | Adaptar controles, resumen y mensajes a teléfono y escritorio.           |
+| `src/css/Variables.css`                                                                          | Modificar solo si hace falta | tokens semánticos                                                                             | Evitar valores visuales reutilizables dispersos.                         |
+| `README.md`                                                                                      | Modificar                    | sección de copias de seguridad                                                                | Documentar alcance, resguardo externo y futura migración.                |
 
 ## FASE 1: Asegurar las lecturas y definir el formato
 

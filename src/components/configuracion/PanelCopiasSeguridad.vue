@@ -33,10 +33,10 @@ const hayRegistrosNuevos = computed(() => {
   const resumen = resumenImportacion.value;
   return Boolean(
     resumen &&
-      (resumen.clientes.nuevos > 0 ||
-        resumen.materiales.nuevos > 0 ||
-        resumen.presupuestos.nuevos > 0 ||
-        resumen.configuracion === 'seAgrega'),
+    (resumen.clientes.nuevos > 0 ||
+      resumen.materiales.nuevos > 0 ||
+      resumen.presupuestos.nuevos > 0 ||
+      resumen.configuracion === 'seAgrega'),
   );
 });
 
@@ -70,14 +70,18 @@ async function descargarCopia(): Promise<void> {
     }
     const destino = await descargarArchivoRespaldo(respaldo);
     $q.notify({
-      message: destino === 'navegador'
-        ? 'Se inició la descarga. Comprobá que el archivo se haya guardado.'
-        : 'Elegí un destino externo y comprobá allí que la copia se haya guardado.',
+      message:
+        destino === 'navegador'
+          ? 'Se inició la descarga. Comprobá que el archivo se haya guardado.'
+          : 'Elegí un destino externo y comprobá allí que la copia se haya guardado.',
       position: 'top',
       classes: 'notificacion-exito',
     });
   } catch (errorCapturado) {
-    errorAccion.value = obtenerMensaje(errorCapturado, 'No se pudo preparar la copia de seguridad.');
+    errorAccion.value = obtenerMensaje(
+      errorCapturado,
+      'No se pudo preparar la copia de seguridad.',
+    );
   } finally {
     operacion.value = null;
   }
@@ -129,7 +133,8 @@ async function prepararConfirmacion(): Promise<void> {
     !hayRegistrosNuevos.value ||
     !comprobarFormulario() ||
     !(await comprobarAcceso())
-  ) return;
+  )
+    return;
   confirmacionVisible.value = true;
 }
 
@@ -317,7 +322,9 @@ function obtenerMensaje(errorCapturado: unknown, mensajePredeterminado: string):
       <q-card class="panel-copias__confirmacion">
         <q-card-section>
           <h3 class="titulo-seccion">Confirmar importación</h3>
-          <p>Se agregarán solo registros faltantes. No se modificarán ni borrarán datos actuales.</p>
+          <p>
+            Se agregarán solo registros faltantes. No se modificarán ni borrarán datos actuales.
+          </p>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat no-caps label="Cancelar" @click="confirmacionVisible = false" />

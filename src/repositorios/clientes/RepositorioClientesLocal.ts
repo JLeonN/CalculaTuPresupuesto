@@ -69,14 +69,19 @@ export class RepositorioClientesLocal implements RepositorioClientes {
   private async guardarTodos(clientes: Cliente[]): Promise<void> {
     const valor = JSON.stringify(clientes);
     await this.almacenamiento.guardar(CLAVES_ALMACENAMIENTO.clientes, valor);
-    if (await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.clientes) !== valor) {
+    if ((await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.clientes)) !== valor) {
       throw new Error('No se pudo verificar el guardado de clientes.');
     }
   }
 }
 
 function normalizarClienteAnterior(valor: unknown): unknown {
-  if (typeof valor !== 'object' || valor === null || !('locales' in valor) || !Array.isArray(valor.locales)) {
+  if (
+    typeof valor !== 'object' ||
+    valor === null ||
+    !('locales' in valor) ||
+    !Array.isArray(valor.locales)
+  ) {
     return valor;
   }
   return {

@@ -25,10 +25,11 @@ const materialesFiltrados = computed(() =>
     direccionOrden.value,
   ),
 );
-const { paginaActual, totalPaginas, registrosPagina: materialesPagina } = usePaginacionListado(
-  materialesFiltrados,
-  [terminoBusqueda, criterioOrden, direccionOrden],
-);
+const {
+  paginaActual,
+  totalPaginas,
+  registrosPagina: materialesPagina,
+} = usePaginacionListado(materialesFiltrados, [terminoBusqueda, criterioOrden, direccionOrden]);
 
 onMounted(() => {
   void materialesStore.cargarMateriales();
@@ -153,11 +154,7 @@ function localPrincipal(material: Material): string {
         </div>
 
         <div class="tarjetas-materiales">
-          <article
-            v-for="material in materialesPagina"
-            :key="material.id"
-            class="tarjeta-material"
-          >
+          <article v-for="material in materialesPagina" :key="material.id" class="tarjeta-material">
             <h2>{{ material.nombre }}</h2>
             <div class="tarjeta-material__datos">
               <span><q-icon name="store" />{{ localPrincipal(material) }}</span>

@@ -85,17 +85,14 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
       throw new Error('La configuración que intentás guardar es inválida.');
     }
     const valor = JSON.stringify(configuracion);
-    await this.almacenamiento.guardar(
-      CLAVES_ALMACENAMIENTO.configuracion,
-      valor,
-    );
-    if (await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.configuracion) !== valor) {
+    await this.almacenamiento.guardar(CLAVES_ALMACENAMIENTO.configuracion, valor);
+    if ((await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.configuracion)) !== valor) {
       throw new Error('No se pudo verificar el guardado de la configuración.');
     }
   }
 
   async guardarSiAusente(configuracion: Configuracion): Promise<boolean> {
-    if (await this.obtenerGuardada() !== null) return false;
+    if ((await this.obtenerGuardada()) !== null) return false;
     await this.guardar(configuracion);
     return true;
   }

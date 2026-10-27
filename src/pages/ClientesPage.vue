@@ -14,10 +14,11 @@ import { useClientesStore } from '@/stores/clientes';
 const clientesStore = useClientesStore();
 const terminoBusqueda = ref<string | null>('');
 const clientesFiltrados = computed(() => clientesStore.buscarClientes(terminoBusqueda.value ?? ''));
-const { paginaActual, totalPaginas, registrosPagina: clientesPagina } = usePaginacionListado(
-  clientesFiltrados,
-  [terminoBusqueda],
-);
+const {
+  paginaActual,
+  totalPaginas,
+  registrosPagina: clientesPagina,
+} = usePaginacionListado(clientesFiltrados, [terminoBusqueda]);
 
 onMounted(() => {
   void clientesStore.cargarClientes();

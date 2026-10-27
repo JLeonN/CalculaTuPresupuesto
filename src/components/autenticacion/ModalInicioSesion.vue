@@ -64,7 +64,8 @@ function cerrarModal(): void {
 
       <q-form class="modal-inicio-sesion__formulario" @submit="enviarFormulario">
         <p class="texto-secundario modal-inicio-sesion__descripcion">
-          Iniciá sesión para descargar, imprimir y enviar presupuestos o gestionar copias de seguridad.
+          Iniciá sesión para descargar, imprimir y enviar presupuestos o gestionar copias de
+          seguridad.
         </p>
 
         <q-input

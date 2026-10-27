@@ -1,4 +1,8 @@
-import { esPresupuestoGuardado, recuperarPresupuestoGuardado, type Presupuesto } from '@/dominio/presupuestos';
+import {
+  esPresupuestoGuardado,
+  recuperarPresupuestoGuardado,
+  type Presupuesto,
+} from '@/dominio/presupuestos';
 import { CLAVES_ALMACENAMIENTO } from '@/configuracion/clavesAlmacenamiento';
 import type { AlmacenamientoClaveValor } from '@/repositorios/clientes/AlmacenamientoClaveValor';
 import type { RepositorioPresupuestos } from './RepositorioPresupuestos';
@@ -30,7 +34,9 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
 
     if (
       presupuestosRecuperados.some((presupuesto) => presupuesto === null) ||
-      presupuestosRecuperados.some((presupuesto) => presupuesto !== null && !esPresupuestoGuardado(presupuesto)) ||
+      presupuestosRecuperados.some(
+        (presupuesto) => presupuesto !== null && !esPresupuestoGuardado(presupuesto),
+      ) ||
       new Set(presupuestosRecuperados.map((presupuesto) => presupuesto?.id)).size !==
         presupuestosRecuperados.length
     ) {
@@ -45,7 +51,8 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
   async agregarFaltantes(presupuestosEntrantes: readonly Presupuesto[]): Promise<number> {
     if (
       !presupuestosEntrantes.every(esPresupuestoGuardado) ||
-      new Set(presupuestosEntrantes.map((presupuesto) => presupuesto.id)).size !== presupuestosEntrantes.length
+      new Set(presupuestosEntrantes.map((presupuesto) => presupuesto.id)).size !==
+        presupuestosEntrantes.length
     ) {
       throw new Error('La copia contiene presupuestos inválidos.');
     }
@@ -86,7 +93,7 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
   private async guardarTodos(presupuestos: Presupuesto[]): Promise<void> {
     const valor = JSON.stringify(presupuestos);
     await this.almacenamiento.guardar(CLAVES_ALMACENAMIENTO.presupuestos, valor);
-    if (await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.presupuestos) !== valor) {
+    if ((await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.presupuestos)) !== valor) {
       throw new Error('No se pudo verificar el guardado de presupuestos.');
     }
   }

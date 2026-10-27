@@ -66,7 +66,8 @@ function recuperarPrecioParcialAnterior(precio: Record<string, unknown>): number
     typeof precio.cantidadContenido !== 'number' ||
     !Number.isFinite(precio.cantidadContenido) ||
     precio.cantidadContenido <= 0
-  ) return null;
+  )
+    return null;
 
   return precio.importe / precio.cantidadContenido;
 }
@@ -81,7 +82,8 @@ export function esMaterialGuardado(valor: unknown): valor is Material {
     !esTextoNoVacio(valor.fechaActualizacion) ||
     !Array.isArray(valor.precios) ||
     !valor.precios.every(esPrecioMaterialGuardado)
-  ) return false;
+  )
+    return false;
 
   const ids = valor.precios.map((precio: PrecioMaterial) => precio.id);
   return (

@@ -21,7 +21,9 @@ export class RepositorioMaterialesLocal implements RepositorioMateriales {
       throw new Error('Los materiales guardados tienen un formato ilegible.');
     }
     const materiales = Array.isArray(valor) ? valor.map(recuperarMaterialGuardado) : null;
-    const materialesRecuperados = materiales?.filter((material): material is Material => material !== null);
+    const materialesRecuperados = materiales?.filter(
+      (material): material is Material => material !== null,
+    );
     if (
       materiales === null ||
       materialesRecuperados === undefined ||
@@ -36,7 +38,8 @@ export class RepositorioMaterialesLocal implements RepositorioMateriales {
   async agregarFaltantes(materialesEntrantes: readonly Material[]): Promise<number> {
     if (
       !materialesEntrantes.every(esMaterialGuardado) ||
-      new Set(materialesEntrantes.map((material) => material.id)).size !== materialesEntrantes.length
+      new Set(materialesEntrantes.map((material) => material.id)).size !==
+        materialesEntrantes.length
     ) {
       throw new Error('La copia contiene materiales inválidos.');
     }
@@ -69,7 +72,7 @@ export class RepositorioMaterialesLocal implements RepositorioMateriales {
   private async guardarTodos(materiales: Material[]): Promise<void> {
     const valor = JSON.stringify(materiales);
     await this.almacenamiento.guardar(CLAVES_ALMACENAMIENTO.materiales, valor);
-    if (await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.materiales) !== valor) {
+    if ((await this.almacenamiento.obtener(CLAVES_ALMACENAMIENTO.materiales)) !== valor) {
       throw new Error('No se pudo verificar el guardado de materiales.');
     }
   }

@@ -46,13 +46,15 @@ export function esClienteGuardado(valor: unknown): valor is Cliente {
     !esTextoNoVacio(valor.fechaActualizacion) ||
     !Array.isArray(valor.telefonos) ||
     !Array.isArray(valor.locales)
-  ) return false;
+  )
+    return false;
 
   if (
     !valor.telefonos.every(esTelefonoGuardado) ||
     !valor.locales.every(esLocalGuardado) ||
     !identificadoresUnicos(valor.locales)
-  ) return false;
+  )
+    return false;
   const telefonos = [...valor.telefonos, ...valor.locales.flatMap((local) => local.telefonos)];
   return identificadoresUnicos(telefonos);
 }

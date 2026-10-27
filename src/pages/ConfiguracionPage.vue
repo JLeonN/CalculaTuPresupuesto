@@ -25,9 +25,24 @@ const CATEGORIAS_CONFIGURACION: {
 }[] = [
   { id: 'empresa', nombre: 'Empresa', descripcion: 'Identidad y contacto', icono: 'business' },
   { id: 'valores', nombre: 'Valores', descripcion: 'Tarifas y moneda', icono: 'payments' },
-  { id: 'cobros', nombre: 'Cobros y redes', descripcion: 'Pagos y perfiles', icono: 'account_balance_wallet' },
-  { id: 'comunicacion', nombre: 'Comunicación', descripcion: 'Mensaje final', icono: 'chat_bubble_outline' },
-  { id: 'copias', nombre: 'Copias de seguridad', descripcion: 'Exportar e importar', icono: 'backup' },
+  {
+    id: 'cobros',
+    nombre: 'Cobros y redes',
+    descripcion: 'Pagos y perfiles',
+    icono: 'account_balance_wallet',
+  },
+  {
+    id: 'comunicacion',
+    nombre: 'Comunicación',
+    descripcion: 'Mensaje final',
+    icono: 'chat_bubble_outline',
+  },
+  {
+    id: 'copias',
+    nombre: 'Copias de seguridad',
+    descripcion: 'Exportar e importar',
+    icono: 'backup',
+  },
 ];
 
 onMounted(() => {
@@ -60,7 +75,9 @@ async function actualizarDatosImportados(recargarConfiguracion: boolean): Promis
     presupuestosStore.error ||
     (recargarConfiguracion && configuracionStore.error)
   ) {
-    throw new Error('Los datos se guardaron, pero no se pudieron actualizar todos los listados. Recargá la aplicación.');
+    throw new Error(
+      'Los datos se guardaron, pero no se pudieron actualizar todos los listados. Recargá la aplicación.',
+    );
   }
 }
 </script>

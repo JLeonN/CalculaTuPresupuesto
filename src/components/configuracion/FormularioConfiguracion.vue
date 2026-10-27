@@ -345,7 +345,9 @@ function mostrarCategoriaConError(componente: unknown): void {
   const categoria = seccion?.dataset.categoriaConfiguracion;
   if (categoria === 'empresa' || categoria === 'valores' || categoria === 'cobros') {
     emitir('update:categoriaActiva', categoria);
-    void nextTick(() => elemento.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')?.focus());
+    void nextTick(() =>
+      elemento.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')?.focus(),
+    );
   }
 }
 </script>

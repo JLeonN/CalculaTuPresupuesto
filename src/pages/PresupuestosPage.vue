@@ -31,10 +31,15 @@ const presupuestosFiltrados = computed(() => {
       )
     : encontrados;
 });
-const { paginaActual, totalPaginas, registrosPagina: presupuestosPagina } = usePaginacionListado(
-  presupuestosFiltrados,
-  [terminoBusqueda, () => ruta.name, () => ruta.params.idCliente],
-);
+const {
+  paginaActual,
+  totalPaginas,
+  registrosPagina: presupuestosPagina,
+} = usePaginacionListado(presupuestosFiltrados, [
+  terminoBusqueda,
+  () => ruta.name,
+  () => ruta.params.idCliente,
+]);
 const rutaNuevoPresupuesto = computed(() =>
   esHistorialCliente.value && clienteActual.value
     ? `/presupuestos/nuevo?idCliente=${encodeURIComponent(clienteActual.value.id)}`

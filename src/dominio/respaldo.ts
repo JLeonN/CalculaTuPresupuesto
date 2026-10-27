@@ -27,10 +27,7 @@ export interface ResumenColeccionImportacion {
 }
 
 export type EstadoConfiguracionImportacion =
-  | 'seAgrega'
-  | 'yaExisteIgual'
-  | 'yaExisteDistinta'
-  | 'sinDatosEnCopia';
+  'seAgrega' | 'yaExisteIgual' | 'yaExisteDistinta' | 'sinDatosEnCopia';
 
 export interface ResumenImportacion {
   clientes: ResumenColeccionImportacion;

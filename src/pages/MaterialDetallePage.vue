@@ -174,7 +174,8 @@ async function eliminarMaterial(): Promise<void> {
                 >
                   <div class="metrica-material metrica-material--principal">
                     <span class="dato-precio-material__etiqueta">
-                      Precio base de venta por {{ obtenerUnidadMedida(precio).toLocaleLowerCase('es') }}
+                      Precio base de venta por
+                      {{ obtenerUnidadMedida(precio).toLocaleLowerCase('es') }}
                     </span>
                     <strong>{{ precioCantidadParcial(precio) }}</strong>
                     <span>/ {{ obtenerUnidadMedida(precio).toLocaleLowerCase('es') }}</span>

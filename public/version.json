@@ -1,19 +1,18 @@
 {
-  "version": "0.0.5",
+  "version": "0.0.6",
   "mostrarActualizacion": true,
   "cambios": {
     "es-AR": [
       {
         "apartado": "Actualizaciones",
         "novedades": [
-          "Desde la ficha de un cliente podés ver sus presupuestos y crear uno nuevo con nombre y teléfono ya cargados.",
-          "Ahora podés editar los datos del cliente en su ficha y guardar varios teléfonos para cada local.",
-          "Cada presupuesto tiene una lista de compras para marcar materiales comprados y ajustar sus datos.",
-          "Podés aplicar un porcentaje adicional a los materiales y ver su desglose en el ticket.",
-          "Al agregar un material, podés elegir entre sus precios guardados.",
-          "Podés elegir un presupuesto completo o resumido antes de compartirlo o descargarlo.",
-          "La búsqueda de presupuestos encuentra nombres, teléfonos y fechas con más facilidad.",
-          "Reorganizamos botones, tarjetas y campos para que sean más cómodos de usar en el celular."
+          "Ahora podés eliminar un presupuesto guardado desde Seguimiento interno, con confirmación antes de borrarlo.",
+          "Podés descargar una copia de tus clientes, materiales, presupuestos y configuración, e importar registros faltantes sin reemplazar los actuales.",
+          "Los listados de clientes, materiales y presupuestos ahora tienen páginas para recorrerlos más cómodamente.",
+          "Reorganizamos Configuración por secciones y mejoramos la edición del mensaje final.",
+          "La ficha y el formulario de materiales muestran los precios con más claridad, también en el celular.",
+          "El logo de la empresa se muestra sin marco blanco en el menú lateral y en el inicio.",
+          "El nombre de los archivos de copia de seguridad ahora es más fácil de leer."
         ]
       }
     ]

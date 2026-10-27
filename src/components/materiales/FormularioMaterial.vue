@@ -373,7 +373,8 @@ function guardarMaterial(): void {
                         outlined
                         label="Nombre de la unidad"
                         :rules="[
-                          (valor) => Boolean(String(valor).trim()) || 'Ingresá la unidad de medida.',
+                          (valor) =>
+                            Boolean(String(valor).trim()) || 'Ingresá la unidad de medida.',
                         ]"
                       />
                     </div>
@@ -412,9 +413,11 @@ function guardarMaterial(): void {
                 <aside class="vista-previa-precio-material" aria-live="polite">
                   <p class="etiqueta-seccion">Vista previa</p>
                   <span class="dato-precio-material__etiqueta">
-                    {{ precio.modalidad === 'directo'
-                      ? 'Precio registrado'
-                      : 'Precio base de venta para cantidades parciales' }}
+                    {{
+                      precio.modalidad === 'directo'
+                        ? 'Precio registrado'
+                        : 'Precio base de venta para cantidades parciales'
+                    }}
                   </span>
                   <strong class="vista-previa-precio-material__importe">
                     {{ precioVista(precio) }}
@@ -427,9 +430,11 @@ function guardarMaterial(): void {
                       <div>
                         <span class="dato-precio-material__etiqueta">Costo de compra</span>
                         <strong>
-                          {{ precio.importe !== null && precio.importe > 0
-                            ? formatearImporte(precio.importe, precio.moneda)
-                            : 'Sin precio' }}
+                          {{
+                            precio.importe !== null && precio.importe > 0
+                              ? formatearImporte(precio.importe, precio.moneda)
+                              : 'Sin precio'
+                          }}
                         </strong>
                         <span>/ {{ obtenerPresentacion(precio).toLocaleLowerCase('es') }}</span>
                       </div>
@@ -439,8 +444,8 @@ function guardarMaterial(): void {
                       </div>
                     </div>
                     <p class="vista-previa-precio-material__ayuda">
-                      El costo calculado es una referencia interna. El precio de la presentación
-                      se puede ajustar en cada presupuesto.
+                      El costo calculado es una referencia interna. El precio de la presentación se
+                      puede ajustar en cada presupuesto.
                     </p>
                   </template>
                 </aside>
