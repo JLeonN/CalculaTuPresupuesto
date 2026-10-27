@@ -72,6 +72,17 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
     await this.guardarTodos(presupuestos);
   }
 
+  async eliminar(idPresupuesto: string): Promise<void> {
+    const presupuestos = await this.obtenerTodos();
+    const restantes = presupuestos.filter((presupuesto) => presupuesto.id !== idPresupuesto);
+
+    if (restantes.length === presupuestos.length) {
+      throw new Error('El presupuesto que intentás eliminar ya no existe.');
+    }
+
+    await this.guardarTodos(restantes);
+  }
+
   private async guardarTodos(presupuestos: Presupuesto[]): Promise<void> {
     const valor = JSON.stringify(presupuestos);
     await this.almacenamiento.guardar(CLAVES_ALMACENAMIENTO.presupuestos, valor);

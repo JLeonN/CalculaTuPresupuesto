@@ -7,10 +7,12 @@ const props = defineProps<{
   estado: EstadoPresupuesto;
   fechaCambioEstado: string | null;
   estadoEnProceso: EstadoPresupuesto | null;
+  eliminando: boolean;
 }>();
 
 const emitir = defineEmits<{
   cambiar: [estado: EstadoPresupuesto];
+  eliminar: [];
 }>();
 
 const fechaFormateada = computed(() => {
@@ -31,7 +33,7 @@ const fechaFormateada = computed(() => {
 });
 
 function solicitarCambio(estado: EstadoPresupuesto): void {
-  if (props.estado !== estado && props.estadoEnProceso === null) {
+  if (props.estado !== estado && props.estadoEnProceso === null && !props.eliminando) {
     emitir('cambiar', estado);
   }
 }
@@ -61,7 +63,7 @@ function solicitarCambio(estado: EstadoPresupuesto): void {
         icon="check_circle"
         label="Aceptar"
         :aria-pressed="estado === 'aceptado'"
-        :disable="estado === 'aceptado' || estadoEnProceso !== null"
+        :disable="estado === 'aceptado' || estadoEnProceso !== null || eliminando"
         :loading="estadoEnProceso === 'aceptado'"
         @click="solicitarCambio('aceptado')"
       />
@@ -72,7 +74,7 @@ function solicitarCambio(estado: EstadoPresupuesto): void {
         icon="cancel"
         label="Rechazar"
         :aria-pressed="estado === 'rechazado'"
-        :disable="estado === 'rechazado' || estadoEnProceso !== null"
+        :disable="estado === 'rechazado' || estadoEnProceso !== null || eliminando"
         :loading="estadoEnProceso === 'rechazado'"
         @click="solicitarCambio('rechazado')"
       />
@@ -83,9 +85,20 @@ function solicitarCambio(estado: EstadoPresupuesto): void {
         icon="undo"
         label="Volver a pendiente"
         :aria-pressed="estado === 'pendiente'"
-        :disable="estado === 'pendiente' || estadoEnProceso !== null"
+        :disable="estado === 'pendiente' || estadoEnProceso !== null || eliminando"
         :loading="estadoEnProceso === 'pendiente'"
         @click="solicitarCambio('pendiente')"
+      />
+    </div>
+    <div class="estado-presupuesto__eliminacion">
+      <q-btn
+        class="boton-peligro"
+        flat
+        no-caps
+        icon="delete_outline"
+        label="Eliminar presupuesto"
+        :disable="estadoEnProceso !== null || eliminando"
+        @click="emitir('eliminar')"
       />
     </div>
   </section>

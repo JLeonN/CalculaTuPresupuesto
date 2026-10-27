@@ -208,6 +208,29 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     }
   }
 
+  async function eliminarPresupuesto(idPresupuesto: string): Promise<void> {
+    guardando.value = true;
+    error.value = null;
+
+    try {
+      await repositorioPresupuestos.eliminar(idPresupuesto);
+      presupuestos.value = presupuestos.value.filter(
+        (presupuesto) => presupuesto.id !== idPresupuesto,
+      );
+      if (borradorVistaPrevia.value?.idPresupuesto === idPresupuesto) {
+        borradorVistaPrevia.value = null;
+      }
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof Error
+          ? errorCapturado.message
+          : 'No se pudo eliminar el presupuesto.';
+      throw new Error(error.value, { cause: errorCapturado });
+    } finally {
+      guardando.value = false;
+    }
+  }
+
   function obtenerPresupuestoPorId(idPresupuesto: string): Presupuesto | undefined {
     return presupuestos.value.find((presupuesto) => presupuesto.id === idPresupuesto);
   }
@@ -295,6 +318,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     actualizarMaterialListaCompras,
     cambiarFormatoDocumento,
     cambiarEstadoPresupuesto,
+    eliminarPresupuesto,
     obtenerPresupuestoPorId,
     buscarPresupuestos,
     establecerBorradorVistaPrevia,

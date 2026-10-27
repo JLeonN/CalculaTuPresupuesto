@@ -71,6 +71,8 @@ const presupuesto = ref<Presupuesto>();
 const cargandoPagina = ref(true);
 const presupuestoNoEncontrado = ref(false);
 const mostrarConfirmacionCancelar = ref(false);
+const mostrarConfirmacionEliminar = ref(false);
+const errorEliminacion = ref<string | null>(null);
 const estadoInicial = ref('');
 const errorAccion = ref<string | null>(null);
 const configuracionDocumento = ref<ConfiguracionDocumentoPresupuesto | null>(null);
@@ -129,6 +131,8 @@ async function inicializarPantalla(): Promise<void> {
   idClienteOrigen.value = null;
   presupuestoNoEncontrado.value = false;
   mostrarConfirmacionCancelar.value = false;
+  mostrarConfirmacionEliminar.value = false;
+  errorEliminacion.value = null;
   errorAccion.value = null;
   estadoEnProceso.value = null;
 
@@ -465,6 +469,53 @@ async function cambiarEstado(estado: EstadoPresupuesto): Promise<void> {
   } finally {
     estadoEnProceso.value = null;
   }
+}
+
+function solicitarEliminacion(): void {
+  if (
+    !soloLectura.value ||
+    !presupuesto.value ||
+    presupuestosStore.guardando ||
+    estadoEnProceso.value !== null ||
+    accionDocumento.value !== null
+  ) {
+    return;
+  }
+
+  errorEliminacion.value = null;
+  mostrarConfirmacionEliminar.value = true;
+}
+
+async function eliminarPresupuesto(): Promise<void> {
+  if (
+    !soloLectura.value ||
+    !presupuesto.value ||
+    presupuestosStore.guardando ||
+    !mostrarConfirmacionEliminar.value
+  ) {
+    return;
+  }
+
+  errorEliminacion.value = null;
+
+  try {
+    await presupuestosStore.eliminarPresupuesto(presupuesto.value.id);
+  } catch (errorCapturado) {
+    errorEliminacion.value =
+      presupuestosStore.error ||
+      (errorCapturado instanceof Error
+        ? errorCapturado.message
+        : 'No se pudo eliminar el presupuesto.');
+    return;
+  }
+
+  mostrarConfirmacionEliminar.value = false;
+  $q.notify({
+    message: 'Presupuesto eliminado correctamente.',
+    position: 'top',
+    classes: 'notificacion-exito',
+  });
+  await router.replace('/presupuestos');
 }
 
 function obtenerMensajeErrorGuardado(errorCapturado: unknown): string {
@@ -866,7 +917,9 @@ function restablecerFechaPresupuesto(): void {
           :estado="presupuesto.estado"
           :fecha-cambio-estado="presupuesto.fechaCambioEstado"
           :estado-en-proceso="estadoEnProceso"
+          :eliminando="presupuestosStore.guardando || accionDocumento !== null"
           @cambiar="cambiarEstado"
+          @eliminar="solicitarEliminacion"
         />
 
         <DocumentoPresupuesto
@@ -880,4 +933,37 @@ function restablecerFechaPresupuesto(): void {
       </div>
     </main>
   </q-page>
+
+  <q-dialog v-model="mostrarConfirmacionEliminar" persistent>
+    <q-card class="dialogo-confirmacion">
+      <q-card-section>
+        <p class="etiqueta-seccion">Acción irreversible</p>
+        <h2 class="titulo-seccion">¿Eliminar este presupuesto?</h2>
+        <p class="texto-secundario">
+          Se borrará el presupuesto guardado y dejará de aparecer en el listado.
+        </p>
+        <p v-if="errorEliminacion" class="resumen-presupuesto__error" role="alert">
+          {{ errorEliminacion }}
+        </p>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          class="boton-secundario"
+          flat
+          no-caps
+          label="Cancelar"
+          :disable="presupuestosStore.guardando"
+          @click="mostrarConfirmacionEliminar = false"
+        />
+        <q-btn
+          class="boton-peligro"
+          flat
+          no-caps
+          label="Eliminar presupuesto"
+          :loading="presupuestosStore.guardando"
+          @click="eliminarPresupuesto"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>

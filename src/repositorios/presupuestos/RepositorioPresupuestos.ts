@@ -4,4 +4,5 @@ export interface RepositorioPresupuestos {
   obtenerTodos(): Promise<Presupuesto[]>;
   agregarFaltantes(presupuestos: readonly Presupuesto[]): Promise<number>;
   guardar(presupuesto: Presupuesto): Promise<void>;
+  eliminar(idPresupuesto: string): Promise<void>;
 }
