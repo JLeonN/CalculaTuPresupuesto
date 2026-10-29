@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
+import { Capacitor } from '@capacitor/core';
 import FormularioConfiguracion from '@/components/configuracion/FormularioConfiguracion.vue';
 import PanelCopiasSeguridad from '@/components/configuracion/PanelCopiasSeguridad.vue';
+import { usePublicidad } from '@/composables/usePublicidad';
 import type { DatosConfiguracion } from '@/dominio/configuracion';
 import { useConfiguracionStore } from '@/stores/configuracion';
 import { useClientesStore } from '@/stores/clientes';
 import { useMaterialesStore } from '@/stores/materiales';
 import { usePresupuestosStore } from '@/stores/presupuestos';
+import { useAutenticacionStore } from '@/stores/autenticacion';
 
 const $q = useQuasar();
+const autenticacionStore = useAutenticacionStore();
+const { mostrarOpcionesPrivacidad, abrirOpcionesPrivacidad, iniciarPublicidad } = usePublicidad();
+const esAndroid = Capacitor.getPlatform() === 'android';
 const configuracionStore = useConfiguracionStore();
 const clientesStore = useClientesStore();
 const materialesStore = useMaterialesStore();
@@ -80,6 +86,11 @@ async function actualizarDatosImportados(recargarConfiguracion: boolean): Promis
     );
   }
 }
+
+async function revisarOpcionesPrivacidad(): Promise<void> {
+  await abrirOpcionesPrivacidad();
+  if (!autenticacionStore.estaAutenticado) await iniciarPublicidad();
+}
 </script>
 
 <template>
@@ -139,6 +150,20 @@ async function actualizarDatosImportados(recargarConfiguracion: boolean): Promis
           </div>
         </div>
       </div>
+
+      <section
+        v-if="esAndroid && !autenticacionStore.estaAutenticado && mostrarOpcionesPrivacidad"
+        class="opciones-privacidad-publicidad"
+        aria-label="Privacidad de anuncios"
+      >
+        <q-btn
+          flat
+          no-caps
+          icon="privacy_tip"
+          label="Opciones de privacidad de anuncios"
+          @click="revisarOpcionesPrivacidad"
+        />
+      </section>
     </main>
   </q-page>
 </template>

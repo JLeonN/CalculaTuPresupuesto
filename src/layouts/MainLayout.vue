@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, type WatchStopHandle } from 'vue';
+import { computed, onMounted, onUnmounted, watch, type WatchStopHandle } from 'vue';
 import { useRoute } from 'vue-router';
 import LogoEmpresa from '@/components/LogoEmpresa.vue';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/configuracion/navegacion';
 import { SUBTITULO_APLICACION } from '@/configuracion/identidadAplicacion';
 import { useIdentidadAplicacion } from '@/composables/useIdentidadAplicacion';
+import { usePublicidad } from '@/composables/usePublicidad';
 import { useAutenticacionStore } from '@/stores/autenticacion';
 import { useConfiguracionStore } from '@/stores/configuracion';
 
@@ -18,6 +19,7 @@ const autenticacionStore = useAutenticacionStore();
 const configuracionStore = useConfiguracionStore();
 const { nombreEmpresaVisible, logoVisible, textoAlternativoLogo, sincronizarFavicon } =
   useIdentidadAplicacion();
+const { altoBanner, iniciarPublicidad, detenerPublicidad } = usePublicidad();
 const elementosMenuEscritorio = obtenerElementosNavegacion('menu-escritorio');
 const elementosBarraMovil = [...obtenerElementosNavegacion('barra-movil'), ELEMENTO_MAS];
 let detenerSincronizacionFavicon: WatchStopHandle | undefined;
@@ -25,12 +27,31 @@ let detenerSincronizacionFavicon: WatchStopHandle | undefined;
 const rutaActual = computed(() => ruta.path);
 const etiquetaEnlaceInicio = computed(() => `Ir al inicio de ${nombreEmpresaVisible.value}`);
 
+function actualizarPublicidad(): void {
+  if (autenticacionStore.estaAutenticado || window.innerWidth < 320) {
+    void detenerPublicidad();
+  } else {
+    void iniciarPublicidad();
+  }
+}
+
+function revisarPublicidadAlVolver(): void {
+  if (document.visibilityState === 'visible') actualizarPublicidad();
+}
+
+watch(() => autenticacionStore.estaAutenticado, actualizarPublicidad, { immediate: true });
+
 onMounted(() => {
+  window.addEventListener('resize', actualizarPublicidad);
+  document.addEventListener('visibilitychange', revisarPublicidadAlVolver);
   detenerSincronizacionFavicon = sincronizarFavicon();
   void configuracionStore.asegurarConfiguracionCargada();
 });
 
 onUnmounted(() => {
+  window.removeEventListener('resize', actualizarPublicidad);
+  document.removeEventListener('visibilitychange', revisarPublicidadAlVolver);
+  void detenerPublicidad();
   detenerSincronizacionFavicon?.();
 });
 
@@ -45,6 +66,10 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
     class="aplicacion-presupuestos"
     :class="{
       'aplicacion-presupuestos--modo-prueba': !autenticacionStore.estaAutenticado,
+    }"
+    :style="{
+      '--alto-banner-publicidad': `${altoBanner}px`,
+      '--separacion-banner-publicidad': altoBanner > 0 ? 'var(--espaciado-pequeno)' : '0px',
     }"
   >
     <q-header v-if="$q.screen.lt.md" class="encabezado-movil">
@@ -109,8 +134,12 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
       <router-view />
     </q-page-container>
 
-    <q-footer v-if="$q.screen.lt.md" class="navegacion-movil">
-      <nav class="navegacion-movil__contenido" aria-label="Navegación principal">
+    <q-footer v-if="$q.screen.lt.md || altoBanner > 0" class="navegacion-movil">
+      <nav
+        v-if="$q.screen.lt.md"
+        class="navegacion-movil__contenido"
+        aria-label="Navegación principal"
+      >
         <router-link
           v-for="elemento in elementosBarraMovil"
           :key="elemento.nombre"
@@ -123,6 +152,8 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
           <span>{{ elemento.etiqueta }}</span>
         </router-link>
       </nav>
+      <div v-if="altoBanner > 0" class="separacion-publicidad" aria-hidden="true"></div>
+      <div v-if="altoBanner > 0" class="reserva-publicidad" aria-hidden="true"></div>
     </q-footer>
   </q-layout>
 </template>

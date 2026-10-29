@@ -4,6 +4,7 @@
   "description": "Quasar Capacitor Folder",
   "private": true,
   "dependencies": {
+    "@capacitor-community/admob": "8.2.1",
     "@capacitor/android": "^8.5.0",
     "@capacitor/app": "^8.0.0",
     "@capacitor/cli": "^8.0.0",

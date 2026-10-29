@@ -439,6 +439,17 @@ input[type='number']::-webkit-outer-spin-button {
   padding: var(--espaciado-pequeno) var(--espaciado-pequeno) env(safe-area-inset-bottom);
 }
 
+.separacion-publicidad {
+  height: var(--separacion-banner-publicidad);
+  background: var(--color-fondo-secundario);
+  pointer-events: none;
+}
+
+.reserva-publicidad {
+  height: var(--alto-banner-publicidad);
+  pointer-events: none;
+}
+
 .enlace-navegacion-movil {
   display: flex;
   flex-direction: column;
@@ -3773,7 +3784,7 @@ input[type='number']::-webkit-outer-spin-button {
 
 .formulario-configuracion .acciones-formulario {
   position: sticky;
-  bottom: 0;
+  bottom: var(--alto-reserva-publicidad);
   z-index: 2;
   padding: var(--espaciado-control) 0;
   background: var(--color-fondo-principal);
@@ -3809,8 +3820,14 @@ input[type='number']::-webkit-outer-spin-button {
 
 @media (max-width: 63.9375rem) {
   .formulario-configuracion .acciones-formulario {
-    bottom: calc(var(--altura-navegacion-movil) + env(safe-area-inset-bottom));
+    bottom: calc(
+      var(--altura-navegacion-movil) + env(safe-area-inset-bottom) + var(--alto-reserva-publicidad)
+    );
   }
+}
+
+.opciones-privacidad-publicidad {
+  margin-top: var(--espaciado-mediano);
 }
 
 @media (max-width: 43.75rem) {

@@ -100,6 +100,11 @@
   --alto-tarjeta-detalle-cliente: 24rem;
   --altura-encabezado-movil: 4rem;
   --altura-navegacion-movil: 4.5rem;
+  --alto-banner-publicidad: 0px;
+  --separacion-banner-publicidad: 0px;
+  --alto-reserva-publicidad: calc(
+    var(--alto-banner-publicidad) + var(--separacion-banner-publicidad)
+  );
   --tamano-cobertura-autocompletado: 100vmax;
   --tamano-icono-navegacion: 1.5rem;
   --tamano-icono-tarjeta: 1.75rem;
