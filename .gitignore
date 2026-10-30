@@ -6,6 +6,12 @@ node_modules
 .env*
 !.env.example
 
+# Configuración local de la app Android de pruebas.
+/src-capacitor/android/app/google-services.json
+firestore-debug.log
+firebase-debug.log
+ui-debug.log
+
 # Archivos temporales de inicialización
 /_generacion-quasar
 

@@ -63,12 +63,12 @@ Disponer de un proyecto Firebase de pruebas identificable, reproducible y separa
 
 ### Pasos de ejecución
 
-- [ ] Revisar `AGENTS.md`, `README.md`, `Memory.md`, este plan y el estado Git antes de tocar código. Inspeccionar `.env.local` solo localmente si es imprescindible, sin imprimir valores ni copiarlos a respuestas. Determinar si hubo secretos reales en el historial y comunicar a Leo la necesidad de rotarlos si corresponde; no reescribir historial ni hacer commit/push.
+- [x] Revisar `AGENTS.md`, `README.md`, `Memory.md`, este plan y el estado Git antes de tocar código. Inspeccionar `.env.local` solo localmente si es imprescindible, sin imprimir valores ni copiarlos a respuestas. Determinar si hubo secretos reales en el historial y comunicar a Leo la necesidad de rotarlos si corresponde; no reescribir historial ni hacer commit/push.
 - [x] Ignorar todas las variantes locales `.env*` salvo `.env.example`, verificar con `git check-ignore` y retirar `.env.local` del índice sin borrar el archivo local durante el release `v0.0.7` autorizado por Leo. El historial previo todavía requiere revisión antes de cargar credenciales.
-- [ ] Usar Firebase Console con la sesión de Leo o Firebase CLI autenticada interactivamente en su cuenta; elegir la opción que permita verificar mejor la configuración con menos pasos. Crear un proyecto exclusivo de desarrollo, registrar su ID no secreto en `.firebaserc` y comprobar que no es un proyecto usado por la app publicada. No capturar ni guardar credenciales personales o tokens CLI en el repositorio.
-- [ ] Antes de crear Firestore, comparar costo y ubicación; usar `southamerica-east1` si sigue disponible y es adecuado al público inicial de Uruguay. Activar Auth con correo/contraseña y Google, registrar la aplicación web y la aplicación Android existente, y configurar solo orígenes de desarrollo autorizados. Obtener la huella SHA necesaria para probar Google en Android sin registrar una huella de producción equivocada.
-- [ ] Habilitar Blaze solo si Storage lo exige para ejecutar este plan; registrar qué servicio lo exigió, configurar alertas de presupuesto y recordar que las alertas no detienen cargos. No desplegar Functions ni activar Analytics u otros servicios ajenos al alcance.
-- [ ] Añadir `firebase.json`, `.firebaserc`, `firestore.indexes.json`, `firestore.rules` y, si se usa Storage, `storage.rules`; fijar alias explícito de pruebas y comandos de despliegue con `--project` para evitar operar sobre producción. No publicar reglas abiertas, ni siquiera temporalmente.
+- [x] Usar Firebase Console con la sesión de Leo o Firebase CLI autenticada interactivamente en su cuenta; elegir la opción que permita verificar mejor la configuración con menos pasos. Crear un proyecto exclusivo de desarrollo, registrar su ID no secreto en `.firebaserc` y comprobar que no es un proyecto usado por la app publicada. No capturar ni guardar credenciales personales o tokens CLI en el repositorio.
+- [x] Antes de crear Firestore, comparar costo y ubicación; usar `southamerica-east1` si sigue disponible y es adecuado al público inicial de Uruguay. Activar Auth con correo/contraseña y Google, registrar la aplicación web y la aplicación Android existente, y configurar solo orígenes de desarrollo autorizados. Obtener la huella SHA necesaria para probar Google en Android sin registrar una huella de producción equivocada.
+- [x] Verificado: Cloud Storage exige Blaze para este proyecto nuevo. Se conservó Spark y se limitó el logo a 350 KB dentro de cada documento; no se activaron facturación, Functions ni Analytics. Si en el futuro se usa Storage, revisar costos y alertas antes de activarlo.
+- [x] Añadir `firebase.json`, `.firebaserc`, `firestore.indexes.json`, `firestore.rules` y, si se usa Storage, `storage.rules`; fijar alias explícito de pruebas y comandos de despliegue con `--project` para evitar operar sobre producción. No publicar reglas abiertas, ni siquiera temporalmente.
 
 ## FASE 2: Crear cuentas y sesión compartida
 
@@ -78,10 +78,10 @@ Un usuario de pruebas puede registrarse, verificar su correo, recuperar contrase
 
 ### Pasos de ejecución
 
-- [ ] Añadir el SDK modular `firebase` al paquete raíz. Definir variables `QCLI_FIREBASE_API_KEY`, `QCLI_FIREBASE_AUTH_DOMAIN`, `QCLI_FIREBASE_PROJECT_ID`, `QCLI_FIREBASE_APP_ID` y las adicionales exigidas por el SDK en `.env.example` sin valores. Configurarlas solo en `.env.local` ignorado. La clave de API web de Firebase es identificador público; secretos de Admin SDK y de futuros pagos nunca van al cliente.
-- [ ] Crear `src/configuracion/firebase.ts` con inicialización única de `FirebaseApp`, `Auth` y `Firestore`; exportar accesores tipados, sin inicializar dos apps al navegar. Agregar `src/boot/firebase.ts` antes de `autenticacion` en `quasar.config.ts` o justificar un orden equivalente.
-- [ ] Ampliar `ServicioAutenticacion` y `UsuarioAutenticado` en los archivos existentes: `id` será `uid` estable, `correo`, `nombre` y proveedores vinculados; agregar `registrarConCorreo`, `iniciarSesionConCorreo`, `iniciarSesionConGoogle`, `enviarRecuperacionContrasena`, `cerrarSesion` y observación de cambios de Auth. Crear `ServicioAutenticacionFirebase.ts` y hacer que `crearServicioAutenticacion()` lo seleccione en el entorno de pruebas. Eliminar el uso del usuario/contraseña incorporados en el cliente para esta configuración.
-- [ ] Adaptar `useAutenticacionStore` para reaccionar a cambios reales de Firebase Auth, distinguir sesión inicializando, visitante y cuenta autenticada, y exponer errores legibles. Resolver carreras de inicio/cierre y limpiar estado de usuario anterior antes de mostrar otra cuenta. La sesión persistente debe recuperarse tras reiniciar SPA y Android.
+- [x] Añadir el SDK modular `firebase` al paquete raíz. Definir variables `QCLI_FIREBASE_API_KEY`, `QCLI_FIREBASE_AUTH_DOMAIN`, `QCLI_FIREBASE_PROJECT_ID`, `QCLI_FIREBASE_APP_ID` y las adicionales exigidas por el SDK en `.env.example` sin valores. Configurarlas solo en `.env.local` ignorado. La clave de API web de Firebase es identificador público; secretos de Admin SDK y de futuros pagos nunca van al cliente.
+- [x] Crear `src/configuracion/firebase.ts` con inicialización única de `FirebaseApp`, `Auth` y `Firestore`; exportar accesores tipados, sin inicializar dos apps al navegar. Agregar `src/boot/firebase.ts` antes de `autenticacion` en `quasar.config.ts` o justificar un orden equivalente.
+- [x] Ampliar `ServicioAutenticacion` y `UsuarioAutenticado` en los archivos existentes: `id` será `uid` estable, `correo`, `nombre` y proveedores vinculados; agregar `registrarConCorreo`, `iniciarSesionConCorreo`, `iniciarSesionConGoogle`, `enviarRecuperacionContrasena`, `cerrarSesion` y observación de cambios de Auth. Crear `ServicioAutenticacionFirebase.ts` y hacer que `crearServicioAutenticacion()` lo seleccione en el entorno de pruebas. Eliminar el uso del usuario/contraseña incorporados en el cliente para esta configuración.
+- [ ] Adaptar `useAutenticacionStore` para reaccionar a cambios reales de Firebase Auth, distinguir sesión inicializando, visitante y cuenta autenticada, y exponer errores legibles. Resolver carreras de inicio/cierre y limpiar estado de usuario anterior antes de mostrar otra cuenta. La recuperación tras reiniciar SPA y Android sigue pendiente de prueba manual.
 - [ ] Actualizar `ModalInicioSesion.vue` con registro, entrada, contraseña olvidada, verificación y Google; mantener `BotonSesion.vue` para estado de cuenta y salida. Usar `autocomplete` correcto, permitir mostrar contraseña, indicar progreso y errores, evitar dobles envíos y mantener diseño usable en teléfonos y PC. Vincular proveedor Google a la cuenta existente mediante el flujo oficial cuando el correo ya pertenece a una cuenta; no crear dos identidades con datos separados silenciosamente.
 - [ ] En web, elegir el flujo Google compatible con el origen de pruebas. Si se usa redirección fuera de Firebase Hosting, aplicar la guía oficial contra bloqueo de almacenamiento de terceros; `signInWithPopup` es válido donde el navegador lo permita. En Android Capacitor, validar compatibilidad actual de `@capacitor-firebase/authentication` con Capacitor 8 antes de instalarlo en ambos paquetes y sincronizar Android. Usar el flujo nativo Google y entregar su credencial a Firebase JS para que Firestore dentro de WebView vea la misma sesión; verificar que el `uid` coincide con la web. Fuente: [plugin Capacitor](https://capawesome.io/docs/sdks/capacitor/firebase/authentication/).
 
@@ -93,10 +93,10 @@ Cada cuenta ve solo sus registros y los mismos datos aparecen en Android y web. 
 
 ### Pasos de ejecución
 
-- [ ] Definir en `firestore.rules` rutas `usuarios/{uid}/clientes/{id}`, `usuarios/{uid}/materiales/{id}`, `usuarios/{uid}/presupuestos/{id}` y `usuarios/{uid}/configuracion/principal`. Permitir lectura y escritura solo cuando `request.auth.uid == uid`; validar tipos y campos críticos. Denegar cualquier ruta comercial no definida. Comprobar que un usuario no puede consultar otra ruta aunque conozca el ID.
-- [ ] Crear una implementación Firestore por cada interfaz `RepositorioClientes`, `RepositorioMateriales`, `RepositorioPresupuestos` y `RepositorioConfiguracion`; conservar IDs y métodos `obtenerTodos`, `guardar`, `eliminar`, `agregarFaltantes`, `obtenerGuardada` y `guardarSiAusente`. Seleccionar repositorio local para visitante y Firestore para usuario autenticado desde los cuatro `crearRepositorio*.ts`, sin mezclar datos locales y remotos de cuentas diferentes.
-- [ ] Ajustar los cuatro stores para invalidar y recargar sus listas/configuración cuando cambia `uid`, al cerrar sesión y al pasar de visitante a cuenta. Cancelar o ignorar respuestas tardías de la cuenta anterior. Revisar todos los consumidores de carga, guardado, borrado, vista previa, identidad visual y copias de seguridad para que no retengan registros de otro usuario.
-- [ ] Diseñar el logo antes de persistir configuración y presupuestos: evitar un `datosUrl` cercano a 1 MB dentro de un documento Firestore. Preferir archivo privado e inmutable en Cloud Storage bajo `usuarios/{uid}/logos/` con reglas por propietario y referencia estable en la configuración/instantánea del presupuesto. Mantener adaptador para el formato JSON actual y preservar la apariencia de documentos históricos. Verificar tamaño real serializado de presupuesto y configuración antes de escribir; mostrar error útil si excede límites.
+- [x] Definir en `firestore.rules` rutas `usuarios/{uid}/clientes/{id}`, `usuarios/{uid}/materiales/{id}`, `usuarios/{uid}/presupuestos/{id}` y `usuarios/{uid}/configuracion/principal`. Permitir lectura y escritura solo cuando `request.auth.uid == uid` y el correo esté verificado; validar tipos y campos críticos. Denegar cualquier ruta comercial no definida. Comprobar que un usuario no puede consultar otra ruta aunque conozca el ID.
+- [x] Crear una implementación Firestore por cada interfaz `RepositorioClientes`, `RepositorioMateriales`, `RepositorioPresupuestos` y `RepositorioConfiguracion`; conservar IDs y métodos `obtenerTodos`, `guardar`, `eliminar`, `agregarFaltantes`, `obtenerGuardada` y `guardarSiAusente`. Seleccionar repositorio local para visitante y Firestore para usuario autenticado desde los cuatro `crearRepositorio*.ts`, sin mezclar datos locales y remotos de cuentas diferentes.
+- [x] Ajustar los cuatro stores para invalidar y recargar sus listas/configuración cuando cambia `uid`, al cerrar sesión y al pasar de visitante a cuenta. Cancelar o ignorar respuestas tardías de la cuenta anterior. Revisar todos los consumidores de carga, guardado, borrado, vista previa, identidad visual y copias de seguridad para que no retengan registros de otro usuario.
+- [x] Diseñar el logo antes de persistir configuración y presupuestos: se conservó `datosUrl` para preservar el formato JSON y documentos históricos, con archivo máximo de 350 KB y documento serializado máximo de 900 KB. Cloud Storage queda pendiente de una decisión futura sobre Blaze.
 - [ ] Configurar caché offline de Firestore de forma deliberada: soporte de Android WebView y navegadores previstos, cola de cambios al volver conexión, y política para equipos compartidos. No exponer documentos del usuario anterior desde la caché tras cerrar sesión; limpiar/inutilizar referencias y probar cambio de cuenta. Documentar conflicto entre ediciones simultáneas y el comportamiento real de última escritura.
 
 ## FASE 4: Migrar copias de prueba
@@ -130,9 +130,9 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 
 ### Pruebas automatizadas
 
-- [ ] Ejecutar `npm run typecheck`, `npm run lint:check` y `npm run build` bajo la autorización de pruebas ya dada por Leo; revisar también el build Android con `npm run build:android` si el entorno SDK está disponible. No usar `npm run lint` como verificación inicial porque reescribe archivos.
-- [ ] Añadir `tests/reglasFirestore.test.ts` y el script `test:firebase` a `package.json`; ejecutar pruebas con Firebase Emulator Suite para estos casos: cuenta A accede a sus documentos, cuenta B recibe denegación, anónimo no lee datos privados, las rutas comerciales no definidas quedan cerradas y la importación repetida no duplica registros. Usar solo datos sintéticos.
-- [ ] Verificar con inspección de Git que `.env.local`, `google-services.json` si se trata como configuración local y archivos de credenciales no se agregaron al índice ni al resultado de compilación; no mostrar valores en logs.
+- [x] Ejecutar `npm run typecheck`, `npm run lint:check` y `npm run build` bajo la autorización de pruebas ya dada por Leo; revisar también el build Android con `npm run build:android` si el entorno SDK está disponible. No usar `npm run lint` como verificación inicial porque reescribe archivos.
+- [x] Añadir `tests/reglasFirestore.test.mjs` y el script `test:firebase` a `package.json`; seis pruebas con Firebase Emulator Suite cubren dueño, otra cuenta, visitante, correo sin verificar, ID y rutas no definidas. `tests/importacionRespaldo.test.ts`, `tests/escriturasFirestore.test.ts` y `test:respaldo` verifican importación repetida con datos sintéticos, conservación de registros, origen intacto y escritura pendiente sin bloquear la app.
+- [x] Verificar con inspección de Git que `.env.local`, `google-services.json` si se trata como configuración local y archivos de credenciales no se agregaron al índice ni al resultado de compilación; no mostrar valores en logs.
 
 ### Pruebas manuales
 
@@ -148,13 +148,15 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 
 ## Progreso del plan
 
-- [ ] Fase 1: Preparar el entorno y cerrar el riesgo de configuración
+- [x] Fase 1: Preparar el entorno y cerrar el riesgo de configuración
 - [ ] Fase 2: Crear cuentas y sesión compartida
 - [ ] Fase 3: Aislar y sincronizar los datos
 - [ ] Fase 4: Migrar copias de prueba
-- [ ] Fase 5: Documentar decisiones y operación
+- [x] Fase 5: Documentar decisiones y operación
 - [ ] Fase Testing
 
+Avance al 30 de octubre de 2026: código de registro y repositorios conectado, reglas publicadas en el proyecto de pruebas, seis pruebas de emulador y dos pruebas locales aprobadas; builds web/Android aprobados. Fases 2 a 4 y Testing siguen abiertas por las pruebas manuales de correo, Google, sincronización y uso sin conexión. Las pruebas de reglas están en `tests/reglasFirestore.test.mjs` para ejecutarse directamente con Node y Firebase Emulator Suite; el resultado cubre el objetivo previsto para el archivo `.ts` de este plan. Resumen: `Planes/Resumenes/2026-10-30-Firebase-Pruebas.md`.
+
 Fecha de creación: 29 de octubre de 2026
-Fecha de última actualización: 29 de octubre de 2026
-Estado: BORRADOR
+Fecha de última actualización: 30 de octubre de 2026
+Estado: EN EJECUCIÓN

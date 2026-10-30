@@ -131,7 +131,7 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view :key="autenticacionStore.usuario?.id ?? 'visitante'" />
     </q-page-container>
 
     <q-footer v-if="$q.screen.lt.md || altoBanner > 0" class="navegacion-movil">

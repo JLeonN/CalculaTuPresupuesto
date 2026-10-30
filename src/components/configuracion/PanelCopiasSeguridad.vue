@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, shallowRef, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import type {
   RespaldoDatos,
@@ -25,10 +25,19 @@ const servicioRespaldo = crearServicioRespaldo();
 const entradaArchivo = ref<HTMLInputElement | null>(null);
 const operacion = ref<'descarga' | 'lectura' | 'importacion' | null>(null);
 const errorAccion = ref<string | null>(null);
-const respaldoSeleccionado = ref<RespaldoDatos | null>(null);
+const respaldoSeleccionado = shallowRef<RespaldoDatos | null>(null);
 const resumenImportacion = ref<ResumenImportacion | null>(null);
 const nombreArchivo = ref('');
 const confirmacionVisible = ref(false);
+watch(
+  () => autenticacionStore.usuario?.id,
+  () => {
+    respaldoSeleccionado.value = null;
+    resumenImportacion.value = null;
+    confirmacionVisible.value = false;
+    errorAccion.value = null;
+  },
+);
 const hayRegistrosNuevos = computed(() => {
   const resumen = resumenImportacion.value;
   return Boolean(
@@ -324,6 +333,11 @@ function obtenerMensaje(errorCapturado: unknown, mensajePredeterminado: string):
           <h3 class="titulo-seccion">Confirmar importación</h3>
           <p>
             Se agregarán solo registros faltantes. No se modificarán ni borrarán datos actuales.
+          </p>
+          <p v-if="autenticacionStore.usuario" class="texto-secundario">
+            Cuenta de destino:
+            {{ autenticacionStore.usuario.correo ?? autenticacionStore.usuario.nombre }} (UID:
+            {{ autenticacionStore.usuario.id }}).
           </p>
         </q-card-section>
         <q-card-actions align="right">

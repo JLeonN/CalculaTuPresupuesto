@@ -21,27 +21,40 @@ export const useMaterialesStore = defineStore('materiales', () => {
   const cargando = ref(false);
   const guardando = ref(false);
   const error = ref<string | null>(null);
+  let versionDatos = 0;
+
+  function invalidarDatos(): void {
+    versionDatos += 1;
+    materiales.value = [];
+    error.value = null;
+    cargando.value = false;
+    guardando.value = false;
+  }
 
   async function cargarMateriales(): Promise<void> {
+    const version = versionDatos;
     cargando.value = true;
     error.value = null;
 
     try {
-      materiales.value = await repositorioMateriales.obtenerTodos();
+      const resultado = await repositorioMateriales.obtenerTodos();
+      if (version === versionDatos) materiales.value = resultado;
     } catch {
-      error.value = 'No se pudieron cargar los materiales guardados.';
+      if (version === versionDatos) error.value = 'No se pudieron cargar los materiales guardados.';
     } finally {
-      cargando.value = false;
+      if (version === versionDatos) cargando.value = false;
     }
   }
 
   async function agregarMaterial(datos: DatosMaterial): Promise<Material> {
+    const version = versionDatos;
     guardando.value = true;
     error.value = null;
     const material = crearMaterial(datos);
 
     try {
       await repositorioMateriales.guardar(material);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       materiales.value = [...materiales.value, material];
       return material;
     } catch {
@@ -53,6 +66,7 @@ export const useMaterialesStore = defineStore('materiales', () => {
   }
 
   async function editarMaterial(idMaterial: string, datos: DatosMaterial): Promise<Material> {
+    const version = versionDatos;
     const materialActual = obtenerMaterialPorId(idMaterial);
 
     if (materialActual === undefined) {
@@ -65,6 +79,7 @@ export const useMaterialesStore = defineStore('materiales', () => {
 
     try {
       await repositorioMateriales.guardar(materialActualizado);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       materiales.value = materiales.value.map((material) =>
         material.id === idMaterial ? materialActualizado : material,
       );
@@ -78,11 +93,13 @@ export const useMaterialesStore = defineStore('materiales', () => {
   }
 
   async function eliminarMaterial(idMaterial: string): Promise<void> {
+    const version = versionDatos;
     guardando.value = true;
     error.value = null;
 
     try {
       await repositorioMateriales.eliminar(idMaterial);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el borrado.');
       materiales.value = materiales.value.filter((material) => material.id !== idMaterial);
     } catch {
       error.value = 'No se pudo eliminar el material.';
@@ -130,6 +147,7 @@ export const useMaterialesStore = defineStore('materiales', () => {
     eliminarMaterial,
     obtenerMaterialPorId,
     buscarMateriales,
+    invalidarDatos,
   };
 });
 

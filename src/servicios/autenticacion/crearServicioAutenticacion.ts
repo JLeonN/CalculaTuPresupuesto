@@ -1,12 +1,9 @@
-import { crearAlmacenamientoAplicacion } from '@/repositorios/almacenamiento/crearAlmacenamientoAplicacion';
+import { estaFirebaseConfigurado } from '@/configuracion/firebase';
 import type { ServicioAutenticacion } from './ServicioAutenticacion';
-import { ServicioAutenticacionPrueba } from './ServicioAutenticacionPrueba';
+import { ServicioAutenticacionFirebase } from './ServicioAutenticacionFirebase';
+import { ServicioAutenticacionVisitante } from './ServicioAutenticacionVisitante';
 
 export function crearServicioAutenticacion(): ServicioAutenticacion {
-  // TODO(firebase): sustituir únicamente este proveedor por Firebase Authentication.
-  return new ServicioAutenticacionPrueba(
-    crearAlmacenamientoAplicacion(),
-    String(import.meta.env.QCLI_USUARIO_PRUEBA ?? ''),
-    String(import.meta.env.QCLI_CONTRASENA_PRUEBA ?? ''),
-  );
+  if (estaFirebaseConfigurado()) return new ServicioAutenticacionFirebase();
+  return new ServicioAutenticacionVisitante();
 }

@@ -13,6 +13,10 @@
  * }
  */
 interface ImportMetaEnv {
-  readonly QCLI_USUARIO_PRUEBA?: string;
-  readonly QCLI_CONTRASENA_PRUEBA?: string;
+  readonly QCLI_FIREBASE_API_KEY?: string;
+  readonly QCLI_FIREBASE_AUTH_DOMAIN?: string;
+  readonly QCLI_FIREBASE_PROJECT_ID?: string;
+  readonly QCLI_FIREBASE_APP_ID?: string;
+  readonly QCLI_FIREBASE_STORAGE_BUCKET?: string;
+  readonly QCLI_FIREBASE_MESSAGING_SENDER_ID?: string;
 }

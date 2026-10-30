@@ -29,6 +29,17 @@ async function cerrarSesion(): Promise<void> {
     classes: cierreCorrecto ? 'notificacion-exito' : 'notificacion-error',
   });
 }
+
+async function vincularGoogle(): Promise<void> {
+  const correcto = await autenticacionStore.vincularGoogle();
+  $q.notify({
+    message: correcto
+      ? 'Google quedó vinculado a tu cuenta.'
+      : (autenticacionStore.error ?? 'No se pudo vincular Google.'),
+    position: 'top',
+    classes: correcto ? 'notificacion-exito' : 'notificacion-error',
+  });
+}
 </script>
 
 <template>
@@ -55,6 +66,19 @@ async function cerrarSesion(): Promise<void> {
         </div>
       </div>
       <q-separator dark />
+      <q-item
+        v-if="
+          autenticacionStore.firebaseActivo &&
+          !autenticacionStore.usuario?.proveedores.includes('google.com')
+        "
+        v-close-popup
+        clickable
+        :disable="autenticacionStore.cargando"
+        @click="vincularGoogle"
+      >
+        <q-item-section avatar><q-icon name="account_circle" /></q-item-section>
+        <q-item-section>Vincular Google</q-item-section>
+      </q-item>
       <q-item v-close-popup clickable :disable="autenticacionStore.cargando" @click="cerrarSesion">
         <q-item-section avatar><q-icon name="logout" /></q-item-section>
         <q-item-section>Cerrar sesión</q-item-section>

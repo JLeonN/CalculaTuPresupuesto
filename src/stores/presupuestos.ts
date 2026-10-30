@@ -33,6 +33,16 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
   const guardando = ref(false);
   const error = ref<string | null>(null);
   const borradorVistaPrevia = ref<BorradorVistaPreviaPresupuesto | null>(null);
+  let versionDatos = 0;
+
+  function invalidarDatos(): void {
+    versionDatos += 1;
+    presupuestos.value = [];
+    borradorVistaPrevia.value = null;
+    error.value = null;
+    cargando.value = false;
+    guardando.value = false;
+  }
 
   const presupuestosOrdenados = computed(() =>
     [...presupuestos.value].sort((presupuestoA, presupuestoB) => {
@@ -46,29 +56,35 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
   );
 
   async function cargarPresupuestos(): Promise<void> {
+    const version = versionDatos;
     cargando.value = true;
     error.value = null;
 
     try {
-      presupuestos.value = await repositorioPresupuestos.obtenerTodos();
+      const resultado = await repositorioPresupuestos.obtenerTodos();
+      if (version === versionDatos) presupuestos.value = resultado;
     } catch (errorCapturado) {
-      error.value =
-        errorCapturado instanceof Error
-          ? errorCapturado.message
-          : 'No se pudieron cargar los presupuestos guardados.';
+      if (version === versionDatos)
+        error.value =
+          errorCapturado instanceof Error
+            ? errorCapturado.message
+            : 'No se pudieron cargar los presupuestos guardados.';
     } finally {
-      cargando.value = false;
+      if (version === versionDatos) cargando.value = false;
     }
   }
 
   async function agregarPresupuesto(datos: DatosPresupuesto): Promise<Presupuesto> {
+    const version = versionDatos;
     guardando.value = true;
     error.value = null;
 
     try {
       const presupuesto = crearPresupuesto(datos);
       await repositorioPresupuestos.guardar(presupuesto);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       const presupuestosPersistidos = await repositorioPresupuestos.obtenerTodos();
+      if (version !== versionDatos) throw new Error('La sesión cambió durante la lectura.');
       const presupuestoPersistido = presupuestosPersistidos.find(
         (presupuestoActual) => presupuestoActual.id === presupuesto.id,
       );
@@ -94,6 +110,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     idPresupuesto: string,
     datos: DatosPresupuesto,
   ): Promise<Presupuesto> {
+    const version = versionDatos;
     const presupuestoActual = obtenerPresupuestoPorId(idPresupuesto);
 
     if (presupuestoActual === undefined) {
@@ -106,6 +123,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     try {
       const presupuestoActualizado = actualizarPresupuesto(presupuestoActual, datos);
       await repositorioPresupuestos.guardar(presupuestoActualizado);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       presupuestos.value = presupuestos.value.map((presupuesto) =>
         presupuesto.id === idPresupuesto ? presupuestoActualizado : presupuesto,
       );
@@ -143,6 +161,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     idPresupuesto: string,
     formatoDocumento: FormatoDocumentoPresupuesto,
   ): Promise<Presupuesto> {
+    const version = versionDatos;
     const presupuestoActual = obtenerPresupuestoPorId(idPresupuesto);
     if (!presupuestoActual) {
       throw new Error('El presupuesto cuyo formato intentás cambiar ya no existe.');
@@ -157,6 +176,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     try {
       const presupuestoActualizado = { ...presupuestoActual, formatoDocumento };
       await repositorioPresupuestos.guardar(presupuestoActualizado);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       presupuestos.value = presupuestos.value.map((actual) =>
         actual.id === idPresupuesto ? presupuestoActualizado : actual,
       );
@@ -177,6 +197,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     idPresupuesto: string,
     estado: EstadoPresupuesto,
   ): Promise<Presupuesto> {
+    const version = versionDatos;
     const presupuestoActual = obtenerPresupuestoPorId(idPresupuesto);
 
     if (presupuestoActual === undefined) {
@@ -193,6 +214,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     try {
       const presupuestoActualizado = actualizarEstadoPresupuesto(presupuestoActual, estado);
       await repositorioPresupuestos.guardar(presupuestoActualizado);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       presupuestos.value = presupuestos.value.map((presupuesto) =>
         presupuesto.id === idPresupuesto ? presupuestoActualizado : presupuesto,
       );
@@ -209,11 +231,13 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
   }
 
   async function eliminarPresupuesto(idPresupuesto: string): Promise<void> {
+    const version = versionDatos;
     guardando.value = true;
     error.value = null;
 
     try {
       await repositorioPresupuestos.eliminar(idPresupuesto);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el borrado.');
       presupuestos.value = presupuestos.value.filter(
         (presupuesto) => presupuesto.id !== idPresupuesto,
       );
@@ -327,6 +351,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     descartarBorradorVistaPrevia,
     actualizarFormatoBorradorVistaPrevia,
     consumirBorradorVistaPrevia,
+    invalidarDatos,
   };
 });
 

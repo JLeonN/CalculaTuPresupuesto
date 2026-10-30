@@ -1,8 +1,12 @@
 import { crearAlmacenamientoAplicacion } from '@/repositorios/almacenamiento/crearAlmacenamientoAplicacion';
 import { RepositorioMaterialesLocal } from './RepositorioMaterialesLocal';
+import { RepositorioMaterialesFirestore } from './RepositorioMaterialesFirestore';
+import { crearRepositorioSegunSesion } from '@/repositorios/almacenamiento/crearRepositorioSegunSesion';
 import type { RepositorioMateriales } from './RepositorioMateriales';
 
 export function crearRepositorioMateriales(): RepositorioMateriales {
-  // TODO(firebase): reemplazar esta selección por un repositorio Firestore para materiales.
-  return new RepositorioMaterialesLocal(crearAlmacenamientoAplicacion());
+  return crearRepositorioSegunSesion<RepositorioMateriales>(
+    () => new RepositorioMaterialesLocal(crearAlmacenamientoAplicacion()),
+    (uid) => new RepositorioMaterialesFirestore(uid),
+  );
 }

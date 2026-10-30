@@ -42,26 +42,31 @@ El workflow se ejecutará al publicar cambios en `main`. En GitHub se debe selec
 
 El repositorio definitivo es `https://github.com/JLeonN/CalculaTuPresupuesto`. CH no crea commits ni ejecuta push; Leo decide cuándo versionar y publicar los cambios.
 
-## Arquitectura futura aprobada
+## Firebase en entorno de pruebas
 
-Firebase se incorporará únicamente en su propio plan. La arquitectura prevista incluye Google Login con Firebase Authentication, Cloud Firestore compartido entre Android y web, persistencia offline, sincronización al recuperar conexión y aislamiento de los datos por cuenta autenticada. Firebase todavía no está instalado.
+El proyecto Firebase de desarrollo es `calculatupresupuesto-pru-b2e9a` (plan Spark). Firestore está en `southamerica-east1`. Authentication admite correo/contraseña y Google; el registro por correo exige verificarlo antes de usar la cuenta. Los dominios autorizados por ahora son `localhost` y los propios de Firebase. En Android solo se registraron las huellas SHA de depuración; antes de publicar una versión nueva hay que registrar la huella de la firma de Play. La configuración web y Android se obtienen siempre desde la cuenta de desarrollo indicada en `Memory.md`.
 
-La identidad visual reutilizable se mantiene centralizada en `src/css/Variables.css`.
+Copiá `.env.example` a `.env.local` y completá allí los identificadores públicos de la app web registrada en Firebase Console. Reiniciá Quasar después de cambiarlos. Si faltan, la app permite el uso local como visitante, sin iniciar sesión. El antiguo usuario y contraseña de prueba ya no forman parte del cliente. La configuración de Android se descarga con Firebase CLI al archivo ignorado `src-capacitor/android/app/google-services.json`:
 
-## Acceso provisional de pruebas
-
-Durante la etapa de pruebas, toda persona puede usar los módulos y guardar datos localmente. La descarga, impresión y entrega de presupuestos requieren iniciar sesión. Sin sesión, la vista previa muestra la marca `VERSIÓN DE PRUEBA`.
-
-Leo debe crear manualmente el archivo local `C:/Z-Programacion/Quasar/CalculaTuPresupuesto/.env.local` con este contrato:
-
-```env
-QCLI_USUARIO_PRUEBA=
-QCLI_CONTRASENA_PRUEBA=
+```bash
+npx --yes firebase-tools@14.22.0 apps:sdkconfig ANDROID 1:769212974243:android:624c9427548ee56839ab16 --out src-capacitor/android/app/google-services.json --project calculatupresupuesto-pru-b2e9a
 ```
 
-Los valores no deben escribirse en `.env.example` ni en otro archivo versionado. Después de modificarlos es necesario reiniciar el servidor de desarrollo o recompilar la SPA y Android.
+Las credenciales personales, claves de servicio y futuros secretos de pagos nunca deben escribirse en el cliente. El antiguo `.env.local` con credenciales provisionales quedó en el historial Git anterior a `v0.0.7`; si esa contraseña se reutilizó en otro servicio, hay que cambiarla.
 
-Este acceso es provisional: Quasar incorpora las variables al código cliente, por lo que no constituyen secretos ni seguridad apta para producción. La futura integración con Firebase sustituirá `ServicioAutenticacionPrueba` desde `crearServicioAutenticacion()` y conservará el store y la interfaz actuales. Firebase deberá resolver cuentas, revocación, aislamiento por `uid` y reglas remotas antes de comercializar la aplicación.
+El visitante guarda clientes, materiales, presupuestos y configuración en su dispositivo. La cuenta autenticada usa `usuarios/{uid}/{clientes|materiales|presupuestos}/{id}` y `usuarios/{uid}/configuracion/principal` en Firestore. La app no sube automáticamente los datos locales: se exporta un JSON desde la versión anterior y se importa bajo la cuenta elegida; la importación conserva IDs y agrega solo faltantes. Las reglas publicadas permiten acceso únicamente al dueño con correo verificado. El comando para reproducirlas es:
+
+```bash
+npx --yes firebase-tools@14.22.0 deploy --only firestore:rules --project calculatupresupuesto-pru-b2e9a
+```
+
+Android usa la caché persistente de Firestore; la web usa caché en memoria para no dejar datos en el almacenamiento persistente de una PC compartida. Al cambiar de cuenta se vacían los stores, se remontan las páginas y se ignoran lecturas antiguas. Si una escritura demora más de tres segundos, la app permite continuar y avisa que el cambio quedó pendiente de sincronización; informa cuando se confirma o falla. Ediciones simultáneas del mismo documento se resuelven por la última escritura. La sincronización sin red todavía necesita comprobación manual en Android y web antes de considerarse cerrada. Las transacciones de importación requieren conexión.
+
+Cloud Storage no está activado porque exigiría Blaze. Los logos se guardan dentro de configuración y presupuestos con límite de 350 KB; cada documento se rechaza si su JSON supera 900 KB. Las copias antiguas con logos mayores pueden requerir reducirlos antes de importar.
+
+Durante estas pruebas, Descargar, Imprimir y Enviar siguen habilitados por sesión iniciada; el visitante ve la marca `VERSIÓN DE PRUEBA`. Prueba gratuita, exención de Pablo y pagos pertenecen a otro plan. No publicar todavía la nueva compilación Android ni la SPA: faltan pruebas manuales de ambas plataformas y configurar los valores web en el entorno de despliegue.
+
+La identidad visual reutilizable se mantiene centralizada en `src/css/Variables.css`.
 
 ## Evolución funcional
 

@@ -19,20 +19,38 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
   const error = ref<string | null>(null);
   const monedaPrincipal = computed(() => configuracion.value.monedaPrincipal);
   let promesaCarga: Promise<void> | null = null;
+  let versionDatos = 0;
+
+  function invalidarDatos(): void {
+    versionDatos += 1;
+    configuracion.value = crearConfiguracionInicial();
+    configuracionCargada.value = false;
+    cargando.value = false;
+    guardando.value = false;
+    guardadoCorrectamente.value = false;
+    error.value = null;
+    promesaCarga = null;
+  }
 
   async function cargarConfiguracion(): Promise<void> {
+    const version = versionDatos;
     cargando.value = true;
     guardadoCorrectamente.value = false;
     error.value = null;
 
     try {
-      configuracion.value = await repositorioConfiguracion.obtener();
-      configuracionCargada.value = true;
+      const resultado = await repositorioConfiguracion.obtener();
+      if (version === versionDatos) {
+        configuracion.value = resultado;
+        configuracionCargada.value = true;
+      }
     } catch {
-      configuracionCargada.value = false;
-      error.value = 'No se pudo cargar la configuración guardada.';
+      if (version === versionDatos) {
+        configuracionCargada.value = false;
+        error.value = 'No se pudo cargar la configuración guardada.';
+      }
     } finally {
-      cargando.value = false;
+      if (version === versionDatos) cargando.value = false;
     }
   }
 
@@ -52,6 +70,7 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
   }
 
   async function guardarConfiguracion(datos: DatosConfiguracion): Promise<Configuracion> {
+    const version = versionDatos;
     guardando.value = true;
     guardadoCorrectamente.value = false;
     error.value = null;
@@ -59,6 +78,7 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
     try {
       const configuracionActualizada = actualizarConfiguracion(datos);
       await repositorioConfiguracion.guardar(configuracionActualizada);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       configuracion.value = configuracionActualizada;
       configuracionCargada.value = true;
       guardadoCorrectamente.value = true;
@@ -90,5 +110,6 @@ export const useConfiguracionStore = defineStore('configuracion', () => {
     asegurarConfiguracionCargada,
     guardarConfiguracion,
     limpiarEstadoGuardado,
+    invalidarDatos,
   };
 });

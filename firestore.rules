@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function esPropietario(uid) {
+      return request.auth != null && request.auth.uid == uid
+        && request.auth.token.email_verified == true;
+    }
+
+    function tieneId(id) {
+      return request.resource.data.id is string && request.resource.data.id == id;
+    }
+
+    match /usuarios/{uid}/clientes/{id} {
+      allow read, delete: if esPropietario(uid);
+      allow create, update: if esPropietario(uid)
+        && tieneId(id)
+        && request.resource.data.nombre is string
+        && request.resource.data.telefonos is list
+        && request.resource.data.locales is list;
+    }
+
+    match /usuarios/{uid}/materiales/{id} {
+      allow read, delete: if esPropietario(uid);
+      allow create, update: if esPropietario(uid)
+        && tieneId(id)
+        && request.resource.data.nombre is string
+        && request.resource.data.precios is list;
+    }
+
+    match /usuarios/{uid}/presupuestos/{id} {
+      allow read, delete: if esPropietario(uid);
+      allow create, update: if esPropietario(uid)
+        && tieneId(id)
+        && request.resource.data.fechaCreacion is string
+        && request.resource.data.fechaPresupuesto is string;
+    }
+
+    match /usuarios/{uid}/configuracion/principal {
+      allow read: if esPropietario(uid);
+      allow create, update: if esPropietario(uid)
+        && request.resource.data.nombreEmpresa is string
+        && request.resource.data.tarifasManoObra is list
+        && request.resource.data.metodosPago is list;
+    }
+  }
+}

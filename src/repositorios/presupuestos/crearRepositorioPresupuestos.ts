@@ -1,8 +1,12 @@
 import { crearAlmacenamientoAplicacion } from '@/repositorios/almacenamiento/crearAlmacenamientoAplicacion';
 import { RepositorioPresupuestosLocal } from './RepositorioPresupuestosLocal';
+import { RepositorioPresupuestosFirestore } from './RepositorioPresupuestosFirestore';
+import { crearRepositorioSegunSesion } from '@/repositorios/almacenamiento/crearRepositorioSegunSesion';
 import type { RepositorioPresupuestos } from './RepositorioPresupuestos';
 
 export function crearRepositorioPresupuestos(): RepositorioPresupuestos {
-  // TODO(firebase): reemplazar esta selección por el repositorio compartido de presupuestos.
-  return new RepositorioPresupuestosLocal(crearAlmacenamientoAplicacion());
+  return crearRepositorioSegunSesion<RepositorioPresupuestos>(
+    () => new RepositorioPresupuestosLocal(crearAlmacenamientoAplicacion()),
+    (uid) => new RepositorioPresupuestosFirestore(uid),
+  );
 }

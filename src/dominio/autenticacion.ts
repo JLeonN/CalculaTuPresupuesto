@@ -6,24 +6,10 @@ export interface CredencialesAcceso {
 export interface UsuarioAutenticado {
   id: string;
   nombre: string;
-  proveedor: 'prueba';
-}
-
-export type CodigoErrorAccesoProvisional = 'credenciales-invalidas' | 'configuracion-ausente';
-
-const MENSAJES_ERROR_ACCESO: Readonly<Record<CodigoErrorAccesoProvisional, string>> = {
-  'credenciales-invalidas': 'El usuario o la contraseña no son correctos.',
-  'configuracion-ausente': 'El acceso de prueba todavía no está configurado.',
-};
-
-export class ErrorAccesoProvisional extends Error {
-  readonly codigo: CodigoErrorAccesoProvisional;
-
-  constructor(codigo: CodigoErrorAccesoProvisional) {
-    super(MENSAJES_ERROR_ACCESO[codigo]);
-    this.name = 'ErrorAccesoProvisional';
-    this.codigo = codigo;
-  }
+  correo: string | null;
+  correoVerificado: boolean;
+  proveedores: string[];
+  proveedor: 'firebase';
 }
 
 export class ErrorSalidaPresupuestoRestringida extends Error {

@@ -15,6 +15,15 @@ export const useClientesStore = defineStore('clientes', () => {
   const cargando = ref(false);
   const guardando = ref(false);
   const error = ref<string | null>(null);
+  let versionDatos = 0;
+
+  function invalidarDatos(): void {
+    versionDatos += 1;
+    clientes.value = [];
+    error.value = null;
+    cargando.value = false;
+    guardando.value = false;
+  }
 
   const clientesOrdenados = computed(() =>
     [...clientes.value].sort((clienteA, clienteB) =>
@@ -23,25 +32,29 @@ export const useClientesStore = defineStore('clientes', () => {
   );
 
   async function cargarClientes(): Promise<void> {
+    const version = versionDatos;
     cargando.value = true;
     error.value = null;
 
     try {
-      clientes.value = await repositorioClientes.obtenerTodos();
+      const resultado = await repositorioClientes.obtenerTodos();
+      if (version === versionDatos) clientes.value = resultado;
     } catch {
-      error.value = 'No se pudieron cargar los clientes guardados.';
+      if (version === versionDatos) error.value = 'No se pudieron cargar los clientes guardados.';
     } finally {
-      cargando.value = false;
+      if (version === versionDatos) cargando.value = false;
     }
   }
 
   async function agregarCliente(datos: DatosCliente): Promise<Cliente> {
+    const version = versionDatos;
     guardando.value = true;
     error.value = null;
     const cliente = crearCliente(datos);
 
     try {
       await repositorioClientes.guardar(cliente);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       clientes.value = [...clientes.value, cliente];
       return cliente;
     } catch {
@@ -53,6 +66,7 @@ export const useClientesStore = defineStore('clientes', () => {
   }
 
   async function editarCliente(idCliente: string, datos: DatosCliente): Promise<Cliente> {
+    const version = versionDatos;
     const clienteActual = obtenerClientePorId(idCliente);
 
     if (clienteActual === undefined) {
@@ -65,6 +79,7 @@ export const useClientesStore = defineStore('clientes', () => {
 
     try {
       await repositorioClientes.guardar(clienteActualizado);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       clientes.value = clientes.value.map((cliente) =>
         cliente.id === idCliente ? clienteActualizado : cliente,
       );
@@ -78,11 +93,13 @@ export const useClientesStore = defineStore('clientes', () => {
   }
 
   async function eliminarCliente(idCliente: string): Promise<void> {
+    const version = versionDatos;
     guardando.value = true;
     error.value = null;
 
     try {
       await repositorioClientes.eliminar(idCliente);
+      if (version !== versionDatos) throw new Error('La sesión cambió durante el borrado.');
       clientes.value = clientes.value.filter((cliente) => cliente.id !== idCliente);
     } catch {
       error.value = 'No se pudo eliminar el cliente.';
@@ -138,5 +155,6 @@ export const useClientesStore = defineStore('clientes', () => {
     obtenerClientePorId,
     limpiarError,
     buscarClientes,
+    invalidarDatos,
   };
 });

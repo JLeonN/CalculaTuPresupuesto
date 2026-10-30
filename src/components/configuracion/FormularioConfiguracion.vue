@@ -18,7 +18,8 @@ import {
 import { MONEDA_INICIAL, obtenerOpcionesMonedasDisponibles, type Moneda } from '@/dominio/monedas';
 import { convertirEntradaPorcentajeAdicionalMateriales } from '@/dominio/porcentajeAdicionalMateriales';
 
-const TAMANO_MAXIMO_LOGO_BYTES = 1024 * 1024;
+// El logo se incluye en la configuración y en cada presupuesto: mantenerlo bajo el límite de documento Firestore.
+const TAMANO_MAXIMO_LOGO_BYTES = 350 * 1024;
 const TIPOS_LOGO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
 
 const props = defineProps<{
@@ -201,7 +202,7 @@ function procesarLogo(evento: Event): void {
   }
 
   if (archivo.size > TAMANO_MAXIMO_LOGO_BYTES) {
-    errorLogo.value = 'El logo debe pesar menos de 1 MB.';
+    errorLogo.value = 'El logo debe pesar menos de 350 KB para sincronizarse.';
     return;
   }
 

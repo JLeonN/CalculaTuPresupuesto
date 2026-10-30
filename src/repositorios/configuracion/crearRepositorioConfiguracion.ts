@@ -1,8 +1,12 @@
 import { crearAlmacenamientoAplicacion } from '@/repositorios/almacenamiento/crearAlmacenamientoAplicacion';
 import { RepositorioConfiguracionLocal } from './RepositorioConfiguracionLocal';
+import { RepositorioConfiguracionFirestore } from './RepositorioConfiguracionFirestore';
+import { crearRepositorioSegunSesion } from '@/repositorios/almacenamiento/crearRepositorioSegunSesion';
 import type { RepositorioConfiguracion } from './RepositorioConfiguracion';
 
 export function crearRepositorioConfiguracion(): RepositorioConfiguracion {
-  // TODO(firebase): reemplazar esta selección por un repositorio Firestore para la configuración.
-  return new RepositorioConfiguracionLocal(crearAlmacenamientoAplicacion());
+  return crearRepositorioSegunSesion<RepositorioConfiguracion>(
+    () => new RepositorioConfiguracionLocal(crearAlmacenamientoAplicacion()),
+    (uid) => new RepositorioConfiguracionFirestore(uid),
+  );
 }
