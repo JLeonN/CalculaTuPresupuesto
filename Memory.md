@@ -19,3 +19,4 @@ Este archivo conserva decisiones y aprendizajes útiles para trabajos futuros en
 ## Decisiones y aprendizajes
 
 - 2026-10-29: Se adopta una memoria curada para conservar contexto reutilizable entre trabajos. Se agregarán decisiones concretas cuando aparezcan, tras verificarlas contra el proyecto vigente.
+- 2026-10-30: Para Firebase y cualquier otro servicio o tarea de desarrollo de este proyecto, usar la cuenta `leodevapps.75@gmail.com`. Verificar la cuenta activa antes de crear o modificar recursos. No usar la cuenta personal destinada a asuntos de la casa.
