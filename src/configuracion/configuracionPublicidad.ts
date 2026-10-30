@@ -1,4 +1,4 @@
-export const PUBLICIDAD_DE_PRUEBA: boolean = true;
+export const PUBLICIDAD_DE_PRUEBA: boolean = false;
 
 export const ID_APLICACION_ADMOB_ANDROID = 'ca-app-pub-7620083100302566~7742704663';
 export const ID_BANNER_ADMOB_ANDROID = 'ca-app-pub-7620083100302566/2220669269';
