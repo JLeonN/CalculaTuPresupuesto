@@ -7,7 +7,7 @@ Este archivo conserva decisiones y aprendizajes útiles para trabajos futuros en
 - Registrar solo información reutilizable que no sea fácil de recuperar del código o los documentos vigentes.
 - Añadir fecha y archivos relacionados cuando ayuden a entender una decisión.
 - Verificar cada entrada antes de usarla; corregirla o quitarla si quedó obsoleta.
-- Mantener el archivo breve, idealmente por debajo de 100 líneas, sin secretos ni datos reales de clientes.
+- Mantener el archivo breve, idealmente por debajo de 100 líneas, sin secretos ni datos reales de clientes salvo autorización expresa de Leo.
 
 ## Puntos de referencia
 
@@ -23,4 +23,6 @@ Este archivo conserva decisiones y aprendizajes útiles para trabajos futuros en
 - 2026-10-30: Firebase de pruebas `calculatupresupuesto-pru-b2e9a` quedó separado de la app publicada, en Spark y con Firestore en São Paulo (`southamerica-east1`). Se configuraron correo/contraseña y Google. No convertir este proyecto en producción sin migración y revisión de privacidad.
 - 2026-10-30: Los datos del visitante permanecen locales; los de una cuenta verificada van a Firestore bajo su `uid`. La migración prevista es exportar/importar JSON sin borrar el origen. Android usa caché persistente y la web solo memoria por el riesgo de equipos compartidos. La sincronización sin red exige prueba manual antes de publicar.
 - 2026-10-30: Storage no se activó porque exige Blaze; los logos se limitan a 350 KB dentro de documentos. Las suscripciones, la exención de Pablo y Billing quedan para un plan comercial posterior. Las reglas Firestore de pruebas están publicadas y solo admiten al dueño con correo verificado.
+- 2026-10-30: Leo indicó que la futura suscripción debe eximir a Pablo, identificado por `el_mallic@hotmail.com`, y a otras cuentas de prueba que Leo designe. Es una decisión pendiente de implementar en el plan comercial; este correo no concede permisos ni acceso por sí solo. Confirmar con Leo las demás cuentas al implementar exenciones.
+- 2026-11-02: Leo usa un teléfono dedicado para pruebas Android y quiere conservar el identificador habitual `com.calculatupresupuesto.app`; no crear otra variante ni paquete para instalarlas. La variante `.pruebas` creada por error se retiró. Leo probó la sincronización entre dispositivos y confirmó que funciona bien.
 - 2026-10-30: El `.env.local` previo a `v0.0.7` contenía usuario y contraseña provisionales en el historial Git. Ya no se usan en el cliente. Si esa contraseña se reutilizó fuera de esta app, cambiarla allí; no imprimir ni recuperar su valor.

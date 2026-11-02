@@ -52,6 +52,8 @@ Copiá `.env.example` a `.env.local` y completá allí los identificadores públ
 npx --yes firebase-tools@14.22.0 apps:sdkconfig ANDROID 1:769212974243:android:624c9427548ee56839ab16 --out src-capacitor/android/app/google-services.json --project calculatupresupuesto-pru-b2e9a
 ```
 
+Las pruebas Android se hacen en el teléfono dedicado de Leo con el identificador habitual `com.calculatupresupuesto.app`. No crear una segunda variante de la aplicación para probarla.
+
 Las credenciales personales, claves de servicio y futuros secretos de pagos nunca deben escribirse en el cliente. El antiguo `.env.local` con credenciales provisionales quedó en el historial Git anterior a `v0.0.7`; si esa contraseña se reutilizó en otro servicio, hay que cambiarla.
 
 El visitante guarda clientes, materiales, presupuestos y configuración en su dispositivo. La cuenta autenticada usa `usuarios/{uid}/{clientes|materiales|presupuestos}/{id}` y `usuarios/{uid}/configuracion/principal` en Firestore. La app no sube automáticamente los datos locales: se exporta un JSON desde la versión anterior y se importa bajo la cuenta elegida; la importación conserva IDs y agrega solo faltantes. Las reglas publicadas permiten acceso únicamente al dueño con correo verificado. El comando para reproducirlas es:

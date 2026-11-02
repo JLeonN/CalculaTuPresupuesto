@@ -157,6 +157,8 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 
 Avance al 30 de octubre de 2026: código de registro y repositorios conectado, reglas publicadas en el proyecto de pruebas, seis pruebas de emulador y dos pruebas locales aprobadas; builds web/Android aprobados. Fases 2 a 4 y Testing siguen abiertas por las pruebas manuales de correo, Google, sincronización y uso sin conexión. Las pruebas de reglas están en `tests/reglasFirestore.test.mjs` para ejecutarse directamente con Node y Firebase Emulator Suite; el resultado cubre el objetivo previsto para el archivo `.ts` de este plan. Resumen: `Planes/Resumenes/2026-10-30-Firebase-Pruebas.md`.
 
+Prueba en teléfono, 2 de noviembre de 2026: Leo confirmó que la sincronización funciona bien. Se había creado por error una segunda variante Android con sufijo `.pruebas`; Leo aclaró que usa un teléfono dedicado y quiere seguir probando con el identificador habitual `com.calculatupresupuesto.app`. La variante adicional se desinstaló y se retiró del proyecto. Las demás pruebas manuales del plan siguen abiertas.
+
 Fecha de creación: 29 de octubre de 2026
-Fecha de última actualización: 30 de octubre de 2026
+Fecha de última actualización: 2 de noviembre de 2026
 Estado: EN EJECUCIÓN
