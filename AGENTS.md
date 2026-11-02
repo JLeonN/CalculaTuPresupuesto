@@ -22,6 +22,24 @@
 - Yo voy a probar el resultado.
 - Si encontrás un riesgo o una decisión importante durante el trabajo, explicámelo de forma breve y proponé una solución práctica.
 
+## Teléfono Android de pruebas por USB
+
+- Usar únicamente el POCO dedicado a pruebas, con serial ADB `f18c5937`. Este procedimiento no se aplica al teléfono personal de Leo. Consultar la [guía de control Android por USB](<Y:/Yoomat75/Control Android por USB del teléfono de pruebas/Control Android por USB en el teléfono de pruebas.md>).
+- Verificar que `adb devices` muestre `f18c5937 device`. Antes de instalar una APK ya creada, comprobar que su paquete sea `com.calculatupresupuesto.app`. En PowerShell:
+
+```powershell
+adb devices
+adb -s f18c5937 install -r 'C:\ruta\app.apk'
+adb -s f18c5937 shell monkey -p com.calculatupresupuesto.app 1
+adb -s f18c5937 shell screencap -p /sdcard/ch_pantalla.png
+adb -s f18c5937 pull /sdcard/ch_pantalla.png .\ch_pantalla.png
+& 'Y:\Yoomat75\Control Android por USB del teléfono de pruebas\Control Android por USB.ps1' -Accion tocar -X 400 -Y 480
+& 'Y:\Yoomat75\Control Android por USB del teléfono de pruebas\Control Android por USB.ps1' -Accion escribir -Texto wifi
+```
+
+- El script se ejecuta una vez por cada toque o escritura; antes de escribir, enfocar el campo de texto. Consultar la guía para los límites de caracteres y el funcionamiento de `uinput`.
+- Antes de modificar código o compilar una APK, explicar el motivo a Leo y pedir su aprobación explícita.
+
 ## Stack y arquitectura
 
 - Usar Quasar CLI con Vue 3, TypeScript estricto, Vite, Vue Router, Pinia y Composition API mediante `<script setup>`.
