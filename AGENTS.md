@@ -42,7 +42,8 @@
 
 ## Seguridad y Git
 
-- Nunca escribir secretos, tokens, credenciales o datos reales de clientes en archivos versionados. Solo si Leo autoriza
+- Nunca escribir secretos, tokens, credenciales o datos reales de clientes en archivos versionados.
+- Excepción autorizada por Leo: `.credenciales-pruebas.local.md` puede guardar en texto plano credenciales de cuentas de prueba y de la cuenta dedicada al desarrollo de Firebase. Debe permanecer ignorado por Git y nunca copiarse a archivos versionados, chat, comandos, registros o respuestas. Consultarlo solo cuando una tarea de desarrollo o pruebas lo necesite; no imprimir su contenido. Leo completa personalmente PIN, MFA y consentimientos.
 - Usar `.env.example` solo como contrato sin valores reales.
 - No ejecutar `git add`, crear commits ni hacer push salvo solicitud explícita de Leo.
 - No cambiar `com.calculatupresupuesto.app` después de publicar Android sin un plan explícito de migración.

@@ -27,7 +27,7 @@ Incorporar Firebase a Calcula tu presupuesto en un entorno de desarrollo separad
 ### Incluye
 
 - Proyecto Firebase exclusivo de pruebas, configuración de Auth, Firestore, Storage si las imágenes lo requieren, reglas, dominios autorizados y aplicación Android de pruebas con el identificador existente.
-- Acceso de la IA ejecutora a Firebase Console o Firebase CLI mediante la sesión de Leo. Leo ya autorizó usar su cuenta para configurar el entorno; permitir que él complete MFA o una pantalla de consentimiento cuando el servicio lo exija. No pedirle contraseñas ni copiarlas a archivos, chat o logs.
+- Acceso de la IA ejecutora a Firebase Console o Firebase CLI mediante la sesión de Leo. Leo ya autorizó usar su cuenta para configurar el entorno; permitir que él complete MFA o una pantalla de consentimiento cuando el servicio lo exija. No pedir contraseñas por chat ni copiarlas a archivos versionados o registros. Desde el 2 de noviembre de 2026, Leo autorizó la excepción `.credenciales-pruebas.local.md`, ignorada por Git, para credenciales de cuentas de prueba y de la cuenta dedicada al desarrollo de Firebase, escritas por él en texto plano. No sustituye MFA.
 - Código para registro, inicio, vinculación de proveedores, recuperación, cierre de sesión, datos por cuenta y migración de copias sintéticas.
 - Pruebas de aislamiento, sincronización, recuperación de sesión, desconexión y protección de datos al cambiar de cuenta.
 - Actualizar `README.md` y `Memory.md` con hechos duraderos verificados durante la ejecución.

@@ -6,6 +6,9 @@ node_modules
 .env*
 !.env.example
 
+# Credenciales locales de cuentas de prueba, escritas por Leo.
+/.credenciales-pruebas.local.md
+
 # Configuración local de la app Android de pruebas.
 /src-capacitor/android/app/google-services.json
 firestore-debug.log

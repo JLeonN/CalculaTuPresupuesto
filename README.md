@@ -56,6 +56,10 @@ Las pruebas Android se hacen en el teléfono dedicado de Leo con el identificado
 
 Las credenciales personales, claves de servicio y futuros secretos de pagos nunca deben escribirse en el cliente. El antiguo `.env.local` con credenciales provisionales quedó en el historial Git anterior a `v0.0.7`; si esa contraseña se reutilizó en otro servicio, hay que cambiarla.
 
+### Credenciales locales de cuentas de prueba
+
+Leo puede abrir `.credenciales-pruebas.local.md` y completar allí las cuentas de prueba y la cuenta dedicada al desarrollo de Firebase. El archivo está ignorado por Git, pero su contenido queda en texto plano en esta PC. No colocar allí cuentas personales, claves de servicio ni secretos de pagos. CH solo lo consultará cuando una tarea lo requiera y no mostrará las contraseñas en respuestas ni registros. Los pasos de verificación de Google siguen siendo manuales.
+
 El visitante guarda clientes, materiales, presupuestos y configuración en su dispositivo. La cuenta autenticada usa `usuarios/{uid}/{clientes|materiales|presupuestos}/{id}` y `usuarios/{uid}/configuracion/principal` en Firestore. La app no sube automáticamente los datos locales: se exporta un JSON desde la versión anterior y se importa bajo la cuenta elegida; la importación conserva IDs y agrega solo faltantes. Las reglas publicadas permiten acceso únicamente al dueño con correo verificado. El comando para reproducirlas es:
 
 ```bash
