@@ -14,6 +14,7 @@ node_modules
 firestore-debug.log
 firebase-debug.log
 ui-debug.log
+/.playwright-mcp/
 
 # Archivos temporales de inicialización
 /_generacion-quasar

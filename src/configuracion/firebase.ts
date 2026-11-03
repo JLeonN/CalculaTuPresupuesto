@@ -5,6 +5,7 @@ import {
   initializeFirestore,
   memoryLocalCache,
   persistentLocalCache,
+  persistentMultipleTabManager,
   type Firestore,
 } from 'firebase/firestore';
 
@@ -43,7 +44,9 @@ export function obtenerFirebase(): {
     getApps().find((actual) => actual.name === '[DEFAULT]') ?? initializeApp(CONFIGURACION);
   autenticacion ??= getAuth(aplicacion);
   baseDatos ??= initializeFirestore(aplicacion, {
-    localCache: Capacitor.isNativePlatform() ? persistentLocalCache() : memoryLocalCache(),
+    localCache: Capacitor.isNativePlatform()
+      ? persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+      : memoryLocalCache(),
   });
 
   return { aplicacion, autenticacion, baseDatos };
