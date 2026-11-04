@@ -1,5 +1,11 @@
 # PLAN MIGRACIÓN DE IDENTIFICADORES TÉCNICOS DE CALCULA TU PRESUPUESTO
 
+## Estado revisado el 4 de noviembre de 2026
+
+Los identificadores técnicos usados por la app ya son `calcula-tu-presupuesto`, `/CalculaTuPresupuesto/` y `com.calculatupresupuesto.app`. El remoto `origin` apunta a `JLeonN/CalculaTuPresupuesto` y `origin/main` coincide con `main`; las únicas referencias `mallic-tesla:*` en código son claves privadas de compatibilidad. Por eso se retiró la tarea general de migración de `TareasPendientes.md`. La carpeta local aún se llama `MallicTesla`; renombrarla es una decisión de organización independiente, sin cambio de datos ni de paquete Android.
+
+Leo indicó que Pablo exporta sus datos a JSON y que los datos de la cuenta `.03` son sintéticos y ya tienen copia JSON. No hace falta migrar esos datos de prueba a producción. Las pruebas históricas de conservación de claves que figuran abajo no se marcan como ejecutadas.
+
 ## Descripción del plan
 
 Eliminar los identificadores técnicos heredados de Mallic Tesla antes de publicar la aplicación en Play Store. La migración abarcará almacenamiento local, paquete npm, ruta pública web, repositorio GitHub, carpeta local y proyecto Android.
@@ -118,8 +124,8 @@ Completar el cambio de ubicación remota y local sin perder el historial Git ni 
 
 - [x] Confirmar que el repositorio remoto actual sea `JLeonN/MallicTesla` y que la rama principal sea `main`.
 - [ ] Verificar que el nombre `JLeonN/CalculaTuPresupuesto` esté disponible antes de modificar el repositorio remoto.
-- [ ] Renombrar el repositorio desde la configuración web de GitHub a `CalculaTuPresupuesto`, ya que GitHub CLI no está instalado.
-- [ ] Actualizar `origin` a `https://github.com/JLeonN/CalculaTuPresupuesto.git` y verificar fetch y push URL.
+- [x] Confirmar que el repositorio remoto actual se llama `JLeonN/CalculaTuPresupuesto` mediante `git ls-remote`.
+- [x] Confirmar que `origin` apunta a `https://github.com/JLeonN/CalculaTuPresupuesto.git` para fetch y push.
 - [x] No depender de una redirección de `/MallicTesla/`, porque GitHub no redirige las URLs de sitios Pages de proyecto después de renombrar el repositorio.
 - [ ] Ejecutar el push únicamente cuando Leo lo solicite de forma explícita.
 - [ ] Después del push autorizado, verificar que GitHub Actions finalice correctamente y obtener la URL publicada desde el resultado del deployment.
@@ -136,7 +142,7 @@ Completar el cambio de ubicación remota y local sin perder el historial Git ni 
 Actualizar el seguimiento solamente cuando la migración técnica y sus pruebas hayan terminado.
 
 - [ ] Confirmar que todas las fases y checks de testing estén completos.
-- [ ] Eliminar de `Planes/PlanesFuturos/TareasPendientes.md` la tarea `Migración de identificadores técnicos de Mallic Tesla` mediante la skill `tareas-pendientes`.
+- [x] Eliminar de `Planes/PlanesFuturos/TareasPendientes.md` la tarea general de migración de identificadores mediante la skill `tareas-pendientes`.
 - [ ] Mantener este plan como registro de por qué las constantes privadas y referencias históricas anteriores todavía pueden aparecer en búsquedas.
 - [ ] Cambiar el estado del plan a `COMPLETADO` y actualizar la fecha de última actualización.
 
@@ -187,5 +193,5 @@ Validar la conservación de los datos web, la nueva identidad técnica, las comp
 - El renombrado remoto, la actualización de `origin`, GitHub Pages y la carpeta local permanecen pendientes; no se ejecutó commit ni push.
 
 Fecha de creación: 24 de Agosto 2026
-Fecha de última actualización: 24 de Agosto 2026
-Estado: EN PROCESO
+Fecha de última actualización: 4 de noviembre de 2026
+Estado: IDENTIFICADORES TÉCNICOS MIGRADOS; RENOMBRE DE CARPETA Y VALIDACIONES HISTÓRICAS PENDIENTES

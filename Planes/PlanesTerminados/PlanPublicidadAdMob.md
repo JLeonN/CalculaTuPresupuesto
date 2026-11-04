@@ -134,6 +134,7 @@ Resultado del 28 de octubre de 2026: `typecheck`, `lint:check`, compilaciones SP
 
 ### Pruebas manuales en el celular
 
+- [x] Leo confirmó que el banner aparece para visitantes y desaparece al iniciar sesión.
 - [ ] Con `PUBLICIDAD_DE_PRUEBA = true` y sin sesión, abrir la APK: el banner de prueba debe quedar abajo del todo y centrado, debajo de la franja no interactiva y de los cuatro botones. Durante la carga puede verse la reserva de 50 dp para evitar desplazamientos; ante fallo o falta de consentimiento la reserva desaparece.
 - [ ] Iniciar sesión con el banner visible: debe desaparecer el anuncio y el espacio inferior. Cerrar sesión: debe volver a mostrarse según consentimiento y conexión. Reabrir la app con sesión persistida: no debe solicitar ni mostrar anuncios.
 - [ ] Denegar o no completar el consentimiento cuando corresponda: no debe haber solicitud de anuncio ni espacio reservado. Si Google exige una entrada para cambiar preferencias, comprobar que aparece en Configuración y abre el formulario.
@@ -153,5 +154,7 @@ Resultado del 28 de octubre de 2026: `typecheck`, `lint:check`, compilaciones SP
 - [ ] Fase Testing
 
 Fecha de creación: 27 de octubre de 2026
-Fecha de última actualización: 28 de octubre de 2026
-Estado: IMPLEMENTADO, PENDIENTE DE FORMULARIO ADMOB Y VALIDACIÓN DEL BANNER
+Fecha de última actualización: 4 de noviembre de 2026
+Estado: IMPLEMENTADO; BANNER PARA VISITANTES CONFIRMADO POR LEO, CASOS ADICIONALES DE TESTING PENDIENTES
+
+Confirmación de Leo del 4 de noviembre de 2026: el banner aparece sin sesión y desaparece al iniciar sesión. Se conserva sin marcar la fase Testing completa porque sus otros casos manuales no tienen resultado registrado.

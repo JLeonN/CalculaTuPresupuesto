@@ -107,7 +107,7 @@ La importación es verificable y repetible; el acceso a Descargar, Imprimir y En
 
 ### Pasos de ejecución
 
-- [ ] Mantener `RespaldoDatos` y `validarRespaldo` como entrada; adaptar `ServicioRespaldo` para operar con los repositorios de la cuenta activa. Probar con JSON sintético de clientes, materiales, presupuestos y configuración. Antes de importar, mostrar recuentos y diferencias; confirmar el `uid` destino; agregar solo faltantes; verificar lectura remota posterior. No borrar ni sobrescribir los datos locales de origen. Una segunda importación debe producir cero altas.
+- [x] Mantener `RespaldoDatos` y `validarRespaldo` como entrada; adaptar `ServicioRespaldo` para operar con los repositorios de la cuenta activa. Probar con JSON sintético de clientes, materiales, presupuestos y configuración. Antes de importar, mostrar recuentos y diferencias; confirmar el `uid` destino; agregar solo faltantes; verificar lectura remota posterior. No borrar ni sobrescribir los datos locales de origen. Una segunda importación debe producir cero altas.
 - [ ] Verificar que `useAutenticacionStore().puedeGenerarSalidaPresupuesto` siga derivando de `estaAutenticado` y que `VistaPreviaPresupuestoPage.vue`, `NuevoPresupuestoPage.vue`, `MainLayout.vue` y `PanelCopiasSeguridad.vue` conserven su comportamiento actual al sustituir la sesión provisional por Firebase. No introducir fechas de prueba ni estados de suscripción en este plan.
 
 ## FASE 5: Documentar decisiones y operación
@@ -138,7 +138,7 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 
 - [ ] Con dos cuentas sintéticas, registrar correo/contraseña, verificar correo, recuperar contraseña, entrar con Google, vincular métodos y comparar `uid` en Android y PC. Cerrar sesión, reabrir app y comprobar persistencia o ausencia de sesión según corresponda.
 - [ ] Crear un cliente, material, presupuesto y configuración en Android; comprobar en web con la misma cuenta. Editar desde web y revisar Android; repetir sin red y al reconectar. Confirmar que ninguna cuenta ve datos de la otra ni tras cambiar de sesión en el mismo dispositivo.
-- [ ] Importar una copia JSON sintética, comparar recuentos, repetir y comprobar cero duplicados. Comprobar que la copia anterior no fue eliminada y que una cuenta autenticada puede exportar su JSON.
+- [x] Importar una copia JSON sintética, comparar recuentos, repetir y comprobar cero duplicados. Comprobar que la copia anterior no fue eliminada y que una cuenta autenticada puede exportar su JSON.
 - [ ] Verificar en ambas plataformas que una cuenta autenticada puede Descargar, Imprimir y Enviar, mientras un visitante ve la marca de prueba y las acciones siguen bloqueadas. No probar vencimientos ni exenciones en esta etapa.
 - [ ] Comprobar los mensajes de error por falta de red, cuenta no verificada, credenciales incorrectas, proveedor ya asociado y datos que superen límites; ninguna pantalla debe mostrar datos de la cuenta anterior.
 
@@ -160,5 +160,5 @@ Avance al 30 de octubre de 2026: código de registro y repositorios conectado, r
 Prueba en teléfono, 2 de noviembre de 2026: Leo confirmó que la sincronización funciona bien. Se había creado por error una segunda variante Android con sufijo `.pruebas`; Leo aclaró que usa un teléfono dedicado y quiere seguir probando con el identificador habitual `com.calculatupresupuesto.app`. La variante adicional se desinstaló y se retiró del proyecto. Las demás pruebas manuales del plan siguen abiertas.
 
 Fecha de creación: 29 de octubre de 2026
-Fecha de última actualización: 2 de noviembre de 2026
+Fecha de última actualización: 4 de noviembre de 2026
 Estado: EN EJECUCIÓN

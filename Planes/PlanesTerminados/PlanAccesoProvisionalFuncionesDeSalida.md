@@ -1,5 +1,7 @@
 # PLAN DE ACCESO PROVISIONAL Y FUNCIONES DE SALIDA
 
+> Estado revisado el 4 de noviembre de 2026: el acceso provisional de este plan fue sustituido por Firebase Authentication. Sus casillas manuales sobre `.env.local` y credenciales provisionales son históricas y no deben ejecutarse como tareas actuales. Las verificaciones vigentes de Descargar, Imprimir y Enviar se siguen en `Planes/PlanCierrePruebasFirebase.md`.
+
 ## Descripción del plan
 
 Incorporar un acceso provisional para la etapa de pruebas de la aplicación. Toda persona podrá recorrer la aplicación, crear y guardar clientes, materiales, configuración y presupuestos en el almacenamiento local existente. Las funciones profesionales de salida de presupuestos —descargar PDF, imprimir y enviar— requerirán una sesión iniciada.
