@@ -120,7 +120,7 @@ Comprobar la cola de escrituras Firestore, la persistencia local Android y el re
 - [x] Con la caché Android corregida, cerrar y reabrir la app sin red y verificar que la sesión, los clientes y una edición sintética de cliente sigan visibles. El resultado se registró el 3 de noviembre.
 - [x] Repetir la persistencia tras reinicio sin red con un material, presupuesto y configuración. El 4 de noviembre siguieron visibles los tres en el POCO después de forzar cierre y reabrir sin Wi-Fi.
 - [x] Restablecer Wi-Fi y comprobar en web la llegada de cambios hechos sin conexión en un cliente y un material; los resultados están registrados en la ejecución del 3 de noviembre.
-- [ ] Comprobar el aviso `sincronizado` y una edición simultánea desde web y Android: Leo decidió trasladar ambas comprobaciones a `Planes/PlanesFuturos/TareasPendientes.md`. Queda pendiente también comprobar un error de red recuperable.
+- [x] Comprobar un error de red recuperable: el 5 de noviembre, la recuperación de contraseña mostró el aviso de falta de conexión y, al reconectar, el reintento mostró la respuesta genérica esperada. Leo trasladó las comprobaciones del aviso `sincronizado` y de edición simultánea a `Planes/PlanesFuturos/TareasPendientes.md`; no se consideran probadas.
 
 ## FASE 6: Publicidad de prueba en el POCO
 
@@ -161,7 +161,7 @@ Cerrar el plan solo con evidencias observables y dejar los fallos aislados para 
 - [x] Fase 2: Persistencia y separación de cuentas
 - [x] Fase 3: Salidas de presupuesto y copias JSON
 - [x] Fase 4: Sincronización de todos los datos
-- [ ] Fase 5: Escritura sin conexión y reconexión
+- [x] Fase 5: Escritura sin conexión y reconexión
 - [ ] Fase 6: Publicidad de prueba en el POCO
 - [ ] Fase Testing
 
@@ -224,3 +224,8 @@ Estado: EN EJECUCIÓN
 - En Android `0.0.7`, con la cuenta de prueba, se rechazó un archivo JSON `{}` antes de importar. Una edición temporal sin guardar bloqueó la descarga de copia con el aviso correspondiente; se descartó al salir y se confirmó que el nombre original permanecía.
 - En Chrome del POCO, la vista previa como visitante no mostró Imprimir y Descargar abrió el inicio de sesión. En la SPA local de PC con sesión, Descargar PDF funcionó desde el presupuesto de prueba y su vista previa. Leo ya había confirmado Imprimir en PC y su ausencia en Android.
 - La copia JSON exportada desde la SPA local tenía el tipo esperado, versión 1 y las secciones clientes, materiales, presupuestos y configuración. Se verificó únicamente su estructura; no se registraron los datos. La importación repetida y la copia externa Android ya estaban comprobadas en ejecuciones anteriores.
+
+## Fase 5 completada el 5 de noviembre de 2026
+
+- POCO Android `0.0.7`, cuenta A: con Wi-Fi desactivado y sin SIM, la solicitud de recuperación de contraseña mostró «No hay conexión. Revisá Internet e intentá nuevamente». Al activar Wi-Fi y repetirla, desapareció el error y se mostró la respuesta genérica esperada. No se comprobó la recepción del correo en este reintento ni se cambió la contraseña. El teléfono quedó con Wi-Fi activo y la sesión cerrada.
+- La persistencia y la llegada de escrituras sin conexión se habían comprobado anteriormente. La edición simultánea y el aviso de sincronización permanecen como tareas futuras por decisión de Leo.

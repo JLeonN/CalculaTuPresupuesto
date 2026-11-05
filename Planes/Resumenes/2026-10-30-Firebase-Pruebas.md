@@ -42,6 +42,7 @@
 - Publicidad: Leo aprobó activar `PUBLICIDAD_DE_PRUEBA`, compilar e instalar. Pasaron la compilación Android y la APK debug firmada del paquete correcto se instaló en el único POCO. No se veía el banner porque había una sesión activa, lo cual coincide con la regla del producto. Falta comprobar la carga como visitante y los casos de consentimiento e interfaz.
 - Corrección de caché Android aprobada: Firestore ahora usa acceso compartido a su caché persistente solo en Android. La APK debug del paquete correcto se instaló en el POCO. Con A, Clientes siguió visible después de cerrar y abrir sin Wi-Fi; una edición sintética también sobrevivió a otro reinicio sin red y apareció en la SPA tras reconectar. No volvió a registrarse el retroceso de Firestore a memoria. Se dejó el Wi-Fi encendido.
 - Web con B: con la pestaña abierta y sin red simulada, la lista y la ficha de un cliente sintético siguieron accesibles y se guardó un teléfono de prueba. Al reconectar y recargar, el valor persistió. No se vio el aviso de sincronización; una recarga de la SPA mientras sigue sin red no está validada y no forma parte del diseño actual de caché en memoria.
+- 5 de noviembre, POCO Android `0.0.7`, cuenta A: la recuperación de contraseña sin Wi-Fi mostró el error de conexión; tras reconectar, el reintento mostró la respuesta genérica esperada. No se verificó la recepción del correo en este reintento. La edición simultánea y el aviso de sincronización siguen trasladados a tareas futuras.
 
 ## Comprobaciones posteriores (4 de noviembre de 2026)
 
