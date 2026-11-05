@@ -159,6 +159,8 @@ Avance al 30 de octubre de 2026: código de registro y repositorios conectado, r
 
 Prueba en teléfono, 2 de noviembre de 2026: Leo confirmó que la sincronización funciona bien. Se había creado por error una segunda variante Android con sufijo `.pruebas`; Leo aclaró que usa un teléfono dedicado y quiere seguir probando con el identificador habitual `com.calculatupresupuesto.app`. La variante adicional se desinstaló y se retiró del proyecto. Las demás pruebas manuales del plan siguen abiertas.
 
+Avance al 4 de noviembre de 2026: con cuentas sintéticas A y B se comprobó aislamiento antes de importar, sincronización de clientes, materiales, presupuestos y configuración en ambos sentidos, además de lectura persistente en Android tras reiniciar sin Wi-Fi. La copia A → B agregó solo faltantes y una segunda importación produjo cero altas. Las salidas de visitante se bloquearon en el POCO; Descargar con sesión guardó PDF, pero Imprimir sigue sin respuesta visible en Android. Los detalles y casos aún abiertos constan en `Planes/PlanCierrePruebasFirebase.md` y en el resumen de ejecución. Las casillas amplias de esta fase permanecen abiertas mientras falten sus subcasos.
+
 Fecha de creación: 29 de octubre de 2026
 Fecha de última actualización: 4 de noviembre de 2026
 Estado: EN EJECUCIÓN

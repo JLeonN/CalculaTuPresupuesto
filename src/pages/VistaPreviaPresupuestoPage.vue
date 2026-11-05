@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue';
 import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
+import { Capacitor } from '@capacitor/core';
 import { useQuasar } from 'quasar';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import DocumentoPresupuesto from '@/components/presupuestos/DocumentoPresupuesto.vue';
@@ -27,6 +28,7 @@ type DocumentoPresupuestoExpuesto = {
 const ruta = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const mostrarImpresion = Capacitor.getPlatform() === 'web' && $q.platform.is.desktop;
 const autenticacionStore = useAutenticacionStore();
 const configuracionStore = useConfiguracionStore();
 const presupuestosStore = usePresupuestosStore();
@@ -297,6 +299,7 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             @click="descargar"
           />
           <q-btn
+            v-if="mostrarImpresion"
             class="boton-secundario"
             flat
             no-caps

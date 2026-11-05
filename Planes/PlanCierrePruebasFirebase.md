@@ -88,7 +88,7 @@ Verificar acciones restringidas y copia/importación sin sobrescribir ni perder 
 
 ### Pasos de ejecución
 
-- [ ] En web y Android, como visitante, confirmar que Descargar PDF, Imprimir y Enviar del presupuesto no producen la salida y muestran la solicitud de inicio de sesión; la vista conserva la marca de prueba. Con una cuenta iniciada y un presupuesto sintético, comprobar cada acción desde `NuevoPresupuestoPage.vue` y `VistaPreviaPresupuestoPage.vue`. En Android, comprobar el destino externo o la hoja de compartir sin enviar nada a terceros. El permiso actual es `useAutenticacionStore().puedeGenerarSalidaPresupuesto`, derivado de `estaAutenticado`; no introducir lógica comercial.
+- [ ] En web de escritorio, como visitante, confirmar que Descargar PDF e Imprimir solicitan inicio de sesión y que Enviar permanece deshabilitado; la vista conserva la marca de prueba. En Android y navegador móvil, confirmar que Imprimir no aparece. Con sesión iniciada, comprobar Descargar y Enviar en Android, e Imprimir en PC. En Android, comprobar el destino externo o la hoja de compartir sin enviar nada a terceros. El permiso actual es `useAutenticacionStore().puedeGenerarSalidaPresupuesto`, derivado de `estaAutenticado`; no introducir lógica comercial.
 - [ ] Desde `ConfiguracionPage.vue` → Seguridad → `PanelCopiasSeguridad.vue`, exportar una copia JSON de datos sintéticos. En web, verificar que el archivo descargado tiene `tipo = calcula-tu-presupuesto-respaldo`, `versionFormato = 1` y las cuatro secciones de `datos`. En Android, elegir un destino externo de prueba en la hoja de compartir y verificar que el archivo realmente existe allí; no conservar la única copia en la caché de la app.
 - [x] Después de completar la fase 2, usar A como origen y B como destino de una copia que solo contenga datos sintéticos. Importar en B mediante «Importar copia» → revisar conteos y UID mostrado → «Agregar faltantes». Comprobar que se agregan solo faltantes, que el cliente propio de B permanece igual y que los datos de A no se borran. Repetir el mismo archivo: el resumen debe indicar cero altas. Desde esta acción, B tendrá legítimamente los registros importados de A; no interpretarlos como fuga entre cuentas. No importar una copia con datos reales ni confirmar un UID distinto del esperado.
 - [ ] Probar un JSON inválido creado fuera del repositorio en `$env:TEMP\ch_respaldo_invalido.json` con contenido `{}` y una operación con cambios de Configuración sin guardar; esperar los mensajes existentes sin alteración de datos. Borrar ese archivo temporal al terminar. Si falla, ubicar primero `PanelCopiasSeguridad.vue` (`seleccionarCopia`, `confirmarImportacion`, `descargarCopia`), `ServicioRespaldo.ts` (`previsualizarImportacion`, `importarFaltantes`, `exigirCuentaVigente`) o `archivosRespaldo.ts` (`descargarArchivoRespaldo`).
@@ -101,9 +101,9 @@ Extender la prueba ya hecha con un cliente a materiales, presupuestos y configur
 
 ### Pasos de ejecución
 
-- [ ] Usar la misma cuenta A en web y POCO. Crear un material sintético desde `/materiales/nuevo`, un presupuesto sintético vinculado al cliente A desde `/presupuestos/nuevo` y guardar un cambio identificable de configuración desde `/configuracion`. Usar nombres de prueba, importes pequeños y ningún dato real. Confirmar en Android cada alta al salir y volver a entrar a Materiales, Presupuestos y Configuración; la prueba anterior mostró actualización al recargar la sección, no actualización inmediata de una lista abierta.
-- [ ] Editar esos tres datos desde Android y volver a cargar sus secciones en web; comparar valores e IDs de registro sin copiarlos al chat. Repetir un cambio desde web hacia Android. Confirmar que B no recibe las altas ni ediciones nuevas de A posteriores a la importación de la fase 3; los registros importados deliberadamente sí pueden figurar en B. Si falta un dato, revisar `RepositorioColeccionFirestore`, `RepositorioConfiguracionFirestore`, los cuatro `crearRepositorio*.ts` y las funciones `cargar*` de los stores; no crear un segundo origen de datos.
-- [ ] Registrar separadamente el resultado de clientes, materiales, presupuestos y configuración. Un caso correcto no marca los otros como aprobados.
+- [x] Usar la misma cuenta A en web y POCO. Se crearon material y presupuesto sintéticos en web y aparecieron en Android; un cambio de configuración web también apareció tras reiniciar la app. La actualización de una sección ya abierta no es inmediata.
+- [x] Editar los datos desde Android y volver a cargar sus secciones en web. Cliente, material y estado del presupuesto llegaron a web el 3 de noviembre; el 4 de noviembre se comprobó configuración Android → web y su restauración web → Android. B no mostró las altas nuevas de A posteriores a la importación.
+- [x] Registrar separadamente los resultados de clientes, materiales, presupuestos y configuración en el resumen de ejecución.
 
 ## FASE 5: Escritura sin conexión y reconexión
 
@@ -116,7 +116,7 @@ Comprobar la cola de escrituras Firestore, la persistencia local Android y el re
 - [x] Con la cuenta A y datos sintéticos ya sincronizados, guardar una copia externa antes de la prueba. Confirmar Wi-Fi activo y datos visibles en ambas plataformas. Desactivar solo el Wi-Fi del POCO mediante su interfaz o ADB; no tocar el teléfono personal ni restablecer datos de la app.
 - [x] Modificar en Android un cliente y un material sintéticos sin conexión, documentar el aviso `pendiente` observado para el material y comprobar que la app permite continuar. Ambos cambios llegaron a la web al reconectar.
 - [x] Con la caché Android corregida, cerrar y reabrir la app sin red y verificar que la sesión, los clientes y una edición sintética de cliente sigan visibles. El resultado se registró el 3 de noviembre.
-- [ ] Repetir la persistencia tras reinicio sin red con un material, presupuesto o configuración si se desea cerrar el caso para todos los tipos de datos.
+- [x] Repetir la persistencia tras reinicio sin red con un material, presupuesto y configuración. El 4 de noviembre siguieron visibles los tres en el POCO después de forzar cierre y reabrir sin Wi-Fi.
 - [ ] Restaurar Wi-Fi y comprobar el aviso `sincronizado`, la lectura remota y los valores en web al recargar. Repetir con un presupuesto o configuración solo si los dos primeros casos pasaron. Registrar por separado éxito de escritura local, persistencia tras reinicio y confirmación remota. Restablecer Wi-Fi aunque falle la prueba.
 - [ ] Probar un error de red recuperable y una edición simultánea sintética desde web y Android; documentar el valor final observado y si coincide con la política actual de última escritura. Ante fallo, inspeccionar `src/configuracion/firebase.ts` (`persistentLocalCache`, `memoryLocalCache`), `src/repositorios/almacenamiento/esperarEscrituraFirestore.ts`, `src/boot/firebase.ts` y el repositorio de la colección afectada antes de proponer cambios.
 
@@ -158,13 +158,13 @@ Cerrar el plan solo con evidencias observables y dejar los fallos aislados para 
 - [x] Fase 1: Acceso y recuperación de contraseña
 - [x] Fase 2: Persistencia y separación de cuentas
 - [ ] Fase 3: Salidas de presupuesto y copias JSON
-- [ ] Fase 4: Sincronización de todos los datos
+- [x] Fase 4: Sincronización de todos los datos
 - [ ] Fase 5: Escritura sin conexión y reconexión
 - [ ] Fase 6: Publicidad de prueba en el POCO
 - [ ] Fase Testing
 
 Fecha de creación: 2 de noviembre de 2026
-Fecha de última actualización: 4 de noviembre de 2026
+Fecha de última actualización: 5 de noviembre de 2026
 Estado: EN EJECUCIÓN
 
 ## Registro de ejecución del 2 de noviembre de 2026
@@ -202,3 +202,15 @@ Estado: EN EJECUCIÓN
 
 - Leo confirmó que el banner de AdMob aparece al cerrar sesión y se oculta al iniciar sesión. El comportamiento principal de publicidad queda aprobado por él; los casos adicionales de consentimiento, error de red, giro y tamaños de pantalla de la fase 6 no constan como comprobados.
 - Leo se encargará de firmar el AAB. Los datos de la cuenta de prueba `.03` ya están exportados a JSON y Pablo guardará sus datos aparte; no se requiere migrar esos datos sintéticos a producción.
+
+## Registro de ejecución del 4 de noviembre de 2026
+
+- POCO Android `0.0.7`, visitante: Descargar e Imprimir en la vista previa abrieron el inicio de sesión; Enviar permaneció deshabilitado y la vista conservó la marca de prueba. En la cuenta A y luego en B, Descargar guardó el PDF en Documentos. Imprimir no abrió diálogo ni mostró aviso con sesión activa; `VistaPreviaPresupuestoPage.vue` llama a `window.print()` en Android. La salida Enviar con destinatario ya había abierto la hoja de compartir el 3 de noviembre; no se envió nada.
+- Sincronización de presupuestos: la cuenta A mostró en el POCO el estado «Pendiente» restablecido desde web para «Prueba CH cuenta A». La cuenta B no mostró ese presupuesto nuevo de A, creado después de la importación deliberada.
+- Android → web, configuración: se guardó en el POCO el nombre sintético «Developer CH prueba». Después de iniciar sesión con A en la SPA local, la cabecera y Configuración mostraron ese valor sin intervención manual sobre los datos. Se restauró «Developer» desde web; tras reiniciar la app Android con Wi-Fi activo, la cabecera volvió a mostrar «Developer». Queda confirmado el recorrido en ambos sentidos para configuración.
+- Sin Wi-Fi y sin red móvil, el POCO mantuvo la sesión y mostró después de reiniciar el nombre de empresa temporal, «Prueba CH material A» y el presupuesto de A con estado «Pendiente». Se restauró el Wi-Fi y se comprobó red activa. Esto cierra la lectura persistente sin red para material, presupuesto y configuración; la edición simultánea web/Android aún no se probó.
+- La herramienta de control de una ventana existente de Chrome se detuvo porque no pudo determinar su URL. La SPA local sí se abrió en un navegador de pruebas separado y permitió completar la verificación anterior. No hubo cambios de código, compilaciones, linters ni pruebas automatizadas en esta ejecución.
+
+## Decisión del 5 de noviembre de 2026
+
+- Leo pidió retirar Imprimir de Android y dejarlo solo en PC. `VistaPreviaPresupuestoPage.vue` muestra ahora el botón únicamente en navegador de escritorio; `ModalInicioSesion.vue` omite «imprimir» en las demás plataformas. Descargar y Enviar conservan su comportamiento. El código quedó actualizado, pero no se ejecutaron la app, pruebas, linters ni compilaciones por la regla de `AGENTS.md`; falta comprobar visualmente la nueva versión y compilar una APK con aprobación explícita antes de verla en el POCO.

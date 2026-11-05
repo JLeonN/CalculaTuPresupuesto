@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { Capacitor } from '@capacitor/core';
 import { useQuasar } from 'quasar';
 import { useAutenticacionStore } from '@/stores/autenticacion';
 
 type Modo = 'entrar' | 'registrar' | 'recuperar' | 'verificar';
 const $q = useQuasar();
+const mostrarImpresion = Capacitor.getPlatform() === 'web' && $q.platform.is.desktop;
 const sesion = useAutenticacionStore();
 const modo = ref<Modo>('entrar');
 const correo = ref('');
@@ -98,7 +100,9 @@ async function entrarConGoogle(): Promise<void> {
         <p class="texto-secundario modal-inicio-sesion__descripcion">
           {{
             modo === 'entrar'
-              ? 'Entrá para sincronizar tus datos y descargar, imprimir o enviar presupuestos.'
+              ? mostrarImpresion
+                ? 'Entrá para sincronizar tus datos y descargar, imprimir o enviar presupuestos.'
+                : 'Entrá para sincronizar tus datos y descargar o enviar presupuestos.'
               : modo === 'registrar'
                 ? 'Creá tu cuenta para guardar tus clientes, materiales y presupuestos.'
                 : modo === 'recuperar'
