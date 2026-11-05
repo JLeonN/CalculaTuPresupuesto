@@ -89,11 +89,11 @@ Verificar acciones restringidas y copia/importación sin sobrescribir ni perder 
 ### Pasos de ejecución
 
 - [x] Leo confirmó que Imprimir no aparece en Android y que en PC aparece y abre la impresión. La prueba previa comprobó Descargar e Imprimir como visitante en web, y Descargar y la hoja de compartir con sesión en Android.
-- [ ] Confirmar que Imprimir no aparece en navegador móvil y completar los demás casos de salida que correspondan según la plataforma.
+- [x] En Chrome del POCO, la vista previa no mostró Imprimir y Descargar como visitante solicitó iniciar sesión. En la SPA de PC con sesión, Descargar PDF funcionó desde el presupuesto y su vista previa; el envío Android ya abrió la hoja de compartir sin enviar.
 - [x] Leo confirmó que la exportación de copia JSON desde la web funciona. Una copia de prueba también se guardó en un destino externo del POCO.
-- [ ] Verificar en la copia web el tipo, la versión del formato y las cuatro secciones de datos, si aún no se comprobaron.
+- [x] Verificar en la copia web el tipo `calcula-tu-presupuesto-respaldo`, la versión 1 y las cuatro secciones de datos; los tres controles pasaron.
 - [x] Después de completar la fase 2, usar A como origen y B como destino de una copia que solo contenga datos sintéticos. Importar en B mediante «Importar copia» → revisar conteos y UID mostrado → «Agregar faltantes». Comprobar que se agregan solo faltantes, que el cliente propio de B permanece igual y que los datos de A no se borran. Repetir el mismo archivo: el resumen debe indicar cero altas. Desde esta acción, B tendrá legítimamente los registros importados de A; no interpretarlos como fuga entre cuentas. No importar una copia con datos reales ni confirmar un UID distinto del esperado.
-- [ ] Probar un JSON inválido creado fuera del repositorio en `$env:TEMP\ch_respaldo_invalido.json` con contenido `{}` y una operación con cambios de Configuración sin guardar; esperar los mensajes existentes sin alteración de datos. Borrar ese archivo temporal al terminar. Si falla, ubicar primero `PanelCopiasSeguridad.vue` (`seleccionarCopia`, `confirmarImportacion`, `descargarCopia`), `ServicioRespaldo.ts` (`previsualizarImportacion`, `importarFaltantes`, `exigirCuentaVigente`) o `archivosRespaldo.ts` (`descargarArchivoRespaldo`).
+- [x] En el POCO se rechazó un JSON inválido `{}` con el mensaje de archivo incorrecto. Con cambios de Configuración sin guardar, Descargar copia mostró que había que guardarlos o descartarlos; al salir y volver, el valor original seguía intacto. El JSON inválido también se había rechazado en web.
 
 ## FASE 4: Sincronización de todos los datos
 
@@ -159,7 +159,7 @@ Cerrar el plan solo con evidencias observables y dejar los fallos aislados para 
 
 - [x] Fase 1: Acceso y recuperación de contraseña
 - [x] Fase 2: Persistencia y separación de cuentas
-- [ ] Fase 3: Salidas de presupuesto y copias JSON
+- [x] Fase 3: Salidas de presupuesto y copias JSON
 - [x] Fase 4: Sincronización de todos los datos
 - [ ] Fase 5: Escritura sin conexión y reconexión
 - [ ] Fase 6: Publicidad de prueba en el POCO
@@ -218,3 +218,9 @@ Estado: EN EJECUCIÓN
 - Leo pidió retirar Imprimir de Android y dejarlo solo en PC. `VistaPreviaPresupuestoPage.vue` muestra ahora el botón únicamente en navegador de escritorio; `ModalInicioSesion.vue` omite «imprimir» en las demás plataformas. Descargar y Enviar conservan su comportamiento. El código quedó actualizado, pero no se ejecutaron la app, pruebas, linters ni compilaciones por la regla de `AGENTS.md`; falta comprobar visualmente la nueva versión y compilar una APK con aprobación explícita antes de verla en el POCO.
 
 - Confirmación posterior de Leo: Imprimir ya se comporta como pidió en Android y PC, y la exportación JSON desde web funciona. Decidió dejar como tareas futuras la prueba de ediciones simultáneas y la comprobación del aviso de sincronización.
+
+## Fase 3 completada el 5 de noviembre de 2026
+
+- En Android `0.0.7`, con la cuenta de prueba, se rechazó un archivo JSON `{}` antes de importar. Una edición temporal sin guardar bloqueó la descarga de copia con el aviso correspondiente; se descartó al salir y se confirmó que el nombre original permanecía.
+- En Chrome del POCO, la vista previa como visitante no mostró Imprimir y Descargar abrió el inicio de sesión. En la SPA local de PC con sesión, Descargar PDF funcionó desde el presupuesto de prueba y su vista previa. Leo ya había confirmado Imprimir en PC y su ausencia en Android.
+- La copia JSON exportada desde la SPA local tenía el tipo esperado, versión 1 y las secciones clientes, materiales, presupuestos y configuración. Se verificó únicamente su estructura; no se registraron los datos. La importación repetida y la copia externa Android ya estaban comprobadas en ejecuciones anteriores.

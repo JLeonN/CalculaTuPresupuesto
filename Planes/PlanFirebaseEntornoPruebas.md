@@ -81,10 +81,11 @@ Un usuario de pruebas puede registrarse, verificar su correo, recuperar contrase
 - [x] Añadir el SDK modular `firebase` al paquete raíz. Definir variables `QCLI_FIREBASE_API_KEY`, `QCLI_FIREBASE_AUTH_DOMAIN`, `QCLI_FIREBASE_PROJECT_ID`, `QCLI_FIREBASE_APP_ID` y las adicionales exigidas por el SDK en `.env.example` sin valores. Configurarlas solo en `.env.local` ignorado. La clave de API web de Firebase es identificador público; secretos de Admin SDK y de futuros pagos nunca van al cliente.
 - [x] Crear `src/configuracion/firebase.ts` con inicialización única de `FirebaseApp`, `Auth` y `Firestore`; exportar accesores tipados, sin inicializar dos apps al navegar. Agregar `src/boot/firebase.ts` antes de `autenticacion` en `quasar.config.ts` o justificar un orden equivalente.
 - [x] Ampliar `ServicioAutenticacion` y `UsuarioAutenticado` en los archivos existentes: `id` será `uid` estable, `correo`, `nombre` y proveedores vinculados; agregar `registrarConCorreo`, `iniciarSesionConCorreo`, `iniciarSesionConGoogle`, `enviarRecuperacionContrasena`, `cerrarSesion` y observación de cambios de Auth. Crear `ServicioAutenticacionFirebase.ts` y hacer que `crearServicioAutenticacion()` lo seleccione en el entorno de pruebas. Eliminar el uso del usuario/contraseña incorporados en el cliente para esta configuración.
-- [ ] Adaptar `useAutenticacionStore` para reaccionar a cambios reales de Firebase Auth, distinguir sesión inicializando, visitante y cuenta autenticada, y exponer errores legibles. Resolver carreras de inicio/cierre y limpiar estado de usuario anterior antes de mostrar otra cuenta. La recuperación tras reiniciar SPA y Android sigue pendiente de prueba manual.
+- [x] Adaptar `useAutenticacionStore` para reaccionar a Firebase Auth, distinguir el estado de sesión, exponer errores y limpiar datos al cambiar de cuenta. La sesión de prueba se recuperó después de reiniciar Android y recargar la SPA.
 - [ ] Actualizar `ModalInicioSesion.vue` con registro, entrada, contraseña olvidada, verificación y Google; mantener `BotonSesion.vue` para estado de cuenta y salida. Usar `autocomplete` correcto, permitir mostrar contraseña, indicar progreso y errores, evitar dobles envíos y mantener diseño usable en teléfonos y PC. Vincular proveedor Google a la cuenta existente mediante el flujo oficial cuando el correo ya pertenece a una cuenta; no crear dos identidades con datos separados silenciosamente.
 - [x] Implementar Google con `signInWithPopup` en web y credencial nativa en Android entregada a Firebase JS. El código también incorpora la vinculación mediante `linkWithPopup` y `linkWithCredential`.
-- [ ] Completar la verificación del UID y del flujo de vinculación en Android y web. Fuente: [plugin Capacitor](https://capawesome.io/docs/sdks/capacitor/firebase/authentication/).
+- [x] Verificar que la cuenta de prueba por correo tiene el mismo UID en Android y web, sin registrar el identificador. Tras intentar vincular el Google que ya pertenece a otra cuenta, Android mostró el error esperado y conservó la sesión y los datos de la cuenta original.
+- [x] Comprobar una vinculación exitosa en Android y web con una cuenta Google de prueba disponible que aún no pertenezca a otro usuario de la app. Android probado por CH; web confirmada por Leo. Fuente: [plugin Capacitor](https://capawesome.io/docs/sdks/capacitor/firebase/authentication/).
 
 ## FASE 3: Aislar y sincronizar los datos
 
@@ -166,6 +167,10 @@ Avance al 4 de noviembre de 2026: con cuentas sintéticas A y B se comprobó ais
 
 Revisión de código: se confirmó la caché elegida por plataforma, la invalidación al cambiar de cuenta, la vinculación de Google implementada y el permiso de salidas basado en la sesión. Las comprobaciones de comportamiento que no constan como ejecutadas siguen pendientes en el plan de cierre.
 
+Pruebas del 5 de noviembre de 2026, fase 2: el POCO rechazó vincular una cuenta Google ya asociada a otro usuario y conservó la sesión y los datos. Después se vinculó correctamente una cuenta Google de prueba libre en Android; al cerrar sesión y entrar con Google se comprobó el mismo UID y el cliente de prueba. En la sesión web existente se confirmó que Firebase reconoce el proveedor vinculado. Leo confirmó posteriormente la prueba de vinculación desde la web.
+
+Continuación: se desvinculó temporalmente Google de la cuenta 03 para repetir la prueba desde la web. El navegador seleccionó una cuenta Google ya asociada a otro usuario y la app rechazó la vinculación. Después se restauró la vinculación original desde Android y se comprobó en Firebase que la cuenta 03 conserva los proveedores de contraseña y Google. Leo confirmó que probó la vinculación desde la web.
+
 Fecha de creación: 29 de octubre de 2026
-Fecha de última actualización: 4 de noviembre de 2026
+Fecha de última actualización: 5 de noviembre de 2026
 Estado: EN EJECUCIÓN

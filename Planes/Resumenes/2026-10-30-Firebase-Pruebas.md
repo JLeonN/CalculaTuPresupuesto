@@ -53,3 +53,16 @@
 ## Decisión posterior (5 de noviembre de 2026)
 
 - Leo decidió que Imprimir quede solo en navegador de escritorio. El botón de la vista previa se ocultó en Android y navegador móvil; el texto de inicio de sesión se ajustó para esas plataformas. Todavía no se ejecutó una compilación ni se instaló una APK con este cambio, por lo que el comportamiento anterior sigue en la versión `0.0.7` instalada en el POCO.
+
+## Cierre de salidas y copias (5 de noviembre de 2026)
+
+- Leo confirmó que Imprimir quedó como pidió en Android y PC. En Chrome del POCO, la vista previa no mostró Imprimir y la descarga como visitante solicitó inicio de sesión. Con sesión en la SPA de PC se descargó el PDF desde el presupuesto y desde la vista previa.
+- La exportación JSON de la SPA produjo el tipo esperado, versión 1 y las cuatro secciones de datos. En el POCO, un JSON inválido se rechazó; una configuración modificada sin guardar impidió generar una copia y mostró la indicación de guardar o descartar. Se descartó el cambio de prueba y se comprobó el valor original.
+- La fase 3 del plan de cierre queda completada junto con las pruebas previas de copia externa, importación repetida y hoja de compartir. No se enviaron presupuestos a terceros.
+
+## Cuentas y vinculación (5 de noviembre de 2026)
+
+- En el POCO, la cuenta A intentó vincular la cuenta Google B, ya asociada a otro usuario. La app mostró que la cuenta Google ya estaba vinculada a otro usuario; tras reiniciar se mantuvieron la sesión A y su cliente de prueba. No se vinculó ni fusionó ninguna cuenta.
+- La cuenta A mostró el mismo UID en Android y la SPA de PC; se comparó sin registrar el identificador. Su sesión se conservó al reiniciar Android y recargar la web.
+- Una cuenta Google libre se vinculó correctamente a A desde el POCO. Tras cerrar sesión y entrar con Google se verificó el mismo UID y el cliente de prueba. En la sesión web existente, Firebase reconoce también el proveedor vinculado.
+- Leo confirmó que probó la vinculación desde la web. La cuenta B ya pertenecía a otro usuario y la vinculación de Google con A se restauró tras la prueba anterior en Android.
