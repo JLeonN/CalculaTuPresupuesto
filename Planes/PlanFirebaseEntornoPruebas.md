@@ -83,7 +83,8 @@ Un usuario de pruebas puede registrarse, verificar su correo, recuperar contrase
 - [x] Ampliar `ServicioAutenticacion` y `UsuarioAutenticado` en los archivos existentes: `id` será `uid` estable, `correo`, `nombre` y proveedores vinculados; agregar `registrarConCorreo`, `iniciarSesionConCorreo`, `iniciarSesionConGoogle`, `enviarRecuperacionContrasena`, `cerrarSesion` y observación de cambios de Auth. Crear `ServicioAutenticacionFirebase.ts` y hacer que `crearServicioAutenticacion()` lo seleccione en el entorno de pruebas. Eliminar el uso del usuario/contraseña incorporados en el cliente para esta configuración.
 - [ ] Adaptar `useAutenticacionStore` para reaccionar a cambios reales de Firebase Auth, distinguir sesión inicializando, visitante y cuenta autenticada, y exponer errores legibles. Resolver carreras de inicio/cierre y limpiar estado de usuario anterior antes de mostrar otra cuenta. La recuperación tras reiniciar SPA y Android sigue pendiente de prueba manual.
 - [ ] Actualizar `ModalInicioSesion.vue` con registro, entrada, contraseña olvidada, verificación y Google; mantener `BotonSesion.vue` para estado de cuenta y salida. Usar `autocomplete` correcto, permitir mostrar contraseña, indicar progreso y errores, evitar dobles envíos y mantener diseño usable en teléfonos y PC. Vincular proveedor Google a la cuenta existente mediante el flujo oficial cuando el correo ya pertenece a una cuenta; no crear dos identidades con datos separados silenciosamente.
-- [ ] En web, elegir el flujo Google compatible con el origen de pruebas. Si se usa redirección fuera de Firebase Hosting, aplicar la guía oficial contra bloqueo de almacenamiento de terceros; `signInWithPopup` es válido donde el navegador lo permita. En Android Capacitor, validar compatibilidad actual de `@capacitor-firebase/authentication` con Capacitor 8 antes de instalarlo en ambos paquetes y sincronizar Android. Usar el flujo nativo Google y entregar su credencial a Firebase JS para que Firestore dentro de WebView vea la misma sesión; verificar que el `uid` coincide con la web. Fuente: [plugin Capacitor](https://capawesome.io/docs/sdks/capacitor/firebase/authentication/).
+- [x] Implementar Google con `signInWithPopup` en web y credencial nativa en Android entregada a Firebase JS. El código también incorpora la vinculación mediante `linkWithPopup` y `linkWithCredential`.
+- [ ] Completar la verificación del UID y del flujo de vinculación en Android y web. Fuente: [plugin Capacitor](https://capawesome.io/docs/sdks/capacitor/firebase/authentication/).
 
 ## FASE 3: Aislar y sincronizar los datos
 
@@ -97,7 +98,8 @@ Cada cuenta ve solo sus registros y los mismos datos aparecen en Android y web. 
 - [x] Crear una implementación Firestore por cada interfaz `RepositorioClientes`, `RepositorioMateriales`, `RepositorioPresupuestos` y `RepositorioConfiguracion`; conservar IDs y métodos `obtenerTodos`, `guardar`, `eliminar`, `agregarFaltantes`, `obtenerGuardada` y `guardarSiAusente`. Seleccionar repositorio local para visitante y Firestore para usuario autenticado desde los cuatro `crearRepositorio*.ts`, sin mezclar datos locales y remotos de cuentas diferentes.
 - [x] Ajustar los cuatro stores para invalidar y recargar sus listas/configuración cuando cambia `uid`, al cerrar sesión y al pasar de visitante a cuenta. Cancelar o ignorar respuestas tardías de la cuenta anterior. Revisar todos los consumidores de carga, guardado, borrado, vista previa, identidad visual y copias de seguridad para que no retengan registros de otro usuario.
 - [x] Diseñar el logo antes de persistir configuración y presupuestos: se conservó `datosUrl` para preservar el formato JSON y documentos históricos, con archivo máximo de 350 KB y documento serializado máximo de 900 KB. Cloud Storage queda pendiente de una decisión futura sobre Blaze.
-- [ ] Configurar caché offline de Firestore de forma deliberada: soporte de Android WebView y navegadores previstos, cola de cambios al volver conexión, y política para equipos compartidos. No exponer documentos del usuario anterior desde la caché tras cerrar sesión; limpiar/inutilizar referencias y probar cambio de cuenta. Documentar conflicto entre ediciones simultáneas y el comportamiento real de última escritura.
+- [x] Configurar la caché: Android usa persistencia compartida y web conserva la caché en memoria. Los stores invalidan sus datos al cambiar de cuenta; el aislamiento y la reconexión de cambios de prueba se comprobaron en las pruebas registradas.
+- [ ] Comprobar mediante una edición simultánea el comportamiento real de última escritura y registrar el resultado.
 
 ## FASE 4: Migrar copias de prueba
 
@@ -108,7 +110,8 @@ La importación es verificable y repetible; el acceso a Descargar, Imprimir y En
 ### Pasos de ejecución
 
 - [x] Mantener `RespaldoDatos` y `validarRespaldo` como entrada; adaptar `ServicioRespaldo` para operar con los repositorios de la cuenta activa. Probar con JSON sintético de clientes, materiales, presupuestos y configuración. Antes de importar, mostrar recuentos y diferencias; confirmar el `uid` destino; agregar solo faltantes; verificar lectura remota posterior. No borrar ni sobrescribir los datos locales de origen. Una segunda importación debe producir cero altas.
-- [ ] Verificar que `useAutenticacionStore().puedeGenerarSalidaPresupuesto` siga derivando de `estaAutenticado` y que `VistaPreviaPresupuestoPage.vue`, `NuevoPresupuestoPage.vue`, `MainLayout.vue` y `PanelCopiasSeguridad.vue` conserven su comportamiento actual al sustituir la sesión provisional por Firebase. No introducir fechas de prueba ni estados de suscripción en este plan.
+- [x] Verificado en el código: `puedeGenerarSalidaPresupuesto` deriva de `estaAutenticado`; las vistas de presupuesto, el diseño principal y el panel de copias consultan el estado de sesión. Imprimir se muestra solo en navegador de escritorio por decisión posterior de Leo.
+- [ ] Completar la comprobación manual de las salidas según `PlanCierrePruebasFirebase.md`.
 
 ## FASE 5: Documentar decisiones y operación
 
@@ -160,6 +163,8 @@ Avance al 30 de octubre de 2026: código de registro y repositorios conectado, r
 Prueba en teléfono, 2 de noviembre de 2026: Leo confirmó que la sincronización funciona bien. Se había creado por error una segunda variante Android con sufijo `.pruebas`; Leo aclaró que usa un teléfono dedicado y quiere seguir probando con el identificador habitual `com.calculatupresupuesto.app`. La variante adicional se desinstaló y se retiró del proyecto. Las demás pruebas manuales del plan siguen abiertas.
 
 Avance al 4 de noviembre de 2026: con cuentas sintéticas A y B se comprobó aislamiento antes de importar, sincronización de clientes, materiales, presupuestos y configuración en ambos sentidos, además de lectura persistente en Android tras reiniciar sin Wi-Fi. La copia A → B agregó solo faltantes y una segunda importación produjo cero altas. Las salidas de visitante se bloquearon en el POCO; Descargar con sesión guardó PDF, pero Imprimir sigue sin respuesta visible en Android. Los detalles y casos aún abiertos constan en `Planes/PlanCierrePruebasFirebase.md` y en el resumen de ejecución. Las casillas amplias de esta fase permanecen abiertas mientras falten sus subcasos.
+
+Revisión de código: se confirmó la caché elegida por plataforma, la invalidación al cambiar de cuenta, la vinculación de Google implementada y el permiso de salidas basado en la sesión. Las comprobaciones de comportamiento que no constan como ejecutadas siguen pendientes en el plan de cierre.
 
 Fecha de creación: 29 de octubre de 2026
 Fecha de última actualización: 4 de noviembre de 2026

@@ -88,8 +88,10 @@ Verificar acciones restringidas y copia/importación sin sobrescribir ni perder 
 
 ### Pasos de ejecución
 
-- [ ] En web de escritorio, como visitante, confirmar que Descargar PDF e Imprimir solicitan inicio de sesión y que Enviar permanece deshabilitado; la vista conserva la marca de prueba. En Android y navegador móvil, confirmar que Imprimir no aparece. Con sesión iniciada, comprobar Descargar y Enviar en Android, e Imprimir en PC. En Android, comprobar el destino externo o la hoja de compartir sin enviar nada a terceros. El permiso actual es `useAutenticacionStore().puedeGenerarSalidaPresupuesto`, derivado de `estaAutenticado`; no introducir lógica comercial.
-- [ ] Desde `ConfiguracionPage.vue` → Seguridad → `PanelCopiasSeguridad.vue`, exportar una copia JSON de datos sintéticos. En web, verificar que el archivo descargado tiene `tipo = calcula-tu-presupuesto-respaldo`, `versionFormato = 1` y las cuatro secciones de `datos`. En Android, elegir un destino externo de prueba en la hoja de compartir y verificar que el archivo realmente existe allí; no conservar la única copia en la caché de la app.
+- [x] Leo confirmó que Imprimir no aparece en Android y que en PC aparece y abre la impresión. La prueba previa comprobó Descargar e Imprimir como visitante en web, y Descargar y la hoja de compartir con sesión en Android.
+- [ ] Confirmar que Imprimir no aparece en navegador móvil y completar los demás casos de salida que correspondan según la plataforma.
+- [x] Leo confirmó que la exportación de copia JSON desde la web funciona. Una copia de prueba también se guardó en un destino externo del POCO.
+- [ ] Verificar en la copia web el tipo, la versión del formato y las cuatro secciones de datos, si aún no se comprobaron.
 - [x] Después de completar la fase 2, usar A como origen y B como destino de una copia que solo contenga datos sintéticos. Importar en B mediante «Importar copia» → revisar conteos y UID mostrado → «Agregar faltantes». Comprobar que se agregan solo faltantes, que el cliente propio de B permanece igual y que los datos de A no se borran. Repetir el mismo archivo: el resumen debe indicar cero altas. Desde esta acción, B tendrá legítimamente los registros importados de A; no interpretarlos como fuga entre cuentas. No importar una copia con datos reales ni confirmar un UID distinto del esperado.
 - [ ] Probar un JSON inválido creado fuera del repositorio en `$env:TEMP\ch_respaldo_invalido.json` con contenido `{}` y una operación con cambios de Configuración sin guardar; esperar los mensajes existentes sin alteración de datos. Borrar ese archivo temporal al terminar. Si falla, ubicar primero `PanelCopiasSeguridad.vue` (`seleccionarCopia`, `confirmarImportacion`, `descargarCopia`), `ServicioRespaldo.ts` (`previsualizarImportacion`, `importarFaltantes`, `exigirCuentaVigente`) o `archivosRespaldo.ts` (`descargarArchivoRespaldo`).
 
@@ -117,8 +119,8 @@ Comprobar la cola de escrituras Firestore, la persistencia local Android y el re
 - [x] Modificar en Android un cliente y un material sintéticos sin conexión, documentar el aviso `pendiente` observado para el material y comprobar que la app permite continuar. Ambos cambios llegaron a la web al reconectar.
 - [x] Con la caché Android corregida, cerrar y reabrir la app sin red y verificar que la sesión, los clientes y una edición sintética de cliente sigan visibles. El resultado se registró el 3 de noviembre.
 - [x] Repetir la persistencia tras reinicio sin red con un material, presupuesto y configuración. El 4 de noviembre siguieron visibles los tres en el POCO después de forzar cierre y reabrir sin Wi-Fi.
-- [ ] Restaurar Wi-Fi y comprobar el aviso `sincronizado`, la lectura remota y los valores en web al recargar. Repetir con un presupuesto o configuración solo si los dos primeros casos pasaron. Registrar por separado éxito de escritura local, persistencia tras reinicio y confirmación remota. Restablecer Wi-Fi aunque falle la prueba.
-- [ ] Probar un error de red recuperable y una edición simultánea sintética desde web y Android; documentar el valor final observado y si coincide con la política actual de última escritura. Ante fallo, inspeccionar `src/configuracion/firebase.ts` (`persistentLocalCache`, `memoryLocalCache`), `src/repositorios/almacenamiento/esperarEscrituraFirestore.ts`, `src/boot/firebase.ts` y el repositorio de la colección afectada antes de proponer cambios.
+- [x] Restablecer Wi-Fi y comprobar en web la llegada de cambios hechos sin conexión en un cliente y un material; los resultados están registrados en la ejecución del 3 de noviembre.
+- [ ] Comprobar el aviso `sincronizado` y una edición simultánea desde web y Android: Leo decidió trasladar ambas comprobaciones a `Planes/PlanesFuturos/TareasPendientes.md`. Queda pendiente también comprobar un error de red recuperable.
 
 ## FASE 6: Publicidad de prueba en el POCO
 
@@ -214,3 +216,5 @@ Estado: EN EJECUCIÓN
 ## Decisión del 5 de noviembre de 2026
 
 - Leo pidió retirar Imprimir de Android y dejarlo solo en PC. `VistaPreviaPresupuestoPage.vue` muestra ahora el botón únicamente en navegador de escritorio; `ModalInicioSesion.vue` omite «imprimir» en las demás plataformas. Descargar y Enviar conservan su comportamiento. El código quedó actualizado, pero no se ejecutaron la app, pruebas, linters ni compilaciones por la regla de `AGENTS.md`; falta comprobar visualmente la nueva versión y compilar una APK con aprobación explícita antes de verla en el POCO.
+
+- Confirmación posterior de Leo: Imprimir ya se comporta como pidió en Android y PC, y la exportación JSON desde web funciona. Decidió dejar como tareas futuras la prueba de ediciones simultáneas y la comprobación del aviso de sincronización.
