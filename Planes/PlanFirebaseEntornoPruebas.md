@@ -101,7 +101,7 @@ Cada cuenta ve solo sus registros y los mismos datos aparecen en Android y web. 
 - [x] Ajustar los cuatro stores para invalidar y recargar sus listas/configuración cuando cambia `uid`, al cerrar sesión y al pasar de visitante a cuenta. Cancelar o ignorar respuestas tardías de la cuenta anterior. Revisar todos los consumidores de carga, guardado, borrado, vista previa, identidad visual y copias de seguridad para que no retengan registros de otro usuario.
 - [x] Diseñar el logo antes de persistir configuración y presupuestos: se conservó `datosUrl` para preservar el formato JSON y documentos históricos, con archivo máximo de 350 KB y documento serializado máximo de 900 KB. Cloud Storage queda pendiente de una decisión futura sobre Blaze.
 - [x] Configurar la caché: Android usa persistencia compartida y web conserva la caché en memoria. Los stores invalidan sus datos al cambiar de cuenta; el aislamiento y la reconexión de cambios de prueba se comprobaron en las pruebas registradas.
-- [ ] Comprobar mediante una edición simultánea el comportamiento real de última escritura y registrar el resultado.
+- [x] Comprobar mediante una edición simultánea el comportamiento real de última escritura y registrar el resultado. El 6 de noviembre, web y POCO editaron el mismo cliente sintético desde el valor inicial: se guardó primero web y después Android; al recargar web prevaleció Android. Se eliminó el cliente creado para la prueba.
 
 ## FASE 4: Migrar copias de prueba
 
@@ -155,7 +155,7 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 
 - [x] Fase 1: Preparar el entorno y cerrar el riesgo de configuración
 - [x] Fase 2: Crear cuentas y sesión compartida
-- [ ] Fase 3: Aislar y sincronizar los datos
+- [x] Fase 3: Aislar y sincronizar los datos
 - [x] Fase 4: Migrar copias de prueba
 - [x] Fase 5: Documentar decisiones y operación
 - [ ] Fase Testing
@@ -165,6 +165,8 @@ Avance al 30 de octubre de 2026: código de registro y repositorios conectado, r
 Actualización del 6 de noviembre de 2026: fase 4 completada con las evidencias existentes de la fase 3 de `Planes/PlanCierrePruebasFirebase.md`, incluida la importación repetida y la confirmación de Leo sobre Imprimir en PC y su ausencia en Android. No se ejecutaron pruebas nuevas para esta actualización.
 
 Actualización posterior del 6 de noviembre: fase 2 completada tras probar el registro, rechazo previo a verificar y acceso posterior en Android, junto con las comprobaciones anteriores de sesión compartida y vinculación. El reenvío de verificación y los casos responsivos completos siguen pendientes de Testing.
+
+Actualización posterior del 6 de noviembre: fase 3 completada. En la misma cuenta de prueba se abrió un cliente sintético en web y POCO antes de editar; se guardó primero el nombre web y luego el nombre Android. La web recargada mostró el valor Android, correspondiente a la última escritura en esta prueba. El cliente temporal se eliminó al finalizar.
 
 Prueba en teléfono, 2 de noviembre de 2026: Leo confirmó que la sincronización funciona bien. Se había creado por error una segunda variante Android con sufijo `.pruebas`; Leo aclaró que usa un teléfono dedicado y quiere seguir probando con el identificador habitual `com.calculatupresupuesto.app`. La variante adicional se desinstaló y se retiró del proyecto. Las demás pruebas manuales del plan siguen abiertas.
 
