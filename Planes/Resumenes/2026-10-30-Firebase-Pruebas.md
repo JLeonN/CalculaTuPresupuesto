@@ -75,3 +75,11 @@
 - SPA local: se comprobó mediante medidas que el cuadro de registro cabe en la ventana sin desbordamiento horizontal a 390 × 844 y 1440 × 900; se comprobó también el cuadro de inicio en escritorio. No se simuló teclado móvil ni se evaluó accesibilidad completa.
 
 - 6 de noviembre, edición simultánea con cuenta de prueba: se abrió el mismo cliente sintético en la SPA y el POCO antes de modificarlo. Se guardó primero el nombre web y luego el nombre Android; al recargar la SPA apareció el nombre Android. La última escritura prevaleció en este caso. El cliente creado para la prueba se eliminó después.
+
+## Testing posterior del 6 de noviembre de 2026
+
+- SPA local autenticada: Enviar generó el PDF y preparó un enlace de WhatsApp para un presupuesto sintético. Se interceptó la apertura; no se envió ningún mensaje. El presupuesto y el PDF temporales se eliminaron.
+- En web se rechazó un logo mayor de 350 KB con su mensaje específico. Un cliente mayor de 900 KB se rechazó sin guardarse, pero inicialmente mostró un error genérico. Leo autorizó corregirlo: tras el cambio se mostró el mensaje específico al crear y editar en web y al crear en el POCO con la nueva APK. En ancho móvil no se observó desbordamiento.
+- `npm run typecheck` y la comprobación de Prettier y ESLint del archivo modificado pasaron. `npm run lint:check` general informó formato previo en `src/css/app.css` y en este resumen. La compilación Android y `assembleDebug` pasaron; se verificó el paquete y se instaló la APK en `f18c5937`.
+- En web, inicio, registro y recuperación a 390 × 844 y 1440 × 900 no mostraron desbordamiento horizontal; sus controles visibles tuvieron nombre y posibilidad de foco. No se ha probado todavía un lector de pantalla.
+- En Android se creó una cuenta sintética sin verificar y la app confirmó el reenvío tras completar nuevamente los campos. Los primeros intentos mostraron un error genérico, pero no permiten concluir que exista un fallo reproducible de la app. Gmail del POCO mostró mensajes de verificación en el buzón de prueba; desde la lista no se pudo identificar con certeza el último reenvío, así que su llegada sigue sin confirmarse.

@@ -144,7 +144,7 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 - [ ] Con dos cuentas sintéticas, registrar correo/contraseña, verificar correo, recuperar contraseña, entrar con Google, vincular métodos y comparar `uid` en Android y PC. Cerrar sesión, reabrir app y comprobar persistencia o ausencia de sesión según corresponda.
 - [ ] Crear un cliente, material, presupuesto y configuración en Android; comprobar en web con la misma cuenta. Editar desde web y revisar Android; repetir sin red y al reconectar. Confirmar que ninguna cuenta ve datos de la otra ni tras cambiar de sesión en el mismo dispositivo.
 - [x] Importar una copia JSON sintética, comparar recuentos, repetir y comprobar cero duplicados. Comprobar que la copia anterior no fue eliminada y que una cuenta autenticada puede exportar su JSON.
-- [ ] Verificar en ambas plataformas que una cuenta autenticada puede Descargar, Imprimir y Enviar, mientras un visitante ve la marca de prueba y las acciones siguen bloqueadas. No probar vencimientos ni exenciones en esta etapa.
+- [x] Verificar las salidas con cuenta y visitante en ambas plataformas. Descargar y Enviar se comprobaron en Android y web; en la web se verificó la descarga y el destino de WhatsApp sin enviar ningún mensaje. Leo confirmó Imprimir en PC y su ausencia en Android; el navegador móvil tampoco lo muestra. La marca y los bloqueos de visitante se comprobaron en Android y web.
 - [ ] Comprobar los mensajes de error por falta de red, cuenta no verificada, credenciales incorrectas, proveedor ya asociado y datos que superen límites; ninguna pantalla debe mostrar datos de la cuenta anterior.
 
 ### Casos responsivos
@@ -167,6 +167,8 @@ Actualización del 6 de noviembre de 2026: fase 4 completada con las evidencias 
 Actualización posterior del 6 de noviembre: fase 2 completada tras probar el registro, rechazo previo a verificar y acceso posterior en Android, junto con las comprobaciones anteriores de sesión compartida y vinculación. El reenvío de verificación y los casos responsivos completos siguen pendientes de Testing.
 
 Actualización posterior del 6 de noviembre: fase 3 completada. En la misma cuenta de prueba se abrió un cliente sintético en web y POCO antes de editar; se guardó primero el nombre web y luego el nombre Android. La web recargada mostró el valor Android, correspondiente a la última escritura en esta prueba. El cliente temporal se eliminó al finalizar.
+
+Testing, avance posterior del 6 de noviembre: en web, Enviar generó un PDF y preparó un enlace de WhatsApp para un presupuesto sintético; se interceptó su apertura y no se envió ningún mensaje. El presupuesto y el PDF temporales se eliminaron. Se rechazaron un logo superior a 350 KB y un cliente superior a 900 KB; este último mostró inicialmente un error genérico. Con la corrección aprobada por Leo se mostró el mensaje de límite al crear y editar en web y al crear en la nueva APK del POCO, sin desbordamiento observado. El reenvío en Android mostró la confirmación de la app; queda por confirmar la llegada del correo. La revisión de etiquetas y foco en web no sustituye la prueba con lector de pantalla.
 
 Prueba en teléfono, 2 de noviembre de 2026: Leo confirmó que la sincronización funciona bien. Se había creado por error una segunda variante Android con sufijo `.pruebas`; Leo aclaró que usa un teléfono dedicado y quiere seguir probando con el identificador habitual `com.calculatupresupuesto.app`. La variante adicional se desinstaló y se retiró del proyecto. Las demás pruebas manuales del plan siguen abiertas.
 

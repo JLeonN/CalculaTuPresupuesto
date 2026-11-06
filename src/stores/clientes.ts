@@ -57,9 +57,12 @@ export const useClientesStore = defineStore('clientes', () => {
       if (version !== versionDatos) throw new Error('La sesión cambió durante el guardado.');
       clientes.value = [...clientes.value, cliente];
       return cliente;
-    } catch {
-      error.value = 'No se pudo guardar el cliente.';
-      throw new Error(error.value);
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof RangeError
+          ? errorCapturado.message
+          : 'No se pudo guardar el cliente.';
+      throw new Error(error.value, { cause: errorCapturado });
     } finally {
       guardando.value = false;
     }
@@ -84,9 +87,12 @@ export const useClientesStore = defineStore('clientes', () => {
         cliente.id === idCliente ? clienteActualizado : cliente,
       );
       return clienteActualizado;
-    } catch {
-      error.value = 'No se pudieron guardar los cambios del cliente.';
-      throw new Error(error.value);
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof RangeError
+          ? errorCapturado.message
+          : 'No se pudieron guardar los cambios del cliente.';
+      throw new Error(error.value, { cause: errorCapturado });
     } finally {
       guardando.value = false;
     }
