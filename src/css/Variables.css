@@ -102,9 +102,6 @@
   --altura-navegacion-movil: 4.5rem;
   --alto-banner-publicidad: 0px;
   --separacion-banner-publicidad: 0px;
-  --alto-reserva-publicidad: calc(
-    var(--alto-banner-publicidad) + var(--separacion-banner-publicidad)
-  );
   --tamano-cobertura-autocompletado: 100vmax;
   --tamano-icono-navegacion: 1.5rem;
   --tamano-icono-tarjeta: 1.75rem;
@@ -121,4 +118,10 @@
   --sombra-control: 0 0.75rem 2rem rgb(0 0 0 / 22%);
   --duracion-transicion: 160ms;
   --opacidad-deshabilitado: 0.62;
+}
+
+.aplicacion-presupuestos {
+  --alto-reserva-publicidad: calc(
+    var(--alto-banner-publicidad) + var(--separacion-banner-publicidad)
+  );
 }
