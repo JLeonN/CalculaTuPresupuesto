@@ -26,6 +26,8 @@ Integrar un único banner nativo de AdMob en la aplicación Android de Calcula t
 
 ## Alcance
 
+**Decisión de Leo del 6 de noviembre:** por ahora la publicidad corresponde solo a Android. La versión web no tiene publicidad; las comprobaciones web verifican que no se muestren anuncios ni se reserve espacio para ellos.
+
 ### Incluye
 
 - SDK nativo de AdMob, configuración Android, banner inferior, consentimiento requerido por Google y opción de privacidad cuando corresponda.
@@ -137,7 +139,7 @@ Resultado del 28 de octubre de 2026: `typecheck`, `lint:check`, compilaciones SP
 - [x] Leo confirmó que el banner aparece para visitantes y desaparece al iniciar sesión.
 - [ ] Con `PUBLICIDAD_DE_PRUEBA = true` y sin sesión, abrir la APK: el banner de prueba debe quedar abajo del todo y centrado, debajo de la franja no interactiva y de los cuatro botones. Durante la carga puede verse la reserva de 50 dp para evitar desplazamientos; ante fallo o falta de consentimiento la reserva desaparece.
 - [ ] Iniciar sesión con el banner visible: debe desaparecer el anuncio y el espacio inferior. Cerrar sesión: debe volver a mostrarse según consentimiento y conexión. Reabrir la app con sesión persistida: no debe solicitar ni mostrar anuncios.
-- [ ] Denegar o no completar el consentimiento cuando corresponda: no debe haber solicitud de anuncio ni espacio reservado. Si Google exige una entrada para cambiar preferencias, comprobar que aparece en Configuración y abre el formulario.
+- [x] Comprobar consentimiento cuando corresponda: solicitar anuncios solo si Google informa `canRequestAds: true`; con `false`, no solicitar ni reservar espacio. Con geografía europea simulada, el formulario sin responder mantuvo el banner oculto y la reserva en cero; el código espera la respuesta antes de solicitar. Leo eligió «No consentir» y el SDK devolvió `true`. La entrada de opciones de privacidad apareció y abrió el formulario de Google.
 - [ ] Simular falta de red o error de carga: navegación, formularios y datos deben seguir funcionando; el pie debe quitar la reserva al confirmarse el fallo. Repetir tras girar el teléfono y al volver de segundo plano: el anuncio sigue centrado y anclado al borde inferior cuando se muestra.
 - [ ] Recorrer Inicio, Presupuestos, Clientes, Materiales, Configuración y vista previa; verificar los últimos controles al desplazarse y especialmente las acciones adhesivas de Configuración.
 
@@ -168,3 +170,11 @@ Decisión de Leo del 6 de noviembre: acepta la posición del banner observada ha
 Avance posterior del 6 de noviembre, POCO `0.0.7`: la sesión persistida reabrió sin banner ni reserva; al cerrar sesión apareció el anuncio de prueba. Al abrir sin Wi-Fi, no hubo anuncio ni reserva y se pudo navegar a Clientes. Tras reconectar, el banner no reapareció en 20 segundos en primer plano, pero volvió al regresar desde segundo plano. En Configuración, con banner visible, la navegación cubrió gran parte de «Guardar cambios»; el inspector identificó la reserva calculada en cero pese a un banner de 50 px. Al recalcular temporalmente la reserva en el layout, el botón dejó de quedar debajo de la navegación. Queda pendiente corregir y repetir; no se verificaron todos los casos del bloque.
 
 Corrección posterior del 6 de noviembre: se calculó la reserva en el layout y se instaló una APK debug nueva en el POCO. Con anuncio visible, «Guardar cambios» quedó completamente visible y su centro accesible; sin Wi-Fi y sin anuncio también quedó visible. No se guardaron cambios. Los demás casos del bloque continúan pendientes.
+
+Comprobaciones posteriores del 6 de noviembre: el inspector del POCO confirmó los últimos controles visibles en Inicio, Presupuestos, Clientes, Materiales, Configuración y vista previa con el anuncio de prueba. El sistema rechazó cambiar el tamaño de pantalla por ADB. Con geografía europea de prueba, el SDK indicó `canRequestAds: false` antes de la elección; Leo eligió «No consentir» y el SDK pasó a `canRequestAds: true`. Al reiniciar normalmente apareció un anuncio de prueba. Esto contradice la expectativa de este plan de no mostrar anuncios tras rechazar; queda pendiente la decisión de Leo. No se modificó código ni se compiló.
+
+Decisión posterior de Leo: seguir lo que permita Google. Se solicitarán anuncios únicamente cuando el SDK devuelva `canRequestAds: true`, incluso si el usuario eligió «No consentir»; con `false` no se solicitarán.
+
+Comprobación adicional: en el POCO se aplicó temporalmente una geografía europea de prueba a la solicitud del complemento mediante el inspector, sin modificar archivos ni APK. Con el formulario de Google pendiente de respuesta, no apareció banner y la reserva fue cero; tras la elección de Leo apareció un anuncio de prueba. Cuando Google indicó que requería opciones de privacidad, la acción apareció en Configuración y abrió su formulario. Se revisó que el código espera la respuesta antes de solicitar el anuncio; no se registraron solicitudes de red en esta comprobación. A 300 píxeles CSS simulados la reserva fue cero y al restaurar 392 volvió a 50; a 1024 el menú lateral apareció y el pie ocupó el ancho simulado. Esto no sustituye una prueba física del banner en tableta.
+
+Leo indicó que ya revisó la publicidad y la dio por terminada; se conserva el detalle de los casos que CH no comprobó directamente.
