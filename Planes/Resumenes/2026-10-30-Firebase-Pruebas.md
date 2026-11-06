@@ -67,3 +67,9 @@
 - La cuenta A mostró el mismo UID en Android y la SPA de PC; se comparó sin registrar el identificador. Su sesión se conservó al reiniciar Android y recargar la web.
 - Una cuenta Google libre se vinculó correctamente a A desde el POCO. Tras cerrar sesión y entrar con Google se verificó el mismo UID y el cliente de prueba. En la sesión web existente, Firebase reconoce también el proveedor vinculado.
 - Leo confirmó que probó la vinculación desde la web. La cuenta B ya pertenecía a otro usuario y la vinculación de Google con A se restauró tras la prueba anterior en Android.
+
+## Registro nuevo (6 de noviembre de 2026)
+
+- POCO Android `0.0.7`: se creó una cuenta sintética con un alias de la casilla de prueba. La app rechazó el ingreso antes de verificar; el mensaje de verificación llegó a la casilla, la página confirmó la verificación y el ingreso posterior funcionó. Los datos de acceso se guardaron únicamente en el archivo privado ignorado. No se comprobó el reenvío de verificación.
+- Leo confirmó el desplazamiento táctil del formulario con teclado abierto. En orientación horizontal, con el formulario de registro abierto, el banner de prueba apareció hacia la izquierda y Leo aceptó esa posición; la revisión responsiva restante sigue pendiente.
+- SPA local: se comprobó mediante medidas que el cuadro de registro cabe en la ventana sin desbordamiento horizontal a 390 × 844 y 1440 × 900; se comprobó también el cuadro de inicio en escritorio. No se simuló teclado móvil ni se evaluó accesibilidad completa.
