@@ -229,3 +229,10 @@ Estado: EN EJECUCIÓN
 
 - POCO Android `0.0.7`, cuenta A: con Wi-Fi desactivado y sin SIM, la solicitud de recuperación de contraseña mostró «No hay conexión. Revisá Internet e intentá nuevamente». Al activar Wi-Fi y repetirla, desapareció el error y se mostró la respuesta genérica esperada. No se comprobó la recepción del correo en este reintento ni se cambió la contraseña. El teléfono quedó con Wi-Fi activo y la sesión cerrada.
 - La persistencia y la llegada de escrituras sin conexión se habían comprobado anteriormente. La edición simultánea y el aviso de sincronización permanecen como tareas futuras por decisión de Leo.
+
+## Fase 6: avance del 5 de noviembre de 2026
+
+- POCO Android `0.0.7`, visitante y Wi-Fi activo: en Inicio se observó un anuncio identificado como de prueba, centrado debajo de los cuatro botones de navegación. Sin teclado, el formulario de inicio de sesión mostró sus botones por encima del banner.
+- Al enfocar la contraseña y abrir el teclado, el banner quedó superpuesto a la parte inferior del formulario y tapó «Continuar con Google». Es un fallo visual que impide aprobar el recorrido completo; debe corregirse y repetirse la prueba. La APK instalada es anterior a los cambios de impresión del 5 de noviembre; no se comprobó este caso en una APK más reciente.
+- No se probaron en esta ejecución el consentimiento, la falta de red del anuncio, el giro, segundo plano ni todas las páginas y tamaños. La fase permanece pendiente. No se modificó código ni se compiló.
+- Corrección autorizada y comprobada en una nueva APK debug `0.0.7`: el cuadro reserva la altura del banner y permite desplazar su contenido. En el POCO, con teclado y anuncio de prueba visibles, al desplazar el formulario mediante el inspector se vieron completos «Entrar» y «Continuar con Google» por encima del anuncio. No se comprobó el gesto táctil de desplazamiento ni el comportamiento horizontal. Pasaron `typecheck`, la compilación Android y `assembleDebug`; se verificó el paquete antes de instalar. La fase 6 sigue pendiente por los demás casos.

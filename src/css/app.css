@@ -90,6 +90,15 @@ input[type='number']::-webkit-outer-spin-button {
   padding: 0 var(--espaciado-grande) var(--espaciado-grande);
 }
 
+body .dialogo-inicio-sesion .q-dialog__inner {
+  /* Quasar aplica !important a los márgenes seguros de diálogos en Android. */
+  padding-bottom: calc(var(--q-safe-area-inset-bottom, 0px) + var(--alto-banner-dialogo)) !important;
+}
+
+.dialogo-inicio-sesion .q-dialog__inner > .modal-inicio-sesion {
+  max-height: 100% !important;
+}
+
 .modal-inicio-sesion {
   width: min(100%, var(--ancho-texto-secundario));
   color: var(--color-texto-principal);

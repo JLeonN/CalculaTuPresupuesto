@@ -158,3 +158,7 @@ Fecha de última actualización: 4 de noviembre de 2026
 Estado: IMPLEMENTADO; BANNER PARA VISITANTES CONFIRMADO POR LEO, CASOS ADICIONALES DE TESTING PENDIENTES
 
 Confirmación de Leo del 4 de noviembre de 2026: el banner aparece sin sesión y desaparece al iniciar sesión. Se conserva sin marcar la fase Testing completa porque sus otros casos manuales no tienen resultado registrado.
+
+Comprobación del 5 de noviembre de 2026, POCO Android `0.0.7`: el anuncio de prueba se mostró centrado debajo de la navegación en Inicio. En el formulario de inicio de sesión, al enfocar contraseña y mostrar el teclado, el banner se superpuso al formulario y tapó «Continuar con Google». La APK instalada es anterior a los cambios de impresión del 5 de noviembre. El caso queda pendiente de corrección y nueva prueba; no se comprobaron los demás casos en esta ejecución.
+
+Corrección posterior del 5 de noviembre: con una nueva APK debug en el POCO y el teclado abierto, el formulario reserva la altura del banner. Al desplazarlo mediante el inspector, «Entrar» y «Continuar con Google» quedaron visibles sobre el anuncio de prueba. Quedan por verificar el gesto táctil, la orientación horizontal y los demás casos de esta fase.

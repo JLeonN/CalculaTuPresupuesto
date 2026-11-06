@@ -3,11 +3,13 @@ import { computed, ref, watch } from 'vue';
 import { Capacitor } from '@capacitor/core';
 import { useQuasar } from 'quasar';
 import { useAutenticacionStore } from '@/stores/autenticacion';
+import { usePublicidad } from '@/composables/usePublicidad';
 
 type Modo = 'entrar' | 'registrar' | 'recuperar' | 'verificar';
 const $q = useQuasar();
 const mostrarImpresion = Capacitor.getPlatform() === 'web' && $q.platform.is.desktop;
 const sesion = useAutenticacionStore();
+const { altoBanner } = usePublicidad();
 const modo = ref<Modo>('entrar');
 const correo = ref('');
 const nombre = ref('');
@@ -85,6 +87,8 @@ async function entrarConGoogle(): Promise<void> {
 <template>
   <q-dialog
     :model-value="sesion.modalInicioSesionVisible"
+    class="dialogo-inicio-sesion"
+    :style="{ '--alto-banner-dialogo': `${altoBanner}px` }"
     @update:model-value="(visible) => !visible && sesion.cerrarModalInicioSesion()"
   >
     <q-card class="modal-inicio-sesion">
