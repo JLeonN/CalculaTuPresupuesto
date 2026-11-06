@@ -112,7 +112,7 @@ La importación es verificable y repetible; el acceso a Descargar, Imprimir y En
 
 - [x] Mantener `RespaldoDatos` y `validarRespaldo` como entrada; adaptar `ServicioRespaldo` para operar con los repositorios de la cuenta activa. Probar con JSON sintético de clientes, materiales, presupuestos y configuración. Antes de importar, mostrar recuentos y diferencias; confirmar el `uid` destino; agregar solo faltantes; verificar lectura remota posterior. No borrar ni sobrescribir los datos locales de origen. Una segunda importación debe producir cero altas.
 - [x] Verificado en el código: `puedeGenerarSalidaPresupuesto` deriva de `estaAutenticado`; las vistas de presupuesto, el diseño principal y el panel de copias consultan el estado de sesión. Imprimir se muestra solo en navegador de escritorio por decisión posterior de Leo.
-- [ ] Completar la comprobación manual de las salidas según `PlanCierrePruebasFirebase.md`.
+- [x] Completar la comprobación manual de las salidas según `PlanCierrePruebasFirebase.md`: su fase 3 quedó completada el 5 de noviembre con las pruebas y confirmaciones registradas allí. Imprimir corresponde únicamente al navegador de escritorio.
 
 ## FASE 5: Documentar decisiones y operación
 
@@ -155,11 +155,13 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 - [x] Fase 1: Preparar el entorno y cerrar el riesgo de configuración
 - [ ] Fase 2: Crear cuentas y sesión compartida
 - [ ] Fase 3: Aislar y sincronizar los datos
-- [ ] Fase 4: Migrar copias de prueba
+- [x] Fase 4: Migrar copias de prueba
 - [x] Fase 5: Documentar decisiones y operación
 - [ ] Fase Testing
 
 Avance al 30 de octubre de 2026: código de registro y repositorios conectado, reglas publicadas en el proyecto de pruebas, seis pruebas de emulador y dos pruebas locales aprobadas; builds web/Android aprobados. Fases 2 a 4 y Testing siguen abiertas por las pruebas manuales de correo, Google, sincronización y uso sin conexión. Las pruebas de reglas están en `tests/reglasFirestore.test.mjs` para ejecutarse directamente con Node y Firebase Emulator Suite; el resultado cubre el objetivo previsto para el archivo `.ts` de este plan. Resumen: `Planes/Resumenes/2026-10-30-Firebase-Pruebas.md`.
+
+Actualización del 6 de noviembre de 2026: fase 4 completada con las evidencias existentes de la fase 3 de `Planes/PlanCierrePruebasFirebase.md`, incluida la importación repetida y la confirmación de Leo sobre Imprimir en PC y su ausencia en Android. No se ejecutaron pruebas nuevas para esta actualización.
 
 Prueba en teléfono, 2 de noviembre de 2026: Leo confirmó que la sincronización funciona bien. Se había creado por error una segunda variante Android con sufijo `.pruebas`; Leo aclaró que usa un teléfono dedicado y quiere seguir probando con el identificador habitual `com.calculatupresupuesto.app`. La variante adicional se desinstaló y se retiró del proyecto. Las demás pruebas manuales del plan siguen abiertas.
 
