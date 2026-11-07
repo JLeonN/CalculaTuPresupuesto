@@ -89,3 +89,10 @@
 - El 7 de noviembre se retomó la prueba con TalkBack: Leo confirmó que el lector leyó el título del acceso y anunció de forma comprensible los controles de correo, contraseña y «Entrar». TalkBack se dejó desactivado, como estaba antes. No se comprobó auditivamente el recorrido completo de los demás modos.
 - En una segunda pasada, Leo confirmó que TalkBack leyó de forma comprensible los títulos de registro, recuperación y verificación. El lector volvió a quedar desactivado; no se comprobó auditivamente cada control de esos modos.
 - El 7 de noviembre, Leo confirmó que todo está bien respecto de TalkBack y pidió dar por terminada la revisión relacionada. Se cierra por su conformidad, manteniendo la distinción de los controles que CH no observó auditivamente.
+- El 7 de noviembre, Leo mostró la conversación de la cuenta sintética: llegaron varios correos de verificación con el asunto y el cuerpo en español. Se confirma la recepción del reenvío; no se abrió ningún enlace como parte de esta comprobación.
+
+## Comprobaciones del 7 de noviembre de 2026
+
+- Con una misma cuenta de prueba, se crearon cliente, material y presupuesto sintéticos y se modificó la configuración en el POCO. Los cuatro cambios aparecieron en la web; la configuración requirió recargar. Después se editaron los cuatro desde la web y se observaron en Android. Se restauró la configuración y se eliminaron los tres registros temporales.
+- Los cuatro formularios de acceso pasaron una revisión geométrica de controles y desbordamiento en la web a 390 × 844 y 1440 × 900. En el POCO, con teclado abierto, los controles se pudieron alcanzar mediante desplazamiento programático y las validaciones de campos vacíos no desbordaron; Leo había confirmado el gesto táctil en la prueba anterior.
+- Chrome del POCO abrió la app de desarrollo por la dirección de red local, pero la pantalla quedó en blanco en HTTP no seguro; el contexto no proporcionaba `crypto.randomUUID`. Esa apertura no permite aprobar la revisión de formularios en Chrome móvil. No se modificó código ni configuración del navegador para esta comprobación.
