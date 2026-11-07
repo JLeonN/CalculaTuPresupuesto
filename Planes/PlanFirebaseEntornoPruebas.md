@@ -149,7 +149,8 @@ Demostrar con datos sintéticos que las cuentas, reglas, migración y permiso ac
 
 ### Casos responsivos
 
-- [ ] Revisar registro, inicio, recuperación y mensajes de sesión en teléfono Android, navegador móvil y PC usando los breakpoints existentes; sin desbordamiento, controles tapados por teclado o publicidad y acciones accesibles al lector de pantalla.
+- [ ] Revisar registro, inicio, recuperación y mensajes de sesión en teléfono Android, navegador móvil y PC usando los breakpoints existentes; sin desbordamiento ni controles tapados por teclado o publicidad.
+- [x] Revisar accesibilidad con TalkBack en Android: Leo confirmó que los títulos y controles comprobados se escuchan correctamente y dio por terminada toda la revisión relacionada con TalkBack. El detalle de las comprobaciones efectivamente observadas se conserva en el resumen; TalkBack quedó desactivado.
 
 ## Progreso del plan
 

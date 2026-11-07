@@ -88,6 +88,7 @@ async function entrarConGoogle(): Promise<void> {
   <q-dialog
     :model-value="sesion.modalInicioSesionVisible"
     class="dialogo-inicio-sesion"
+    aria-labelledby="titulo-modal-inicio-sesion"
     :style="{ '--alto-banner-dialogo': `${altoBanner}px` }"
     @update:model-value="(visible) => !visible && sesion.cerrarModalInicioSesion()"
   >
@@ -96,7 +97,7 @@ async function entrarConGoogle(): Promise<void> {
         <span class="modal-inicio-sesion__icono" aria-hidden="true"><q-icon name="key" /></span>
         <div>
           <p class="etiqueta-seccion">Cuenta privada</p>
-          <h2 class="titulo-seccion">{{ titulo }}</h2>
+          <h2 id="titulo-modal-inicio-sesion" class="titulo-seccion">{{ titulo }}</h2>
         </div>
       </q-card-section>
 
