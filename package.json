@@ -13,6 +13,8 @@
     "dev:android": "quasar dev -m capacitor -T android",
     "build": "quasar build",
     "build:android": "quasar build -m capacitor -T android",
+    "firebase:pruebas": "node scripts/seleccionar-firebase.mjs pruebas",
+    "firebase:produccion": "node scripts/seleccionar-firebase.mjs produccion",
     "typecheck": "vue-tsc --noEmit",
     "test:firebase": "npx --yes firebase-tools@14.22.0 emulators:exec --only firestore --project demo-calcula-pruebas \"node --test tests/reglasFirestore.test.mjs\"",
     "test:respaldo": "tsx --test tests/importacionRespaldo.test.ts tests/escriturasFirestore.test.ts",

@@ -44,6 +44,17 @@ El repositorio definitivo es `https://github.com/JLeonN/CalculaTuPresupuesto`. C
 
 ## Firebase en entorno de pruebas
 
+Producción utiliza el proyecto independiente `calculatupresupuesto-prod`. El despliegue de GitHub Pages requiere las seis variables `QCLI_FIREBASE_*` en **Settings > Secrets and variables > Actions > Variables** del repositorio; el workflow comprueba que estén completas y que el proyecto sea el de producción. Estos valores forman parte pública del cliente: nunca colocar contraseñas ni claves privadas en ellos.
+
+Para alternar los entornos locales, conservar los archivos ignorados `.env.firebase.pruebas`, `.env.firebase.produccion`, `google-services.pruebas.json` y `google-services.produccion.json` en la raíz. Las variables web se obtienen de la app web de cada proyecto y los JSON de sus apps Android correspondientes. El selector valida proyecto y paquete antes de copiar la pareja a `.env.local` y `src-capacitor/android/app/google-services.json`:
+
+```bash
+npm run firebase:pruebas
+npm run firebase:produccion
+```
+
+Elegí el entorno antes de cada compilación y reiniciá Quasar si estaba abierto. No alternes mientras se está compilando ni cambies manualmente uno solo de los dos archivos activos. Si el selector informa que no pudo restaurarlos, revisá ambos antes de compilar. Las huellas de Play actuales y anteriores están registradas en producción y el JSON Android se volvió a descargar; si cambian las firmas, hay que actualizar las huellas y descargarlo otra vez. El acceso con Google de la versión distribuida por Play sigue pendiente de comprobación.
+
 El proyecto Firebase de desarrollo es `calculatupresupuesto-pru-b2e9a` (plan Spark). Firestore está en `southamerica-east1`. Authentication admite correo/contraseña y Google; el registro por correo exige verificarlo antes de usar la cuenta. Los dominios autorizados por ahora son `localhost` y los propios de Firebase. En Android solo se registraron las huellas SHA de depuración; antes de publicar una versión nueva hay que registrar la huella de la firma de Play. La configuración web y Android se obtienen siempre desde la cuenta de desarrollo indicada en `Memory.md`.
 
 Copiá `.env.example` a `.env.local` y completá allí los identificadores públicos de la app web registrada en Firebase Console. Reiniciá Quasar después de cambiarlos. Si faltan, la app permite el uso local como visitante, sin iniciar sesión. El antiguo usuario y contraseña de prueba ya no forman parte del cliente. La configuración de Android se descarga con Firebase CLI al archivo ignorado `src-capacitor/android/app/google-services.json`:

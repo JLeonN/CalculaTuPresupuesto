@@ -11,6 +11,8 @@ node_modules
 
 # Configuración local de la app Android de pruebas.
 /src-capacitor/android/app/google-services.json
+/google-services.pruebas.json
+/google-services.produccion.json
 firestore-debug.log
 firebase-debug.log
 ui-debug.log

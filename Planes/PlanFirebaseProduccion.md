@@ -36,17 +36,17 @@ Preparar un proyecto Firebase independiente para la aplicación publicada, conse
 
 ## Mapa de cambios
 
-| Archivo o recurso | Acción | Símbolos principales | Propósito |
-| --- | --- | --- | --- |
-| Firebase Console, proyecto nuevo | Crear y configurar | Authentication, Firestore, apps web y Android | Aislar producción |
-| `.firebaserc` | Modificar | `projects.produccion` | Identificar el proyecto sin cambiar `pruebas` |
-| `.env.example` y archivos locales ignorados | Actualizar contrato y preparar configuraciones locales | `QCLI_FIREBASE_*` | Separar parámetros por entorno |
-| `scripts/seleccionar-firebase.mjs` | Crear | selección explícita `pruebas` o `produccion` | Instalar juntos los archivos web y Android correctos |
-| `package.json` | Modificar | scripts de selección | Facilitar el cambio seguro de entorno |
-| `.github/workflows/deploy-pages.yml` | Modificar | paso `Compilar SPA`, variables de Actions | Compilar Pages con producción y fallar si falta configuración |
-| GitHub, variables del repositorio o entorno | Configurar | seis variables `QCLI_FIREBASE_*` | Suministrar configuración pública de producción |
-| `README.md`, `Memory.md` | Actualizar | secciones Firebase y decisiones reutilizables | Documentar operación y estado real |
-| Firebase Authentication y Play Console | Preparar cuenta e instrucciones | cuenta de revisión | Permitir revisión de funciones protegidas |
+| Archivo o recurso                           | Acción                                                 | Símbolos principales                          | Propósito                                                     |
+| ------------------------------------------- | ------------------------------------------------------ | --------------------------------------------- | ------------------------------------------------------------- |
+| Firebase Console, proyecto nuevo            | Crear y configurar                                     | Authentication, Firestore, apps web y Android | Aislar producción                                             |
+| `.firebaserc`                               | Modificar                                              | `projects.produccion`                         | Identificar el proyecto sin cambiar `pruebas`                 |
+| `.env.example` y archivos locales ignorados | Actualizar contrato y preparar configuraciones locales | `QCLI_FIREBASE_*`                             | Separar parámetros por entorno                                |
+| `scripts/seleccionar-firebase.mjs`          | Crear                                                  | selección explícita `pruebas` o `produccion`  | Instalar juntos los archivos web y Android correctos          |
+| `package.json`                              | Modificar                                              | scripts de selección                          | Facilitar el cambio seguro de entorno                         |
+| `.github/workflows/deploy-pages.yml`        | Modificar                                              | paso `Compilar SPA`, variables de Actions     | Compilar Pages con producción y fallar si falta configuración |
+| GitHub, variables del repositorio o entorno | Configurar                                             | seis variables `QCLI_FIREBASE_*`              | Suministrar configuración pública de producción               |
+| `README.md`, `Memory.md`                    | Actualizar                                             | secciones Firebase y decisiones reutilizables | Documentar operación y estado real                            |
+| Firebase Authentication y Play Console      | Preparar cuenta e instrucciones                        | cuenta de revisión                            | Permitir revisión de funciones protegidas                     |
 
 ## FASE 1: Crear y proteger Firebase de producción
 
@@ -56,10 +56,10 @@ Disponer de recursos de producción separados y configurados para las mismas fun
 
 ### Pasos de ejecución
 
-- [ ] Verificar cuenta activa y recursos existentes para evitar duplicados; crear un proyecto de producción con nombre e identificador inequívocos, registrar el ID definitivo y conservar el proyecto de pruebas. Seleccionar Spark mientras alcance, sin activar facturación sin acuerdo de Leo.
-- [ ] Registrar app web y app Android `com.calculatupresupuesto.app`. Configurar Authentication con correo/contraseña y Google; revisar nombre público, correo de soporte, plantillas y enlaces de verificación y recuperación en español. Añadir el dominio efectivo de GitHub Pages a los dominios autorizados.
-- [ ] Crear Firestore en `southamerica-east1`, confirmar la ubicación antes de crear la base y publicar `firestore.rules` y `firestore.indexes.json` apuntando explícitamente al ID de producción. Comprobar que las reglas publicadas coinciden y restringen datos al propietario con correo verificado.
-- [ ] Añadir a `.firebaserc` el alias `produccion` con el ID real, conservando `pruebas`; usar siempre `--project` explícito en operaciones de despliegue. No copiar cuentas ni datos de prueba.
+- [x] Verificar cuenta activa y recursos existentes para evitar duplicados; crear un proyecto de producción con nombre e identificador inequívocos, registrar el ID definitivo y conservar el proyecto de pruebas. Seleccionar Spark mientras alcance, sin activar facturación sin acuerdo de Leo.
+- [x] Registrar app web y app Android `com.calculatupresupuesto.app`. Configurar Authentication con correo/contraseña y Google; revisar nombre público, correo de soporte, plantillas y enlaces de verificación y recuperación en español. Añadir el dominio efectivo de GitHub Pages a los dominios autorizados.
+- [x] Crear Firestore en `southamerica-east1`, confirmar la ubicación antes de crear la base y publicar `firestore.rules` y `firestore.indexes.json` apuntando explícitamente al ID de producción. Comprobar que las reglas publicadas coinciden y restringen datos al propietario con correo verificado.
+- [x] Añadir a `.firebaserc` el alias `produccion` con el ID real, conservando `pruebas`; usar siempre `--project` explícito en operaciones de despliegue. No copiar cuentas ni datos de prueba.
 
 ## FASE 2: Seleccionar entorno y registrar firmas
 
@@ -100,6 +100,19 @@ Permitir que los revisores accedan a las funciones con sesión en la app de prod
 - [ ] Preparar instrucciones breves en inglés para Play Console: abrir acceso, elegir correo y contraseña, ingresar con la cuenta de revisión y localizar las funciones protegidas. Explicar a Leo dónde cargar credenciales e instrucciones; él gestiona Play Console. Asegurar que la cuenta sea reutilizable y no requiera intervención, código temporal ni ubicación específica en cada revisión.
 - [ ] Si posteriormente se implementan funciones de pago, revisar que la cuenta tenga acceso de revisión conforme a las reglas vigentes; pagos y exenciones no se implementan en este plan.
 
+### Instrucciones preparadas para Play Console
+
+Leo debe cargar el correo y la contraseña de la aplicación en **Política y programas > Contenido de la app > Datos de acceso**. El siguiente texto queda preparado en inglés y debe validarse con la cuenta antes de enviarlo a revisión:
+
+```text
+1. Open the app and tap “Iniciar sesión”.
+2. Enter the email and password provided in the sign-in details, then tap “Entrar”.
+3. Use “Clientes”, “Materiales” and “Presupuestos” to review the sample data and create or review a budget.
+4. Open a budget to review its preview and available export or sharing options.
+```
+
+La cuenta y el correo todavía deben verificarse antes de proporcionar estas instrucciones. No incluir aquí ninguna contraseña ni credencial.
+
 ## FASE TESTING
 
 ### Objetivo
@@ -120,7 +133,9 @@ Comprobar aislamiento, autenticación y configuración web y Android; ejecutar c
 
 ## Progreso del plan
 
-- [ ] Fase 1: Crear y proteger Firebase de producción
+- 9 de noviembre: se creó el proyecto `calculatupresupuesto-prod` en la cuenta de desarrollo y se registraron las apps web y Android. Firebase CLI creó inicialmente una base vacía en `nam5` al publicar las reglas. Con autorización de Leo, se eliminó y se recreó en `southamerica-east1`; se confirmó su región y nivel gratuito, y se publicaron las reglas y los índices locales. No se cargaron datos de usuarios. Authentication, huellas y demás pasos siguen pendientes; la fase 1 no está completa.
+
+- [x] Fase 1: Crear y proteger Firebase de producción
 - [ ] Fase 2: Seleccionar entorno y registrar firmas
 - [ ] Fase 3: Conectar GitHub Pages a producción
 - [ ] Fase 4: Cuenta de revisión de Google Play
@@ -128,4 +143,14 @@ Comprobar aislamiento, autenticación y configuración web y Android; ejecutar c
 
 Fecha de creación: 09 de noviembre de 2026  
 Fecha de última actualización: 09 de noviembre de 2026  
-Estado: BORRADOR
+Estado: EN PROCESO
+
+Avance posterior del 9 de noviembre: Authentication tiene correo y Google habilitados, dominio de GitHub Pages autorizado y plantillas de verificación y recuperación en español latinoamericano; no se enviaron correos de prueba. Se registraron SHA-1 y SHA-256 de las firmas de Play actual y anterior y se descargó de nuevo el JSON Android de producción. Se prepararon archivos locales ignorados para ambos entornos, el selector y el workflow; los archivos activos siguen siendo los de pruebas. Se guardaron las seis variables en GitHub Actions. Leo decidió dejar la cuenta de revisión pendiente hasta elegir el correo. No se ejecutaron app, pruebas, linters, compilaciones ni publicación; falta verificar el selector y los flujos reales antes de completar las fases restantes.
+
+Avance posterior: Leo eligió una cuenta de pruebas existente para la revisión, creó personalmente un usuario con correo y contraseña en producción y pidió conservar los datos originales. Se copiaron a esa cuenta 6 clientes, 6 materiales, 6 presupuestos y 1 configuración desde pruebas, sin borrar el origen. La cuenta de producción todavía tiene el correo sin verificar y no puede acceder a sus datos con las reglas actuales. Leo anotará la contraseña en el archivo privado y cargará las credenciales en Play Console; aún no se entregaron a Google. Queda pendiente verificar el correo y comprobar el acceso de revisión.
+
+Comprobaciones posteriores autorizadas por Leo: el selector pasó a producción y restauró exactamente los archivos iniciales de pruebas; rechazó un entorno inválido. Pasaron `typecheck`, las dos pruebas de respaldo, las seis pruebas de reglas en emulador y ESLint. El formato general señaló dos archivos preexistentes; se corrigió el formato de este plan. No se compiló ni publicó. La app local iniciada temporalmente en producción aceptó la contraseña de la cuenta de revisión, pero el reenvío de verificación mostró un error genérico; se investiga antes de dar por validado el acceso.
+
+Diagnóstico posterior: Firebase devolvió `auth/too-many-requests` durante el reenvío; no se identificó si el límite corresponde al ingreso o al envío ni cuándo se levantará. La contraseña sí permitió alcanzar el aviso de correo sin verificar. Se retiró el diagnóstico temporal, se detuvo la app local y se restauró la configuración de pruebas. Quedan pendientes el reintento de verificación, la comprobación de acceso con la cuenta y las pruebas finales.
+
+Comprobación adicional: el selector rechazó archivos ausentes y un proyecto incorrecto en una carpeta temporal aislada, sin modificar los archivos de destino. Se prepararon instrucciones en inglés para la revisión de Play, pendientes de validación con la cuenta verificada.
