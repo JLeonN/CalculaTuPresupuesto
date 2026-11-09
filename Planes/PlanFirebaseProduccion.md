@@ -16,7 +16,7 @@ Preparar un proyecto Firebase independiente para la aplicación publicada, conse
 - Usar la cuenta de desarrollo indicada en `Memory.md` y verificar la cuenta activa antes de crear recursos. Leo completa PIN, MFA y consentimientos.
 - Firebase de pruebas es `calculatupresupuesto-pru-b2e9a`, Firestore está en `southamerica-east1` y las reglas locales están en `firestore.rules`. No alterar ni borrar su configuración, cuentas o datos.
 - `src/configuracion/firebase.ts` lee seis variables `QCLI_FIREBASE_*`; la autenticación nativa de `src/servicios/autenticacion/ServicioAutenticacionFirebase.ts` usa `@capacitor-firebase/authentication` y necesita configuración Android coherente con la web. `src-capacitor/capacitor.config.ts` conserva `com.calculatupresupuesto.app`.
-- `.env.local` y `src-capacitor/android/app/google-services.json` están ignorados. `.firebaserc` solo define el alias `pruebas`. El workflow `.github/workflows/deploy-pages.yml` compila sin variables Firebase. GitHub Pages se publica al hacer push a `main` o mediante ejecución manual.
+- `.env.local` y `src-capacitor/android/app/google-services.json` están ignorados. `.firebaserc` define los alias `pruebas` y `produccion`. El workflow local recibe las variables Firebase de producción; GitHub Pages se publica al hacer push a `main` o mediante ejecución manual.
 - Los datos de visitantes son locales; las cuentas verificadas usan Firestore por UID. Las cuentas y datos del entorno de pruebas no se migran automáticamente. Pablo conserva una copia JSON para importar cuando corresponda.
 - Las claves de configuración Firebase del cliente son identificadores públicos; la seguridad depende de Authentication, reglas y configuración de servicios. No guardar credenciales ni datos reales en archivos versionados. La excepción local de credenciales autorizada por `AGENTS.md` se mantiene ignorada.
 
@@ -83,9 +83,9 @@ Preparar el workflow para compilar con Firebase de producción sin publicar toda
 
 ### Pasos de ejecución
 
-- [ ] En GitHub configurar las seis variables públicas `QCLI_FIREBASE_API_KEY`, `QCLI_FIREBASE_AUTH_DOMAIN`, `QCLI_FIREBASE_PROJECT_ID`, `QCLI_FIREBASE_APP_ID`, `QCLI_FIREBASE_STORAGE_BUCKET` y `QCLI_FIREBASE_MESSAGING_SENDER_ID` con los valores de la app web de producción; comprobar repositorio y cuenta antes de escribir. Mantener secretos reales fuera de estas variables.
-- [ ] En `.github/workflows/deploy-pages.yml`, pasar las seis variables del contexto `vars` al entorno del paso `Compilar SPA`. Añadir validación previa que falle de forma explícita si falta una variable obligatoria o el proyecto no coincide con producción, sin imprimir valores sensibles. No cambiar el disparador ni ejecutar el workflow sin solicitud de Leo.
-- [ ] Documentar en `README.md` dónde se configuran las variables, que se incorporan al compilar y que son públicas, y que el despliegue existente se activa con push a `main` o manualmente.
+- [x] En GitHub configurar las seis variables públicas `QCLI_FIREBASE_API_KEY`, `QCLI_FIREBASE_AUTH_DOMAIN`, `QCLI_FIREBASE_PROJECT_ID`, `QCLI_FIREBASE_APP_ID`, `QCLI_FIREBASE_STORAGE_BUCKET` y `QCLI_FIREBASE_MESSAGING_SENDER_ID` con los valores de la app web de producción; comprobar repositorio y cuenta antes de escribir. Mantener secretos reales fuera de estas variables.
+- [x] En `.github/workflows/deploy-pages.yml`, pasar las seis variables del contexto `vars` al entorno del paso `Compilar SPA`. Añadir validación previa que falle de forma explícita si falta una variable obligatoria o el proyecto no coincide con producción, sin imprimir valores sensibles. No cambiar el disparador ni ejecutar el workflow sin solicitud de Leo.
+- [x] Documentar en `README.md` dónde se configuran las variables, que se incorporan al compilar y que son públicas, y que el despliegue existente se activa con push a `main` o manualmente.
 
 ## FASE 4: Cuenta de revisión de Google Play
 
@@ -137,7 +137,7 @@ Comprobar aislamiento, autenticación y configuración web y Android; ejecutar c
 
 - [x] Fase 1: Crear y proteger Firebase de producción
 - [ ] Fase 2: Seleccionar entorno y registrar firmas
-- [ ] Fase 3: Conectar GitHub Pages a producción
+- [x] Fase 3: Conectar GitHub Pages a producción
 - [ ] Fase 4: Cuenta de revisión de Google Play
 - [ ] Fase Testing
 
@@ -154,3 +154,5 @@ Comprobaciones posteriores autorizadas por Leo: el selector pasó a producción 
 Diagnóstico posterior: Firebase devolvió `auth/too-many-requests` durante el reenvío; no se identificó si el límite corresponde al ingreso o al envío ni cuándo se levantará. La contraseña sí permitió alcanzar el aviso de correo sin verificar. Se retiró el diagnóstico temporal, se detuvo la app local y se restauró la configuración de pruebas. Quedan pendientes el reintento de verificación, la comprobación de acceso con la cuenta y las pruebas finales.
 
 Comprobación adicional: el selector rechazó archivos ausentes y un proyecto incorrecto en una carpeta temporal aislada, sin modificar los archivos de destino. Se prepararon instrucciones en inglés para la revisión de Play, pendientes de validación con la cuenta verificada.
+
+Revisión de GitHub: las seis variables del repositorio coinciden con la configuración web de producción y Pages está configurado con GitHub Actions. El workflow actualizado está en el commit local, pero todavía no en `main` remoto; las ejecuciones anteriores corresponden al workflow anterior. La publicación y la comprobación del workflow desplegado siguen pendientes de que Leo decida hacer push.
