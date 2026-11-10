@@ -25,7 +25,6 @@ const opcionesAdicionales = obtenerElementosNavegacion('pagina-mas');
           </span>
           <span class="tarjeta-opcion__texto">
             <strong>{{ elemento.etiqueta }}</strong>
-            <small>Próximamente</small>
           </span>
           <q-icon name="chevron_right" aria-hidden="true" />
         </router-link>

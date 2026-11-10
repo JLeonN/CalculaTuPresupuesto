@@ -95,8 +95,8 @@ Permitir que los revisores accedan a las funciones con sesión en la app de prod
 
 ### Pasos de ejecución
 
-- [ ] Preparar una cuenta exclusiva de revisión en Firebase de producción con correo/contraseña, correo verificado y acceso a las funciones protegidas existentes. Usar únicamente datos ficticios; no crear mecanismos especiales de acceso ni saltar las reglas de Firestore. Coordinar con Leo la verificación del correo y cualquier contraseña o MFA que deba introducir personalmente.
-- [ ] Guardar las credenciales únicamente en `.credenciales-pruebas.local.md`, si Leo autoriza su uso para esta cuenta, y verificar que Git lo ignora; no imprimirlas ni incluirlas en el plan, archivos versionados, comandos o registros. Si no existe un correo adecuado o no es posible verificarlo, dejar la fase pendiente y solicitarlo a Leo.
+- [x] Preparar la cuenta elegida por Leo para revisión en Firebase de producción con correo/contraseña, correo verificado y acceso a las funciones protegidas existentes. Leo decidió reutilizar su cuenta de pruebas con los datos que ya tenía, en lugar de una cuenta exclusiva. No se crearon mecanismos especiales de acceso ni se saltaron las reglas de Firestore.
+- [x] Guardar las credenciales únicamente en `.credenciales-pruebas.local.md`, si Leo autoriza su uso para esta cuenta, y verificar que Git lo ignora; no imprimirlas ni incluirlas en el plan, archivos versionados, comandos o registros. Si no existe un correo adecuado o no es posible verificarlo, dejar la fase pendiente y solicitarlo a Leo.
 - [ ] Preparar instrucciones breves en inglés para Play Console: abrir acceso, elegir correo y contraseña, ingresar con la cuenta de revisión y localizar las funciones protegidas. Explicar a Leo dónde cargar credenciales e instrucciones; él gestiona Play Console. Asegurar que la cuenta sea reutilizable y no requiera intervención, código temporal ni ubicación específica en cada revisión.
 - [ ] Si posteriormente se implementan funciones de pago, revisar que la cuenta tenga acceso de revisión conforme a las reglas vigentes; pagos y exenciones no se implementan en este plan.
 
@@ -107,11 +107,11 @@ Leo debe cargar el correo y la contraseña de la aplicación en **Política y pr
 ```text
 1. Open the app and tap “Iniciar sesión”.
 2. Enter the email and password provided in the sign-in details, then tap “Entrar”.
-3. Use “Clientes”, “Materiales” and “Presupuestos” to review the sample data and create or review a budget.
+3. Use “Clientes” and “Presupuestos” to review the sample data. For materials, tap “Más” and then “Materiales”.
 4. Open a budget to review its preview and available export or sharing options.
 ```
 
-El correo fue verificado y el acceso con contraseña se comprobó en la web. Falta guardar la contraseña en el archivo privado y validar las acciones de salida en Android. No incluir aquí ninguna contraseña ni credencial.
+El correo fue verificado y el acceso con contraseña se comprobó en la web y Android. Las credenciales constan en el archivo privado ignorado por Git; Leo debe cargarlas en Play Console. No incluir aquí ninguna contraseña ni credencial.
 
 ## FASE TESTING
 
@@ -166,3 +166,5 @@ Continuación: Leo configuró el bloqueo y completó personalmente la verificaci
 Prueba Android del 10 de noviembre: con autorización de Leo se compiló e instaló en el POCO una APK debug conectada a producción, con publicidad de prueba; la app abrió y se confirmó el paquete. Luego se restauró el selector local a pruebas. El acceso con Google no se completó. La huella debug de esta PC ya pertenece a otro proyecto OAuth con el mismo paquete y Firebase rechazó registrarla también en producción (conflicto 409). No se modificó la firma del proyecto de pruebas. Una firma debug distinta requeriría una nueva instalación incompatible con la firma actual, por lo que hay que preservar o respaldar primero los datos locales del teléfono. La validación con la firma de Play sigue pendiente de una distribución firmada por Play. La contraseña de la cuenta de revisión no consta en el archivo privado; no se entregaron credenciales a Google Play.
 
 Se corrigió el formato de los dos archivos señalados anteriormente y `npm run lint:check` pasó completo, incluyendo Prettier y ESLint. El resto de las pruebas automatizadas aprobadas está registrado arriba; las comprobaciones pendientes no se dan por terminadas.
+
+Prueba posterior en Android: la contraseña anotada en el archivo privado permitió ingresar en la APK de producción del POCO. Se consultaron presupuestos y materiales, se abrió la vista previa y se comprobó que se creó un PDF en Documentos. Se detectó que la pantalla «Más» mostraba «Próximamente» en Materiales y Configuración aunque sus enlaces funcionan; con autorización de Leo se quitó el texto del código. El cambio todavía no está compilado en la APK instalada. El acceso con Google de la APK debug y de una distribución firmada por Play sigue pendiente. Leo conserva la gestión de Play Console y del AAB.
