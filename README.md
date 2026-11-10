@@ -81,7 +81,7 @@ Android usa la caché persistente de Firestore; la web usa caché en memoria par
 
 Cloud Storage no está activado porque exigiría Blaze. Los logos se guardan dentro de configuración y presupuestos con límite de 350 KB; cada documento se rechaza si su JSON supera 900 KB. Las copias antiguas con logos mayores pueden requerir reducirlos antes de importar.
 
-Durante estas pruebas, Descargar y Enviar siguen habilitados por sesión iniciada; Imprimir se muestra únicamente en el navegador de escritorio. El visitante ve la marca `VERSIÓN DE PRUEBA`. Prueba gratuita, exención de Pablo y pagos pertenecen a otro plan. Las variables web de producción ya están configuradas en GitHub; el workflow actualizado aún debe llegar a `main` remoto y falta comprobar su despliegue. Antes de publicar la nueva compilación Android y la SPA, quedan pendientes pruebas manuales de ambas plataformas.
+Durante estas pruebas, Descargar y Enviar siguen habilitados por sesión iniciada; Imprimir se muestra únicamente en el navegador de escritorio. El visitante ve la marca `VERSIÓN DE PRUEBA`. Prueba gratuita, exención de Pablo y pagos pertenecen a otro plan. Las variables web de producción están configuradas en GitHub y el workflow actualizado se desplegó correctamente; la web publicada usa Firebase de producción. Quedan pendientes las pruebas autenticadas en móvil y de la compilación Android de producción.
 
 La identidad visual reutilizable se mantiene centralizada en `src/css/Variables.css`.
 

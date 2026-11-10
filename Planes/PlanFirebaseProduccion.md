@@ -69,11 +69,11 @@ Poder preparar una compilación coherente para cada entorno conservando el paque
 
 ### Pasos de ejecución
 
-- [ ] Crear `scripts/seleccionar-firebase.mjs`, ejecutado con Node, que acepte exclusivamente `pruebas` o `produccion` y lea configuraciones locales ignoradas `.env.firebase.pruebas`, `.env.firebase.produccion`, `google-services.pruebas.json` y `google-services.produccion.json`. Agregar las rutas exactas de los dos JSON a `.gitignore`; `.env*` ya está ignorado. Obtener los JSON oficiales desde el proyecto y app Android correspondientes y preservar la configuración actual de pruebas antes de cualquier sustitución.
-- [ ] El script debe validar antes de escribir que ambos archivos de origen existen, que las variables obligatorias (`API_KEY`, `AUTH_DOMAIN`, `PROJECT_ID`, `APP_ID`, con prefijo `QCLI_FIREBASE_`) están completas, que el `project_id` del JSON coincide con `QCLI_FIREBASE_PROJECT_ID`, y que el JSON contiene el paquete Android esperado. Ante error, informar sin imprimir valores ni modificar destinos. Tras validar, copiar ambos archivos a `.env.local` y `src-capacitor/android/app/google-services.json`; mostrar solo entorno e ID de proyecto. Si falla alguna copia, restaurar ambos destinos previos y avisar; nunca dejar una pareja mezclada.
-- [ ] Agregar a `package.json` los scripts `firebase:pruebas` y `firebase:produccion` que invoquen el selector con el argumento correspondiente. Actualizar `.env.example` como contrato sin valores reales y `README.md` con rutas, comandos, advertencia de reiniciar Quasar y verificación del entorno antes de cada compilación.
-- [ ] Obtener de Play Console las huellas SHA-1 y SHA-256 del certificado de firma de la aplicación y registrar las necesarias en la app Android de Firebase de producción; si no están disponibles, documentar el paso como pendiente y no afirmar que Google Login publicado quedó validado. Registrar también las huellas de otras firmas solo si se utilizarán en ese proyecto. Nunca solicitar ni copiar clave privada o contraseña.
-- [ ] Descargar nuevamente el `google-services.json` de producción después de configurar Google y huellas; verificar proyecto y paquete. Preparar las configuraciones sin compilar ni instalar hasta autorización específica de Leo.
+- [x] Crear `scripts/seleccionar-firebase.mjs`, ejecutado con Node, que acepte exclusivamente `pruebas` o `produccion` y lea configuraciones locales ignoradas `.env.firebase.pruebas`, `.env.firebase.produccion`, `google-services.pruebas.json` y `google-services.produccion.json`. Agregar las rutas exactas de los dos JSON a `.gitignore`; `.env*` ya está ignorado. Obtener los JSON oficiales desde el proyecto y app Android correspondientes y preservar la configuración actual de pruebas antes de cualquier sustitución.
+- [x] El script debe validar antes de escribir que ambos archivos de origen existen, que las variables obligatorias (`API_KEY`, `AUTH_DOMAIN`, `PROJECT_ID`, `APP_ID`, con prefijo `QCLI_FIREBASE_`) están completas, que el `project_id` del JSON coincide con `QCLI_FIREBASE_PROJECT_ID`, y que el JSON contiene el paquete Android esperado. Ante error, informar sin imprimir valores ni modificar destinos. Tras validar, copiar ambos archivos a `.env.local` y `src-capacitor/android/app/google-services.json`; mostrar solo entorno e ID de proyecto. Si falla alguna copia, restaurar ambos destinos previos y avisar; nunca dejar una pareja mezclada.
+- [x] Agregar a `package.json` los scripts `firebase:pruebas` y `firebase:produccion` que invoquen el selector con el argumento correspondiente. Actualizar `.env.example` como contrato sin valores reales y `README.md` con rutas, comandos, advertencia de reiniciar Quasar y verificación del entorno antes de cada compilación.
+- [x] Obtener de Play Console las huellas SHA-1 y SHA-256 del certificado de firma de la aplicación y registrar las necesarias en la app Android de Firebase de producción; si no están disponibles, documentar el paso como pendiente y no afirmar que Google Login publicado quedó validado. Registrar también las huellas de otras firmas solo si se utilizarán en ese proyecto. Nunca solicitar ni copiar clave privada o contraseña.
+- [x] Descargar nuevamente el `google-services.json` de producción después de configurar Google y huellas; verificar proyecto y paquete. Preparar las configuraciones sin compilar ni instalar hasta autorización específica de Leo.
 
 ## FASE 3: Conectar GitHub Pages a producción
 
@@ -111,7 +111,7 @@ Leo debe cargar el correo y la contraseña de la aplicación en **Política y pr
 4. Open a budget to review its preview and available export or sharing options.
 ```
 
-La cuenta y el correo todavía deben verificarse antes de proporcionar estas instrucciones. No incluir aquí ninguna contraseña ni credencial.
+El correo fue verificado y el acceso con contraseña se comprobó en la web. Falta guardar la contraseña en el archivo privado y validar las acciones de salida en Android. No incluir aquí ninguna contraseña ni credencial.
 
 ## FASE TESTING
 
@@ -136,13 +136,13 @@ Comprobar aislamiento, autenticación y configuración web y Android; ejecutar c
 - 9 de noviembre: se creó el proyecto `calculatupresupuesto-prod` en la cuenta de desarrollo y se registraron las apps web y Android. Firebase CLI creó inicialmente una base vacía en `nam5` al publicar las reglas. Con autorización de Leo, se eliminó y se recreó en `southamerica-east1`; se confirmó su región y nivel gratuito, y se publicaron las reglas y los índices locales. No se cargaron datos de usuarios. Authentication, huellas y demás pasos siguen pendientes; la fase 1 no está completa.
 
 - [x] Fase 1: Crear y proteger Firebase de producción
-- [ ] Fase 2: Seleccionar entorno y registrar firmas
+- [x] Fase 2: Seleccionar entorno y registrar firmas
 - [x] Fase 3: Conectar GitHub Pages a producción
 - [ ] Fase 4: Cuenta de revisión de Google Play
 - [ ] Fase Testing
 
 Fecha de creación: 09 de noviembre de 2026  
-Fecha de última actualización: 09 de noviembre de 2026  
+Fecha de última actualización: 10 de noviembre de 2026  
 Estado: EN PROCESO
 
 Avance posterior del 9 de noviembre: Authentication tiene correo y Google habilitados, dominio de GitHub Pages autorizado y plantillas de verificación y recuperación en español latinoamericano; no se enviaron correos de prueba. Se registraron SHA-1 y SHA-256 de las firmas de Play actual y anterior y se descargó de nuevo el JSON Android de producción. Se prepararon archivos locales ignorados para ambos entornos, el selector y el workflow; los archivos activos siguen siendo los de pruebas. Se guardaron las seis variables en GitHub Actions. Leo decidió dejar la cuenta de revisión pendiente hasta elegir el correo. No se ejecutaron app, pruebas, linters, compilaciones ni publicación; falta verificar el selector y los flujos reales antes de completar las fases restantes.
@@ -156,3 +156,13 @@ Diagnóstico posterior: Firebase devolvió `auth/too-many-requests` durante el r
 Comprobación adicional: el selector rechazó archivos ausentes y un proyecto incorrecto en una carpeta temporal aislada, sin modificar los archivos de destino. Se prepararon instrucciones en inglés para la revisión de Play, pendientes de validación con la cuenta verificada.
 
 Revisión de GitHub: las seis variables del repositorio coinciden con la configuración web de producción y Pages está configurado con GitHub Actions. El workflow actualizado está en el commit local, pero todavía no en `main` remoto; las ejecuciones anteriores corresponden al workflow anterior. La publicación y la comprobación del workflow desplegado siguen pendientes de que Leo decida hacer push.
+
+10 de noviembre: Leo solicitó el reenvío desde la app local de producción y completó la verificación con el correo más reciente. Firebase confirmó que la dirección está verificada; Leo inició sesión con correo y contraseña y se observaron los 6 clientes, 6 materiales y 6 presupuestos copiados. Se cerró la sesión, se detuvo la app y se restauró la configuración local de pruebas. Falta validar las acciones de salida, la versión Android y la entrega de instrucciones a Play Console.
+
+Comprobación posterior en el POCO `f18c5937`: la app Android instalada y las APK debug existentes contienen la configuración de Firebase de pruebas, por lo que no permiten validar Android con producción. La web publicada en GitHub Pages responde correctamente, su workflow remoto terminó con éxito y sus módulos contienen el identificador de Firebase de producción, no el de pruebas. Chrome del POCO abrió esa web y mostró el acceso; al seleccionar la cuenta de prueba para Google Login, Google solicitó una verificación de identidad y configuración de bloqueo de pantalla. No se completó la verificación ni se cambió la seguridad del teléfono. Siguen pendientes Google Login y las acciones autenticadas en móvil, así como una APK de producción autorizada para probar el acceso nativo.
+
+Continuación: Leo configuró el bloqueo y completó personalmente la verificación de Google. En Chrome del POCO, Google Login abrió una sesión en la web de producción y apareció un cliente de ejemplo previamente copiado. Esta comprobación corresponde a la web móvil, no a la app Android nativa. Leo indicó que no desea conservar el bloqueo de pantalla en este teléfono de pruebas; debe retirarlo él si así lo decide. Las demás acciones autenticadas y la APK nativa de producción siguen pendientes.
+
+Prueba Android del 10 de noviembre: con autorización de Leo se compiló e instaló en el POCO una APK debug conectada a producción, con publicidad de prueba; la app abrió y se confirmó el paquete. Luego se restauró el selector local a pruebas. El acceso con Google no se completó. La huella debug de esta PC ya pertenece a otro proyecto OAuth con el mismo paquete y Firebase rechazó registrarla también en producción (conflicto 409). No se modificó la firma del proyecto de pruebas. Una firma debug distinta requeriría una nueva instalación incompatible con la firma actual, por lo que hay que preservar o respaldar primero los datos locales del teléfono. La validación con la firma de Play sigue pendiente de una distribución firmada por Play. La contraseña de la cuenta de revisión no consta en el archivo privado; no se entregaron credenciales a Google Play.
+
+Se corrigió el formato de los dos archivos señalados anteriormente y `npm run lint:check` pasó completo, incluyendo Prettier y ESLint. El resto de las pruebas automatizadas aprobadas está registrado arriba; las comprobaciones pendientes no se dan por terminadas.

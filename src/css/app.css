@@ -92,7 +92,9 @@ input[type='number']::-webkit-outer-spin-button {
 
 body .dialogo-inicio-sesion .q-dialog__inner {
   /* Quasar aplica !important a los márgenes seguros de diálogos en Android. */
-  padding-bottom: calc(var(--q-safe-area-inset-bottom, 0px) + var(--alto-banner-dialogo)) !important;
+  padding-bottom: calc(
+    var(--q-safe-area-inset-bottom, 0px) + var(--alto-banner-dialogo)
+  ) !important;
 }
 
 .dialogo-inicio-sesion .q-dialog__inner > .modal-inicio-sesion {
