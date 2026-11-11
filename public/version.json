@@ -1,13 +1,14 @@
 {
-  "version": "0.0.7",
+  "version": "0.0.8",
   "mostrarActualizacion": true,
   "cambios": {
     "es-AR": [
       {
         "apartado": "Actualizaciones",
         "novedades": [
-          "Preparamos la publicidad para visitantes en Android: cuando esté disponible, aparecerá al pie sin tapar la navegación.",
-          "Si se requieren preferencias de privacidad para los anuncios, podrás abrirlas desde Configuración."
+          "Creá tu cuenta con correo electrónico para guardar y sincronizar tus datos.",
+          "Recuperá tu contraseña si olvidaste cómo ingresar.",
+          "Importá una copia de seguridad para trasladar tus datos a tu cuenta."
         ]
       }
     ]
