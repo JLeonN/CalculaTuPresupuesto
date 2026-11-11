@@ -81,7 +81,7 @@ Android usa la caché persistente de Firestore; la web usa caché en memoria par
 
 Cloud Storage no está activado porque exigiría Blaze. Los logos se guardan dentro de configuración y presupuestos con límite de 350 KB; cada documento se rechaza si su JSON supera 900 KB. Las copias antiguas con logos mayores pueden requerir reducirlos antes de importar.
 
-Durante estas pruebas, Descargar y Enviar siguen habilitados por sesión iniciada; Imprimir se muestra únicamente en el navegador de escritorio. El visitante ve la marca `VERSIÓN DE PRUEBA`. Prueba gratuita, exención de Pablo y pagos pertenecen a otro plan. Las variables web de producción están configuradas en GitHub y el workflow actualizado se desplegó correctamente; la web publicada usa Firebase de producción. Quedan pendientes las pruebas autenticadas en móvil y de la compilación Android de producción.
+Durante estas pruebas, Descargar y Enviar siguen habilitados por sesión iniciada; Imprimir se muestra únicamente en el navegador de escritorio. El visitante ve la marca `VERSIÓN DE PRUEBA`. Prueba gratuita, exención de Pablo y pagos pertenecen a otro plan. Las variables web de producción están configuradas en GitHub y el workflow actualizado se desplegó correctamente; la web publicada usa Firebase de producción. En el POCO se comprobó una APK de producción con correo y contraseña, lectura de datos, vista previa y descarga de PDF. Falta comprobar Google Login en una versión distribuida y firmada por Play; la firma debug de esta PC está asociada al proyecto de pruebas y no puede registrarse con el mismo paquete en el de producción.
 
 La identidad visual reutilizable se mantiene centralizada en `src/css/Variables.css`.
 
@@ -117,7 +117,7 @@ En Android se debe elegir un destino externo desde la hoja de compartir, por eje
 
 El banner inferior se solicita únicamente para visitantes de Android, después de consultar el consentimiento. La SPA web y las sesiones iniciadas no solicitan anuncios. El ID de aplicación Android (`ca-app-pub-7620083100302566~7742704663`) está en el manifiesto mediante `admob_app_id`; la unidad del banner (`ca-app-pub-7620083100302566/2220669269`) y la unidad oficial de prueba están en `src/configuracion/configuracionPublicidad.ts`. El ID de editor es `pub-7620083100302566`.
 
-`PUBLICIDAD_DE_PRUEBA = true` debe mantenerse para las APK de prueba. Antes de generar un AAB de publicación, Leo debe cambiarlo a `false` y recompilar. Toda unidad futura, incluidos los formatos de video, debe aportar sus IDs real y de demostración a `obtenerConfiguracionSolicitudPublicidad`; este booleano seguirá siendo el único interruptor global.
+`PUBLICIDAD_DE_PRUEBA = false` deja seleccionada la publicidad de producción para la próxima compilación de publicación. Para compilar una APK de prueba, cambiarlo temporalmente a `true` y restaurarlo después. Toda unidad futura, incluidos los formatos de video, debe aportar sus IDs real y de demostración a `obtenerConfiguracionSolicitudPublicidad`; este booleano seguirá siendo el único interruptor global.
 
 El plugin `@capacitor-community/admob` está instalado en los paquetes raíz y `src-capacitor`. Antes de compilar Android, queda pendiente ejecutar `npx cap sync android` desde `src-capacitor` para registrar el plugin nativo.
 

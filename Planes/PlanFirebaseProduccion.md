@@ -121,7 +121,7 @@ Comprobar aislamiento, autenticación y configuración web y Android; ejecutar c
 
 ### Pruebas automatizadas
 
-- [ ] Con autorización, ejecutar `npm run typecheck`, `npm run lint:check`, `npm run test:firebase` y `npm run test:respaldo`; registrar resultados y distinguir fallos preexistentes. El test Firebase usa el proyecto emulado `demo-calcula-pruebas`, no producción.
+- [x] Con autorización, ejecutar `npm run typecheck`, `npm run lint:check`, `npm run test:firebase` y `npm run test:respaldo`; registrar resultados y distinguir fallos preexistentes. El test Firebase usa el proyecto emulado `demo-calcula-pruebas`, no producción.
 - [ ] Con autorización para compilar, comprobar compilaciones de los entornos necesarios sin publicar. Verificar el selector con archivos de prueba locales, incluyendo proyecto incompatible y archivo ausente; confirmar que no deja destinos mezclados. No exponer claves o credenciales en salidas.
 
 ### Pruebas manuales
@@ -168,3 +168,5 @@ Prueba Android del 10 de noviembre: con autorización de Leo se compiló e insta
 Se corrigió el formato de los dos archivos señalados anteriormente y `npm run lint:check` pasó completo, incluyendo Prettier y ESLint. El resto de las pruebas automatizadas aprobadas está registrado arriba; las comprobaciones pendientes no se dan por terminadas.
 
 Prueba posterior en Android: la contraseña anotada en el archivo privado permitió ingresar en la APK de producción del POCO. Se consultaron presupuestos y materiales, se abrió la vista previa y se comprobó que se creó un PDF en Documentos. Se detectó que la pantalla «Más» mostraba «Próximamente» en Materiales y Configuración aunque sus enlaces funcionan; con autorización de Leo se quitó el texto del código. El cambio todavía no está compilado en la APK instalada. El acceso con Google de la APK debug y de una distribución firmada por Play sigue pendiente. Leo conserva la gestión de Play Console y del AAB.
+
+Comprobación final adicional: se repitieron satisfactoriamente `typecheck`, `lint:check`, las seis pruebas Firestore y las dos de respaldo. Se ejecutó la validación del workflow de Pages con una variable ausente y con un proyecto incorrecto: rechazó ambos casos sin publicar. Se compiló e instaló de nuevo la APK debug de producción en el POCO conservando la sesión, y se comprobó visualmente que la pantalla «Más» ya no muestra «Próximamente». Los archivos activos de Firebase volvieron al entorno de pruebas. La cuenta para revisión y sus instrucciones están preparadas; Leo debe cargarlas en Play Console. La prueba Google Login de la versión firmada por Play y las comprobaciones de registro, recuperación y aislamiento entre proyectos reales siguen pendientes; no se marca testing como terminado.
