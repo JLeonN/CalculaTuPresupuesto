@@ -8,8 +8,10 @@ Documento de conversación para reunir las decisiones comerciales. No es un plan
 - **Plan Pro:** incluye las funciones del plan Gratis y permite descargar, enviar e imprimir presupuestos sin la marca de prueba.
 - **Publicidad:** el plan Gratis muestra anuncios en Android. Tanto durante la prueba Pro como con Pro de pago, no hay anuncios. Al finalizar la prueba sin suscripción, la cuenta pasa al plan Gratis y muestra anuncios.
 - **Prueba Pro:** dura 10 días desde el registro, ofrece las funciones Pro y no exige ingresar una tarjeta. Al finalizar, la cuenta pasa al plan Gratis si no se suscribe.
+- Las cuentas creadas antes de activar la suscripción recibirán 10 días completos de prueba Pro desde su primera entrada posterior a la activación. Al entrar verán un aviso que explique la prueba y el paso al plan Gratis si no se suscriben.
 - Después de la prueba, el acceso Pro requiere una suscripción pagada, con la excepción de Pablo.
 - **Pablo:** tendrá acceso Pro gratuito sin vencimiento y sin anuncios. Leo confirmará el correo que se utilizará para identificar su cuenta; aún no se implementó la excepción.
+- **Cuenta de pruebas de Leo:** la cuenta identificada como «Yo Mat 03» tendrá acceso Pro gratuito sin vencimiento y sin anuncios, sin necesidad de suscripción. Confirmar su identidad de forma segura al implementar la excepción.
 - Los datos se conservan cuando finaliza la prueba o la persona pasa al plan Gratis.
 - Por ahora no se establecen límites de cantidad para clientes, materiales ni presupuestos. Más adelante se podrá evaluar un límite, por ejemplo de 20 para cada uno, sin borrar datos existentes.
 
@@ -29,9 +31,20 @@ Documento de conversación para reunir las decisiones comerciales. No es un plan
 
 - Revisar los precios finales por país y los impuestos en Play Console.
 - Confirmar el correo de Pablo y definir cómo implementar su acceso especial.
-- Configurar el perfil de pagos y revisar la declaración de estado de comerciante en Play Console.
+- Incluir en el futuro plan de suscripción la gestión y configuración del perfil de pagos de Google Play, incluida la verificación de los datos necesarios para recibir ingresos.
 - Revisar otros detalles que diferencien los planes.
 - Revisar los plazos de recuperación de pagos rechazados de Google Play y los detalles técnicos del uso sin conexión.
-- Condiciones para usuarios actuales, aspectos comerciales y fiscales.
+- Revisar aspectos comerciales y fiscales.
 
 La lista de pendientes se irá completando a medida que avance la conversación.
+
+## Aspectos por definir o confirmar para la implementación
+
+- Verificar los pagos de Google Play de forma segura y mantener actualizado el acceso ante renovaciones, cancelaciones, reembolsos y pagos rechazados.
+- Definir cómo limitar la prueba gratuita por cuenta y evitar usos repetidos, considerando que pueden crearse nuevas cuentas.
+- Precisar cómo asociar la compra de Google Play con la cuenta de la app y recuperar el acceso en Android y web, sin permitir asociaciones indebidas.
+- Diseñar y comprobar el plazo sin conexión y sus límites, incluyendo vencimientos y cambios de estado.
+- Confirmar las cuentas exentas de Pablo y de Leo y proteger la asignación de sus permisos Pro.
+- Comprobar el flujo completo con compras de prueba, incluidas renovaciones, cancelaciones y fallos, antes de publicar.
+- Revisar el perfil de pagos, las comisiones de Google, los costos de Firebase y los impuestos aplicables antes de comercializar.
+- Revisar los precios y la disponibilidad por país y explicar al usuario la renovación, la cancelación y las condiciones de la prueba.
