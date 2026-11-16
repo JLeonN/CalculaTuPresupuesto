@@ -44,6 +44,8 @@ El repositorio definitivo es `https://github.com/JLeonN/CalculaTuPresupuesto`. C
 
 ## Firebase en entorno de pruebas
 
+El directorio `functions/` prepara el servidor de suscripción y todavía no está listo para despliegue. Utiliza Firebase Admin para consultar Authentication y Firestore, Firebase Functions para la función autenticada, y Google Auth para consultar la API oficial de Play con la identidad del servidor; TypeScript compila ese código. Son dependencias necesarias para esa integración, independientes de las del cliente. La activación, la vinculación segura de compras, la conciliación y las notificaciones aún están pendientes. No configurar la fecha de activación ni desplegar estas funciones hasta completar y verificar el flujo y revisar costos con Leo.
+
 Producción utiliza el proyecto independiente `calculatupresupuesto-prod`. El despliegue de GitHub Pages requiere las seis variables `QCLI_FIREBASE_*` en **Settings > Secrets and variables > Actions > Variables** del repositorio; el workflow comprueba que estén completas y que el proyecto sea el de producción. Estos valores forman parte pública del cliente: nunca colocar contraseñas ni claves privadas en ellos.
 
 Para alternar los entornos locales, conservar los archivos ignorados `.env.firebase.pruebas`, `.env.firebase.produccion`, `google-services.pruebas.json` y `google-services.produccion.json` en la raíz. Las variables web se obtienen de la app web de cada proyecto y los JSON de sus apps Android correspondientes. El selector valida proyecto y paquete antes de copiar la pareja a `.env.local` y `src-capacitor/android/app/google-services.json`:

@@ -153,6 +153,8 @@ Avance parcial del 16 de noviembre de 2026: se prepararon el modelo puro de acce
 
 El MCP oficial figuró disponible en el inventario inicial, pero desapareció antes de poder consultar cuenta y proyectos. La CLI local no está instalada. No se verificaron facturación, Play Console, recursos ni identidades; no se activó ningún servicio. La comparación preliminar identifica `@capgo/native-purchases` y Capawesome Purchases como candidatos con identificador de cuenta ofuscado; falta verificar versiones, mantenimiento, API completa y compatibilidad antes de elegir o instalar. Google documenta Billing Library 9.1.0; no se debe deducir compatibilidad de un plugin solo por su descripción.
 
+Continuación del 16 de noviembre de 2026: se preparó `functions/` con dependencias y versiones fijadas, una función autenticada que inicia la prueba transaccionalmente, una consulta aislada a `subscriptionsv2.get` y una comparación del identificador ofuscado de cuenta y entorno. Ninguna se conectó ni desplegó; falta comprobarlas. La compra aún no se vincula con una cuenta ni concede permisos, no se confirma, y no existen RTDN ni reconciliación. El servidor requiere completar y revisar esos mecanismos antes de su uso. En la versión 8.9.6 de `@capgo/native-purchases` se verificaron la declaración de Capacitor 8, Billing 9.1.0, consulta de compras y control de confirmación; queda pendiente verificar integración completa, licencia MPL-2.0 y comportamiento antes de instalarlo o seleccionarlo definitivamente. El MCP oficial no estuvo disponible en esta continuación.
+
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba
 - [ ] Fase 3: Compras y estados de Google Play
