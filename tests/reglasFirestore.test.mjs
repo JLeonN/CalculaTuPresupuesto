@@ -110,3 +110,22 @@ test('las rutas comerciales no definidas permanecen cerradas', async () => {
     }),
   );
 });
+
+test('solo el dueño verificado lee el estado y ningún cliente modifica permisos', async () => {
+  const ruta = 'usuarios/cuenta-a/suscripcion/estado';
+  await entorno.withSecurityRulesDisabled(async (contexto) => {
+    await setDoc(doc(contexto.firestore(), ruta), { tipo: 'prueba', vencimiento: 1000 });
+  });
+  const dueno = entorno.authenticatedContext('cuenta-a', { email_verified: true }).firestore();
+  const otra = entorno.authenticatedContext('cuenta-b', { email_verified: true }).firestore();
+  const sinVerificar = entorno.authenticatedContext('cuenta-a', { email_verified: false }).firestore();
+  await assertSucceeds(getDoc(doc(dueno, ruta)));
+  await assertFails(getDoc(doc(otra, ruta)));
+  await assertFails(getDoc(doc(sinVerificar, ruta)));
+  await assertFails(setDoc(doc(dueno, ruta), { tipo: 'exento' }));
+  await assertFails(deleteDoc(doc(dueno, ruta)));
+  await assertFails(getDoc(doc(dueno, 'suscripcionesPrivadas/cuenta-a')));
+  await assertFails(setDoc(doc(dueno, 'suscripcionesPrivadas/cuenta-a'), { exento: true }));
+  await assertFails(setDoc(doc(dueno, 'titularesCompras/token-sintetico'), { uid: 'cuenta-a' }));
+  await assertFails(setDoc(doc(dueno, 'configuracionSuscripcion/activacion'), { fecha: 0 }));
+});
