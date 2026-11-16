@@ -10,6 +10,12 @@ service cloud.firestore {
       return request.resource.data.id is string && request.resource.data.id == id;
     }
 
+    // El servidor administra el estado; ningún cliente puede modificarlo.
+    match /usuarios/{uid}/suscripcion/estado {
+      allow read: if esPropietario(uid);
+      allow write: if false;
+    }
+
     match /usuarios/{uid}/clientes/{id} {
       allow read, delete: if esPropietario(uid);
       allow create, update: if esPropietario(uid)
