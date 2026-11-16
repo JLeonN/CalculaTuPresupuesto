@@ -4,6 +4,8 @@ import { resolverAccesoSuscripcion } from '../src/dominio/suscripcion';
 import { evaluarReferenciaSinConexion, MARGEN_SIN_CONEXION_MS } from '../src/servicios/suscripcion/referenciaTiempo';
 import { correspondeACuenta, obtenerIdentificadorCuenta } from '../functions/src/identidadCompra';
 import { interpretarCompraPlay } from '../functions/src/googlePlay';
+import { cifrarToken, descifrarToken } from '../functions/src/cifradoToken';
+import { verificarCompraPlay } from '../functions/src/verificacionCompra';
 
 test('el acceso distingue prueba vigente, vencida, exención y verificación pendiente', () => {
   assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'pendiente' }, 10), {
@@ -45,4 +47,38 @@ test('Play solo concede vigencia al producto y estado autorizados', () => {
   assert.equal(interpretarCompraPlay({ ...compra, subscriptionState: 'SUBSCRIPTION_STATE_ON_HOLD' }, 'pro', 0).vigente, false);
   assert.equal(interpretarCompraPlay({ ...compra, subscriptionState: 'SUBSCRIPTION_STATE_PENDING' }, 'pro', 0).vigente, false);
   assert.equal(interpretarCompraPlay({ ...compra, testPurchase: {} }, 'pro', 0).esPrueba, true);
+});
+
+test('el token cifrado queda asociado al proyecto y a su documento', () => {
+  const clave = Buffer.alloc(32, 4).toString('base64');
+  const identificador = 'a'.repeat(64);
+  const cifrado = cifrarToken('token-sintetico', clave, 'pruebas', identificador);
+  assert.equal(descifrarToken(cifrado, clave, 'pruebas', identificador), 'token-sintetico');
+  assert.notEqual(cifrado.contenido, 'token-sintetico');
+  assert.throws(() => descifrarToken(cifrado, clave, 'produccion', identificador));
+  assert.throws(() => descifrarToken(cifrado, clave, 'pruebas', 'b'.repeat(64)));
+  assert.throws(() => descifrarToken({ ...cifrado, autenticacion: Buffer.alloc(16).toString('base64') }, clave, 'pruebas', identificador));
+  assert.throws(() => cifrarToken('token', 'clave-invalida', 'pruebas', identificador));
+});
+
+test('la compra debe coincidir con producto, cuenta y entorno antes de conceder acceso', () => {
+  const proyecto = 'calculatupresupuesto-pru-b2e9a';
+  const uid = 'cuenta-sintetica';
+  const compra = {
+    subscriptionState: 'SUBSCRIPTION_STATE_ACTIVE',
+    acknowledgementState: 'ACKNOWLEDGEMENT_STATE_PENDING',
+    externalAccountIdentifiers: { obfuscatedExternalAccountId: obtenerIdentificadorCuenta(uid, proyecto) },
+    lineItems: [{ productId: 'pro', expiryTime: '2030-01-01T00:00:00Z' }],
+    testPurchase: {},
+  };
+  const resultado = verificarCompraPlay(compra, uid, proyecto, 'pro', 0);
+  assert.equal(resultado.vigente, true);
+  assert.equal(resultado.requiereConfirmacion, true);
+  assert.throws(() => verificarCompraPlay(compra, 'otra', proyecto, 'pro', 0));
+  assert.throws(() => verificarCompraPlay(compra, uid, proyecto, 'otro', 0));
+  assert.throws(() => verificarCompraPlay({ ...compra, testPurchase: undefined }, uid, proyecto, 'pro', 0));
+  assert.throws(() => verificarCompraPlay(compra, uid, 'proyecto-desconocido', 'pro', 0));
+  assert.throws(() => verificarCompraPlay({ ...compra, lineItems: [{ productId: 'pro' }] }, uid, proyecto, 'pro', 0));
+  assert.throws(() => verificarCompraPlay({ ...compra, acknowledgementState: undefined }, uid, proyecto, 'pro', 0));
+  assert.equal(verificarCompraPlay({ ...compra, subscriptionState: 'SUBSCRIPTION_STATE_PENDING' }, uid, proyecto, 'pro', 0).vigente, false);
 });

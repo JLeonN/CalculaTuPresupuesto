@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { FieldValue, type Firestore } from 'firebase-admin/firestore';
+import { cifrarToken } from './cifradoToken';
 
 function identificarToken(token: string): string {
   if (!token || token.length > 4096) throw new Error('Token de compra inválido.');
@@ -8,16 +9,18 @@ function identificarToken(token: string): string {
 
 /**
  * Reserva la titularidad de tokens ya verificados con Play para un único UID.
- * No comprueba la compra, no guarda el token y no concede permisos.
+ * No comprueba la compra ni concede permisos. El token se guarda cifrado una sola vez.
  */
 export async function asociarCompraVerificada(
   base: Firestore,
   uid: string,
   tokenCompra: string,
+  configuracion: { proyecto: string; claveBase64: string },
   tokenAnterior?: string,
 ): Promise<void> {
   if (!uid) throw new Error('Falta la identidad de la cuenta.');
   const identificador = identificarToken(tokenCompra);
+  const tokenCifrado = cifrarToken(tokenCompra, configuracion.claveBase64, configuracion.proyecto, identificador);
   const identificadorAnterior = tokenAnterior ? identificarToken(tokenAnterior) : null;
   if (identificadorAnterior === identificador) throw new Error('La compra enlazada es inválida.');
   const actual = base.doc(`titularesCompras/${identificador}`);
@@ -34,7 +37,7 @@ export async function asociarCompraVerificada(
       throw new Error('No se pudo verificar la cuenta de la compra anterior.');
     }
     if (!documentoActual.exists) {
-      transaccion.create(actual, { uid, creadoEn: FieldValue.serverTimestamp() });
+      transaccion.create(actual, { uid, tokenCifrado, creadoEn: FieldValue.serverTimestamp() });
     }
   });
 }

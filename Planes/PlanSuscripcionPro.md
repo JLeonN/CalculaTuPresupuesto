@@ -59,9 +59,13 @@ Definir la integración verificada y preparar entornos separados sin afectar a u
 ### Pasos de ejecución
 
 - [ ] Comprobar el MCP de Firebase, la cuenta activa, ambos proyectos, la ubicación de Firestore y el estado de facturación. Usar el MCP si está disponible; registrar solo resultados no sensibles. No activar Blaze ni crear recursos de pago hasta revisar alcance, costos y autorización necesaria.
+  - [x] Comprobar la cuenta de desarrollo y confirmar en las consolas que pruebas y producción están en Spark.
+  - [ ] Verificar la ubicación de Firestore en ambos proyectos y completar la revisión de facturación.
 - [ ] Comprobar el perfil de pagos de Play Console, la información requerida para recibir ingresos, la declaración de comerciante y los impuestos aplicables. Leo completa datos bancarios, verificaciones, PIN y consentimientos; no registrar datos sensibles en el repositorio.
 - [ ] Identificar una integración de Play Billing compatible con las versiones del proyecto y las exigencias vigentes de Google; comparar documentación y mantenimiento, validar la necesidad antes de instalar cualquier dependencia y fijar su versión. No inventar APIs de un plugin aún no seleccionado.
 - [ ] Diseñar `functions/` con TypeScript estricto y la configuración de `firebase.json`, scripts y despliegue por entorno explícito. Definir cuentas de servicio con permisos mínimos, API de Google Play, Pub/Sub y notificaciones RTDN; no incluir claves privadas ni secretos en código o logs.
+  - [x] Preparar la estructura local de Functions, las dependencias fijadas y la configuración inicial de Firebase.
+  - [ ] Completar el despliegue por entorno y definir cuentas, permisos, API y notificaciones.
 - [ ] Configurar en Play Console una suscripción mensual y su plan base de USD 4,99 para todos los países admitidos, sin activar ni publicar hasta que corresponda. La prueba de 10 días es de la app, no una oferta gratuita adicional de Google Play.
 - [ ] Preparar cuentas de licencia y Play Billing Lab para probar compras, renovaciones y fallos antes de publicar. Evaluar una APK para Pablo como prueba opcional; comprobar firma, paquete y conservación de datos antes de instalarla o reemplazar su app. [Pruebas de Google Play Billing](https://developer.android.com/google/play/billing/test).
 - [ ] Mantener aislados Firestore, funciones, cuentas de servicio y destinos de notificaciones por entorno. Para pruebas reales de Play con el mismo paquete, definir y verificar explícitamente cómo se dirigen las notificaciones al entorno de pruebas; Google Play no queda separado automáticamente por cambiar de proyecto Firebase. Identificar las compras de prueba con la respuesta oficial de Play y rechazar en producción cualquier compra de prueba; no duplicar ni registrar tokens en texto claro. Documentar y comprobar el enrutamiento antes de probar compras.
@@ -77,10 +81,16 @@ Establecer una única fuente de verdad para los permisos de cada cuenta.
 
 - [x] Crear `src/dominio/suscripcion.ts`: tipos explícitos para Gratis, prueba, Pro pagado, Pro exento y estado pendiente de verificación; exponer una función pura `resolverAccesoSuscripcion` que reciba estado confiable y fecha evaluada y devuelva `puedeGenerarSalida`, `mostrarMarca` y `mostrarPublicidad`.
 - [ ] Crear en `functions/` un servicio transaccional por UID con fecha de inicio y vencimiento de prueba fijadas por servidor, permisos exentos y estado de compra verificado. La prueba es única por cuenta: cuentas nuevas empiezan desde el registro y cuentas anteriores a la activación reciben 10 días desde la primera entrada posterior. Registrar una fecha de activación confiable; evitar que inicios simultáneos reinicien la prueba.
+  - [x] Implementar y probar en el emulador el inicio único y concurrente de la prueba para cuentas nuevas y anteriores.
+  - [ ] Integrar el estado de compra verificado y configurar la activación y las exenciones por entorno.
 - [ ] Mantener el inicio de los 10 días desde el registro incluso si el usuario demora en verificar su correo; no ampliar la prueba por esa demora. Leo decidió dejar cualquier cambio de esta política para el futuro.
 - [ ] Identificar las cuentas de Pablo y Leo mediante UID y verificación segura obtenidos en el entorno correspondiente; no dar Pro por un correo editable desde el cliente ni guardar datos personales nuevos en archivos versionados. Registrar asignaciones únicamente desde servidor administrativo y mantenerlas separadas por entorno.
 - [ ] En `firestore.rules`, permitir leer el propio estado al dueño autenticado y prohibir toda escritura cliente de prueba, exención, compra y vencimiento. Mantener acceso existente a datos y respaldos; probar aislamiento y falsificación cuando Leo autorice pruebas.
+  - [x] Agregar las reglas locales y comprobar en el emulador la lectura propia, el aislamiento y el rechazo de escrituras cliente.
+  - [ ] Desplegar las reglas cuando corresponda y verificar la integración completa con los respaldos y permisos.
 - [ ] Crear `src/stores/suscripcion.ts` con `useSuscripcionStore`, inicialización, carga, error, estado por UID y limpieza al cerrar sesión o cambiar de cuenta. El estado inicial desconocido no concede Pro y no debe mostrar anuncios prematuramente mientras se verifica una cuenta potencialmente Pro.
+  - [x] Preparar el store y el cliente de consulta, con limpieza y descarte de respuestas tardías.
+  - [ ] Conectar y comprobar el store con la sesión y los permisos de la aplicación.
 - [ ] Integrar la inicialización y limpieza con `actualizarUsuario` de `src/stores/autenticacion.ts`; descartar respuestas tardías de otra cuenta. Mantener autenticación separada de suscripción y exponer un permiso único a todos los consumidores.
 
 ## FASE 3: Compras y estados de Google Play
@@ -93,6 +103,9 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
 
 - [ ] Crear `src/servicios/suscripcion/servicioComprasAndroid.ts` como adaptador del plugin validado: consultar producto y precio mostrado por Play, iniciar compra con identificador de cuenta ofuscado, consultar compras recuperables y entregar el token al servidor. No enviar correos en texto claro como identificadores.
 - [ ] En `functions/`, verificar tokens y producto mediante Google Play Developer API, asociarlos transaccionalmente a un UID y rechazar asociaciones con otra cuenta. Atender compras pendientes sin conceder acceso prematuro; confirmar la compra válida dentro del plazo exigido por Google.
+  - [x] Preparar la consulta a Play, la comparación de identidad y la reserva transaccional de titularidad; probar la exclusividad con datos sintéticos.
+  - [x] Preparar la comprobación de producto, identidad y entorno, el cifrado autenticado del token y la llamada de confirmación a Play; probar cifrado, aislamiento y reserva con datos sintéticos.
+  - [ ] Integrar y verificar el flujo completo, incluidos la confirmación, el almacenamiento seguro y las compras pendientes.
 - [ ] Procesar RTDN mediante Pub/Sub de forma idempotente: consultar el estado completo a Google, manejar renovaciones, cancelación con acceso hasta vencimiento, reembolsos, revocación y recuperación de pagos. Atender duplicados, orden no garantizado y errores con reintentos; no confiar exclusivamente en el evento ni en datos enviados por el cliente.
 - [ ] Al iniciar sesión, volver al primer plano y recuperar conexión, solicitar al servidor una reconciliación limitada por tiempo para evitar consultas repetidas. El servidor vuelve a consultar Google para compras asociadas cuando corresponda; también reintenta errores y revisa estados próximos a vencimiento para recuperarse de avisos demorados o perdidos. Guardar el último estado confirmado y la fecha de verificación; no interpretar un error de red como cancelación. Si no se puede verificar, mostrar un aviso con opción de reintento y aplicar la política sin conexión acordada. Las notificaciones visuales no sustituyen la actualización segura del permiso.
 - [ ] Mantener Pro durante el período de gracia de Google y quitarlo cuando Google confirme suspensión o vencimiento, salvo el margen sin conexión acordado cuando el dispositivo no puede consultar el estado. Gestionar tokens enlazados y restauración para la misma cuenta sin transferir compras.
@@ -122,6 +135,8 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
 
 - [ ] Crear en `src/servicios/suscripcion/` un contrato para registrar hora confiable del servidor, vencimiento y estado del UID, protegidos contra modificación accidental y asociados al entorno y cuenta. No afirmar que el cliente puede impedir toda manipulación.
 - [ ] Implementar un adaptador Android compatible con Capacitor que use `SystemClock.elapsedRealtime()` desde la última referencia confiable; incluye reposo y no cambia al ajustar la fecha. Calcular el plazo hasta vencimiento más cinco días cuando no pueda verificarse la renovación.
+  - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
+  - [ ] Conectarlo al estado real y comprobarlo en Android, incluidos cambios de hora y reinicios.
 - [ ] Detectar reinicio o referencia temporal no verificable y pedir conexión para comprobar Pro, con aviso claro y datos intactos. No asumir que el contador conserva el tiempo apagado; una reinstalación o almacenamiento borrado también requiere nueva verificación.
 - [ ] Guardar junto con la hora del servidor el valor de `SystemClock.elapsedRealtime()` y `Settings.Global.BOOT_COUNT`; al reabrir la app comparar el contador de arranques y calcular el tiempo transcurrido solo si ambos valores son coherentes. `BOOT_COUNT` existe desde API 24: verificar compatibilidad y comportamiento en los Android admitidos. Si cambió, falta, es incoherente o no resulta confiable, pedir conexión. [Contador de arranques de Android](https://developer.android.com/reference/android/provider/Settings.Global#BOOT_COUNT).
 - [ ] En la web no crear un sistema especial para abrir la app sin conexión ni persistencia adicional. Si ya estaba abierta al cortarse la conexión, permitir lo que esté disponible; cuando una acción no pueda completarse, mostrar un aviso claro de falta de conexión. Al reconectar, verificar nuevamente Pro. Mantener los datos y la caché en memoria existente. Los cinco días de confianza y la protección del reloj se aplican en Android.
@@ -136,6 +151,8 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 ### Pruebas automatizadas
 
 - [ ] Con solicitud explícita, ejecutar `npm run typecheck`, `npm run lint:check`, `npm run test:firebase` y `npm run test:respaldo`, además de los comandos nuevos realmente incorporados; informar fallos sin ocultarlos.
+  - [x] Ejecutar las pruebas de Firestore, respaldo y suscripción con datos sintéticos: 17 pruebas aprobadas.
+  - [ ] Ejecutar typecheck y lint cuando Leo los autorice, y repetir las pruebas después de completar la integración.
 - [ ] Cubrir reglas Firestore contra escritura de permisos y acceso entre cuentas; probar concurrencia, inicio único de prueba, eventos duplicados y asociación exclusiva de compras con datos sintéticos.
 - [ ] Cubrir con reloj simulado vencimiento, cinco días, reinicio, cambio de hora, cambio de cuenta y cambios de estado de Play; comprobar que los respaldos siguen disponibles en Gratis.
 
@@ -159,6 +176,8 @@ Nueva revisión del 16 de noviembre de 2026: se confirmó en las consolas la cue
 
 Pruebas autorizadas por Leo: pasaron 4 pruebas sintéticas de acceso, reloj e interpretación de Play, 11 de reglas y transacciones en el emulador Firestore y 2 de respaldo y escrituras. Se verificaron la exclusividad ante solicitudes simultáneas, los tokens enlazados, el inicio único de la prueba y el registro con verificación demorada. Se separó el servicio de prueba transaccional y se prepararon un cliente y store aislados que descartan respuestas de cuentas anteriores; no están conectados a la aplicación. Siguen pendientes la integración completa de compras, RTDN, reconciliación, tiempo confiable conectado, interfaz y pruebas reales. No se desplegaron cambios ni se activaron servicios pagos.
 
+Continuación: se prepararon la validación de compra por producto, cuenta y entorno, el cifrado autenticado de tokens y la llamada de confirmación a Play. La reserva transaccional guarda el token cifrado sin duplicarlo en texto claro. Pasaron 6 pruebas sintéticas de suscripción y 11 de reglas y transacciones; falta integrar estas piezas, gestionar la clave en Secret Manager por entorno y probar con Play. No se crearon secretos ni servicios pagos.
+
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba
 - [ ] Fase 3: Compras y estados de Google Play
@@ -168,4 +187,4 @@ Pruebas autorizadas por Leo: pasaron 4 pruebas sintéticas de acceso, reloj e in
 
 Fecha de creación: 16 de noviembre de 2026  
 Fecha de última actualización: 16 de noviembre de 2026  
-Estado: EN CURSO — implementación parcial, sin pruebas ni despliegue
+Estado: EN CURSO — implementación y pruebas parciales, sin despliegue
