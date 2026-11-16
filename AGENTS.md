@@ -42,6 +42,7 @@ adb -s f18c5937 pull /sdcard/ch_pantalla.png .\ch_pantalla.png
 
 ## Stack y arquitectura
 
+- Hay un MCP oficial de Firebase configurado. Para trabajos con Firebase, comprobar si sus herramientas están disponibles y priorizarlas cuando sean adecuadas; verificar siempre el proyecto y el entorno antes de operar. Si no están disponibles, informar y usar otra herramienta apropiada sin exponer secretos.
 - Usar Quasar CLI con Vue 3, TypeScript estricto, Vite, Vue Router, Pinia y Composition API mediante `<script setup>`.
 - Mantener una única base responsive para SPA web y Android mediante Capacitor.
 - Crear componentes pequeños con una responsabilidad clara.
