@@ -6,6 +6,9 @@ import { correspondeACuenta, obtenerIdentificadorCuenta } from '../functions/src
 import { interpretarCompraPlay } from '../functions/src/googlePlay';
 import { cifrarToken, descifrarToken } from '../functions/src/cifradoToken';
 import { verificarCompraPlay } from '../functions/src/verificacionCompra';
+import { interpretarNotificacionPlay } from '../functions/src/notificacionPlay';
+import { interpretarReferenciaPersistida } from '../src/servicios/suscripcion/referenciaPersistente';
+import { resolverAccesoAndroidSinConexion } from '../src/servicios/suscripcion/accesoSinConexion';
 
 test('el acceso distingue prueba vigente, vencida, exención y verificación pendiente', () => {
   assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'pendiente' }, 10), {
@@ -81,4 +84,31 @@ test('la compra debe coincidir con producto, cuenta y entorno antes de conceder 
   assert.throws(() => verificarCompraPlay({ ...compra, lineItems: [{ productId: 'pro' }] }, uid, proyecto, 'pro', 0));
   assert.throws(() => verificarCompraPlay({ ...compra, acknowledgementState: undefined }, uid, proyecto, 'pro', 0));
   assert.equal(verificarCompraPlay({ ...compra, subscriptionState: 'SUBSCRIPTION_STATE_PENDING' }, uid, proyecto, 'pro', 0).vigente, false);
+});
+
+test('las notificaciones identifican la compra sin conceder permisos', () => {
+  const paquete = 'com.calculatupresupuesto.app';
+  assert.deepEqual(interpretarNotificacionPlay({ packageName: paquete, testNotification: {} }), { tipo: 'prueba' });
+  assert.deepEqual(interpretarNotificacionPlay({ packageName: paquete, subscriptionNotification: { purchaseToken: 'sintetico' } }), { tipo: 'suscripcion', token: 'sintetico' });
+  assert.deepEqual(interpretarNotificacionPlay({ packageName: paquete, voidedPurchaseNotification: { productType: 1, purchaseToken: 'sintetico' } }), { tipo: 'reembolso', token: 'sintetico' });
+  assert.deepEqual(interpretarNotificacionPlay({ packageName: paquete, voidedPurchaseNotification: { productType: 2 } }), { tipo: 'ignorado' });
+  assert.throws(() => interpretarNotificacionPlay({ packageName: 'otro', subscriptionNotification: { purchaseToken: 'sintetico' } }));
+  assert.throws(() => interpretarNotificacionPlay({ packageName: paquete, subscriptionNotification: {} }));
+  assert.throws(() => interpretarNotificacionPlay({ packageName: paquete, subscriptionNotification: {}, testNotification: {} }));
+});
+
+test('la referencia persistida rechaza datos corruptos o incompletos', () => {
+  const referencia = { uid: 'a', proyectoFirebase: 'pruebas', horaServidor: 1000, vencimiento: 2000, reloj: { arranques: 3, milisegundosTranscurridos: 100 } };
+  assert.deepEqual(interpretarReferenciaPersistida(JSON.stringify(referencia)), referencia);
+  assert.equal(interpretarReferenciaPersistida('{'), null);
+  assert.equal(interpretarReferenciaPersistida(JSON.stringify({ ...referencia, reloj: { arranques: -1, milisegundosTranscurridos: 100 } })), null);
+  assert.equal(interpretarReferenciaPersistida(JSON.stringify({ ...referencia, uid: '' })), null);
+});
+
+test('el margen adicional corresponde a Pro pagado, no prolonga la prueba', () => {
+  const referencia = { uid: 'a', proyectoFirebase: 'pruebas', horaServidor: 1000, vencimiento: 2000, reloj: { arranques: 3, milisegundosTranscurridos: 100 } };
+  const reloj = { arranques: 3, milisegundosTranscurridos: 1100 };
+  assert.equal(resolverAccesoAndroidSinConexion('prueba', referencia, 'a', 'pruebas', reloj).acceso.puedeGenerarSalida, false);
+  assert.equal(resolverAccesoAndroidSinConexion('pro', referencia, 'a', 'pruebas', reloj).acceso.puedeGenerarSalida, true);
+  assert.equal(resolverAccesoAndroidSinConexion('pro', referencia, 'a', 'pruebas', { ...reloj, arranques: 4 }).necesitaConexion, true);
 });

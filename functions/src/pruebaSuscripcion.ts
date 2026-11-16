@@ -30,9 +30,13 @@ export async function iniciarPruebaUnica(base: Firestore, uid: string, registro:
     } else if (!(inicio instanceof Timestamp) || !(vencimiento instanceof Timestamp)) {
       throw new HttpsError('failed-precondition', 'No se pudo verificar la prueba.');
     }
-    // La integración de Play aún no existe: nunca sobrescribir un estado pagado.
     if (documentoPublico.get('tipo') === 'pro') {
-      throw new HttpsError('failed-precondition', 'La compra requiere reconciliación.');
+      const vencimientoPro: unknown = documentoPublico.get('vencimiento');
+      if (!Number.isSafeInteger(vencimientoPro) || (vencimientoPro as number) < 0) {
+        throw new HttpsError('failed-precondition', 'No se pudo verificar la compra.');
+      }
+      // Esta lectura no sustituye la reconciliación con Play.
+      return { tipo: 'pro', inicioPrueba: inicio.toMillis(), vencimiento: vencimientoPro as number, horaServidor: ahora.toMillis() };
     }
     const exento = datosPrivados?.exento === true;
     const tipo = exento ? 'exento' : vencimiento.toMillis() > ahora.toMillis() ? 'prueba' : 'gratis';

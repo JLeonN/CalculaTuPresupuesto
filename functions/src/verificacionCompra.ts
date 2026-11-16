@@ -44,7 +44,8 @@ export function verificarCompraPlay(
   ) {
     throw new Error('No se pudo verificar el vencimiento de la compra.');
   }
-  const pendiente = compra.subscriptionState === 'SUBSCRIPTION_STATE_PENDING';
+  const pendiente = compra.subscriptionState === 'SUBSCRIPTION_STATE_PENDING' ||
+    compra.subscriptionState === 'SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED';
   if (interpretacion.vigente && compra.acknowledgementState !== 'ACKNOWLEDGEMENT_STATE_PENDING' &&
       compra.acknowledgementState !== 'ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED') {
     throw new Error('No se pudo verificar la confirmación de la compra.');

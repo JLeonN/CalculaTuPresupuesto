@@ -8,5 +8,8 @@ export default defineCapacitorConfig({
       skipNativeAuth: true,
       providers: ['google.com'],
     },
+    NativePurchases: {
+      autoFinishTransactions: false,
+    },
   },
 });

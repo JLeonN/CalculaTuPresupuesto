@@ -102,9 +102,12 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
 ### Pasos de ejecución
 
 - [ ] Crear `src/servicios/suscripcion/servicioComprasAndroid.ts` como adaptador del plugin validado: consultar producto y precio mostrado por Play, iniciar compra con identificador de cuenta ofuscado, consultar compras recuperables y entregar el token al servidor. No enviar correos en texto claro como identificadores.
+  - [x] Preparar el adaptador con `@capgo/native-purchases` 8.9.6 y desactivar la confirmación automática; consulta precio y compras, y envía el token al servidor.
+  - [ ] Integrar la interfaz y probar compras y recuperación reales con Play; revisar la licencia y sincronizar el proyecto nativo antes de compilar.
 - [ ] En `functions/`, verificar tokens y producto mediante Google Play Developer API, asociarlos transaccionalmente a un UID y rechazar asociaciones con otra cuenta. Atender compras pendientes sin conceder acceso prematuro; confirmar la compra válida dentro del plazo exigido por Google.
   - [x] Preparar la consulta a Play, la comparación de identidad y la reserva transaccional de titularidad; probar la exclusividad con datos sintéticos.
   - [x] Preparar la comprobación de producto, identidad y entorno, el cifrado autenticado del token y la llamada de confirmación a Play; probar cifrado, aislamiento y reserva con datos sintéticos.
+  - [x] Preparar una función autenticada que coordina verificación, asignación y confirmación, y probar el procesamiento simulado y la protección ante respuestas antiguas.
   - [ ] Integrar y verificar el flujo completo, incluidos la confirmación, el almacenamiento seguro y las compras pendientes.
 - [ ] Procesar RTDN mediante Pub/Sub de forma idempotente: consultar el estado completo a Google, manejar renovaciones, cancelación con acceso hasta vencimiento, reembolsos, revocación y recuperación de pagos. Atender duplicados, orden no garantizado y errores con reintentos; no confiar exclusivamente en el evento ni en datos enviados por el cliente.
 - [ ] Al iniciar sesión, volver al primer plano y recuperar conexión, solicitar al servidor una reconciliación limitada por tiempo para evitar consultas repetidas. El servidor vuelve a consultar Google para compras asociadas cuando corresponda; también reintenta errores y revisa estados próximos a vencimiento para recuperarse de avisos demorados o perdidos. Guardar el último estado confirmado y la fecha de verificación; no interpretar un error de red como cancelación. Si no se puede verificar, mostrar un aviso con opción de reintento y aplicar la política sin conexión acordada. Las notificaciones visuales no sustituyen la actualización segura del permiso.
@@ -134,6 +137,8 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
 ### Pasos de ejecución
 
 - [ ] Crear en `src/servicios/suscripcion/` un contrato para registrar hora confiable del servidor, vencimiento y estado del UID, protegidos contra modificación accidental y asociados al entorno y cuenta. No afirmar que el cliente puede impedir toda manipulación.
+  - [x] Preparar lectura y escritura local de la referencia temporal con validación y asociación a cuenta y entorno.
+  - [ ] Guardar también el estado verificado y conectar la referencia al ciclo real de la aplicación.
 - [ ] Implementar un adaptador Android compatible con Capacitor que use `SystemClock.elapsedRealtime()` desde la última referencia confiable; incluye reposo y no cambia al ajustar la fecha. Calcular el plazo hasta vencimiento más cinco días cuando no pueda verificarse la renovación.
   - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
   - [ ] Conectarlo al estado real y comprobarlo en Android, incluidos cambios de hora y reinicios.
@@ -177,6 +182,8 @@ Nueva revisión del 16 de noviembre de 2026: se confirmó en las consolas la cue
 Pruebas autorizadas por Leo: pasaron 4 pruebas sintéticas de acceso, reloj e interpretación de Play, 11 de reglas y transacciones en el emulador Firestore y 2 de respaldo y escrituras. Se verificaron la exclusividad ante solicitudes simultáneas, los tokens enlazados, el inicio único de la prueba y el registro con verificación demorada. Se separó el servicio de prueba transaccional y se prepararon un cliente y store aislados que descartan respuestas de cuentas anteriores; no están conectados a la aplicación. Siguen pendientes la integración completa de compras, RTDN, reconciliación, tiempo confiable conectado, interfaz y pruebas reales. No se desplegaron cambios ni se activaron servicios pagos.
 
 Continuación: se prepararon la validación de compra por producto, cuenta y entorno, el cifrado autenticado de tokens y la llamada de confirmación a Play. La reserva transaccional guarda el token cifrado sin duplicarlo en texto claro. Pasaron 6 pruebas sintéticas de suscripción y 11 de reglas y transacciones; falta integrar estas piezas, gestionar la clave en Secret Manager por entorno y probar con Play. No se crearon secretos ni servicios pagos.
+
+Continuación posterior: se incorporó una operación autenticada de compra, control de revisiones para descartar respuestas antiguas, un adaptador Android con Billing 9.1.0, lectura de notificaciones y persistencia temporal local. Pasaron 9 pruebas sintéticas de suscripción y 14 de Firestore con Play simulado. Aún no están conectadas la interfaz, las notificaciones RTDN, los reembolsos y la reconciliación; tampoco se comprobaron compras ni el adaptador en un dispositivo. La operación no está desplegada y requiere configuración y pruebas antes de usarse.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba
