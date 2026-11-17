@@ -10,6 +10,7 @@ import { iniciarPruebaUnica } from './pruebaSuscripcion';
 import { procesarCompra } from './procesarCompra';
 import { procesarNotificacionPlay } from './procesarNotificacion';
 import { reconciliarCompraCuenta } from './reconciliarCompra';
+import { revisarComprasPendientes } from './revisarComprasPendientes';
 
 initializeApp();
 
@@ -158,10 +159,11 @@ export const obtenerProductoSuscripcion = onCall({ region: REGION }, async (soli
 
 /** Revisa un lote acotado; la programación y sus costos deben revisarse antes del despliegue. */
 export const revisarSuscripcionesPendientes = onSchedule(
-  { schedule: 'every 6 hours', region: REGION, secrets: [CLAVE_CIFRADO_PLAY] },
+  { schedule: 'every 6 hours', region: REGION, timeoutSeconds: 540, secrets: [CLAVE_CIFRADO_PLAY] },
   async () => {
     const base = getFirestore();
     const configuracion = await obtenerConfiguracionPlay();
+    await revisarComprasPendientes(base, configuracion);
     const pendientes = await base
       .collection('suscripcionesPrivadas')
       .where('proximaRevision', '<=', Timestamp.now())

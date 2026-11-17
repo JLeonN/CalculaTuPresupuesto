@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { Firestore } from 'firebase-admin/firestore';
+import { FieldValue, type Firestore } from 'firebase-admin/firestore';
 import { asociarCompraVerificada } from './asociacionCompra';
 import { aplicarRevisionCompra, reservarRevisionCompra } from './actualizacionCompra';
 import { confirmarSuscripcionPlay, consultarSuscripcionPlay, type CompraPlay } from './googlePlay';
@@ -53,6 +53,15 @@ export async function procesarCompra(
     if (!verificada.ordenHash || !reembolsos.includes(verificada.ordenHash)) {
       await servicios.confirmar(token, configuracion.producto);
     }
+  }
+  if (actualizada || verificada.pendienteCancelada) {
+    const referencia = base.doc(`titularesCompras/${identificador}`);
+    await base.runTransaction(async (transaccion) => {
+      const documento = await transaccion.get(referencia);
+      if (documento.get('uid') === uid && documento.get('revisionSolicitada') === revision) {
+        transaccion.update(referencia, { proximaRevisionPendiente: FieldValue.delete() });
+      }
+    });
   }
   return { actualizada, pendiente: verificada.pendiente };
 }

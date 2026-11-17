@@ -6,6 +6,7 @@ export interface CompraVerificada {
   vigente: boolean;
   vencimiento: number | null;
   pendiente: boolean;
+  pendienteCancelada?: boolean;
   requiereConfirmacion: boolean;
   renovacionEsperada?: boolean;
   tokenAnterior?: string;
@@ -85,6 +86,7 @@ export function verificarCompraPlay(
     vigente: interpretacion.vigente,
     vencimiento: interpretacion.vencimiento,
     pendiente,
+    pendienteCancelada: compra.subscriptionState === 'SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED',
     renovacionEsperada: [
       'SUBSCRIPTION_STATE_ACTIVE',
       'SUBSCRIPTION_STATE_IN_GRACE_PERIOD',

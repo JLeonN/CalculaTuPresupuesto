@@ -13,6 +13,7 @@ import { procesarCompra } from '../functions/src/procesarCompra';
 import { obtenerIdentificadorCuenta } from '../functions/src/identidadCompra';
 import { procesarNotificacionPlay } from '../functions/src/procesarNotificacion';
 import { reconciliarCompraCuenta } from '../functions/src/reconciliarCompra';
+import { revisarComprasPendientes } from '../functions/src/revisarComprasPendientes';
 
 if (!process.env.FIRESTORE_EMULATOR_HOST) throw new Error('Esta prueba requiere el emulador.');
 const requerir = createRequire(new URL('../functions/package.json', import.meta.url));
@@ -373,6 +374,119 @@ test('una compra pendiente queda asociada y un aviso posterior concede acceso tr
   assert.equal(resultado, 'procesada');
   assert.equal((await base.doc(`usuarios/${uid}/suscripcion/estado`).get()).get('tipo'), 'pro');
   assert.equal(confirmaciones, 1);
+});
+
+test('la revisión programada recupera una compra pendiente sin aviso y reintenta errores', async () => {
+  const uid = `sin-aviso-${Date.now()}-${Math.random()}`;
+  const token = `token-${uid}`;
+  const identificador = createHash('sha256').update(token).digest('hex');
+  const proyecto = 'calculatupresupuesto-pru-b2e9a';
+  const ajustes = { proyecto, producto: 'pro', claveBase64: configuracion.claveBase64 };
+  let estadoPlay = 'SUBSCRIPTION_STATE_PENDING';
+  let fallar = false;
+  let confirmaciones = 0;
+  const consultar = async () => {
+    if (fallar) throw new Error('Fallo de red simulado');
+    return {
+      subscriptionState: estadoPlay,
+      acknowledgementState: 'ACKNOWLEDGEMENT_STATE_PENDING',
+      externalAccountIdentifiers: {
+        obfuscatedExternalAccountId: obtenerIdentificadorCuenta(uid, proyecto),
+      },
+      lineItems: [{ productId: 'pro', expiryTime: new Date(Date.now() + 86400000).toISOString() }],
+      testPurchase: {},
+    };
+  };
+  const confirmar = async () => {
+    confirmaciones += 1;
+  };
+  const procesar: typeof procesarCompra = async (bd, cuenta, compra, config) =>
+    procesarCompra(bd, cuenta, compra, config, { consultar, confirmar });
+  await procesarCompra(base, uid, token, ajustes, { consultar, confirmar });
+  const titular = base.doc(`titularesCompras/${identificador}`);
+  const publica = base.doc(`usuarios/${uid}/suscripcion/estado`);
+  await titular.update({ proximaRevisionPendiente: Timestamp.fromMillis(1) });
+  fallar = true;
+  await revisarComprasPendientes(base, ajustes, procesar);
+  assert.equal((await publica.get()).exists, false);
+  assert.ok((await titular.get()).get('proximaRevisionPendiente').toMillis() > Date.now());
+  fallar = false;
+  estadoPlay = 'SUBSCRIPTION_STATE_ACTIVE';
+  await titular.update({ proximaRevisionPendiente: Timestamp.fromMillis(1) });
+  await Promise.all([
+    revisarComprasPendientes(base, ajustes, procesar),
+    revisarComprasPendientes(base, ajustes, procesar),
+  ]);
+  assert.equal((await publica.get()).get('tipo'), 'pro');
+  assert.equal(confirmaciones, 1);
+  assert.equal((await titular.get()).get('proximaRevisionPendiente'), undefined);
+});
+
+test('una compra pendiente cancelada deja de reintentarse sin alterar el acceso anterior', async () => {
+  const uid = `cancelada-${Date.now()}-${Math.random()}`;
+  const token = `token-${uid}`;
+  const identificador = createHash('sha256').update(token).digest('hex');
+  const proyecto = 'calculatupresupuesto-pru-b2e9a';
+  const ajustes = { proyecto, producto: 'pro', claveBase64: configuracion.claveBase64 };
+  const estadoPrevio = { tipo: 'pro', vencimiento: Date.now() + 86400000 };
+  await base.doc(`usuarios/${uid}/suscripcion/estado`).set(estadoPrevio);
+  await base.doc(`suscripcionesPrivadas/${uid}`).set({ compraActual: 'a'.repeat(64) });
+  const consultar = async () => ({
+    subscriptionState: 'SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED',
+    externalAccountIdentifiers: {
+      obfuscatedExternalAccountId: obtenerIdentificadorCuenta(uid, proyecto),
+    },
+    lineItems: [{ productId: 'pro' }],
+    testPurchase: {},
+  });
+  await procesarCompra(base, uid, token, ajustes, {
+    consultar,
+    confirmar: async () => {
+      throw new Error('No debe confirmarse.');
+    },
+  });
+  assert.deepEqual(
+    (await base.doc(`usuarios/${uid}/suscripcion/estado`).get()).data(),
+    estadoPrevio,
+  );
+  assert.equal(
+    (await base.doc(`titularesCompras/${identificador}`).get()).get('proximaRevisionPendiente'),
+    undefined,
+  );
+});
+
+test('un error al confirmar la compra conserva un reintento hasta completar la confirmación', async () => {
+  const uid = `confirmacion-${Date.now()}-${Math.random()}`;
+  const token = `token-${uid}`;
+  const identificador = createHash('sha256').update(token).digest('hex');
+  const proyecto = 'calculatupresupuesto-pru-b2e9a';
+  const ajustes = { proyecto, producto: 'pro', claveBase64: configuracion.claveBase64 };
+  let fallar = true;
+  let confirmaciones = 0;
+  const consultar = async () => ({
+    subscriptionState: 'SUBSCRIPTION_STATE_ACTIVE',
+    acknowledgementState: 'ACKNOWLEDGEMENT_STATE_PENDING',
+    externalAccountIdentifiers: {
+      obfuscatedExternalAccountId: obtenerIdentificadorCuenta(uid, proyecto),
+    },
+    lineItems: [{ productId: 'pro', expiryTime: new Date(Date.now() + 86400000).toISOString() }],
+    testPurchase: {},
+  });
+  const confirmar = async () => {
+    if (fallar) throw new Error('Fallo de confirmación simulado');
+    confirmaciones += 1;
+  };
+  const servicios = { consultar, confirmar };
+  await assert.rejects(procesarCompra(base, uid, token, ajustes, servicios));
+  const titular = base.doc(`titularesCompras/${identificador}`);
+  assert.ok((await titular.get()).get('proximaRevisionPendiente') instanceof Timestamp);
+  await titular.update({ proximaRevisionPendiente: Timestamp.fromMillis(1) });
+  fallar = false;
+  await revisarComprasPendientes(base, ajustes, (bd, cuenta, compra, config) =>
+    procesarCompra(bd, cuenta, compra, config, servicios),
+  );
+  assert.equal(confirmaciones, 1);
+  assert.equal((await titular.get()).get('proximaRevisionPendiente'), undefined);
 });
 
 test('un reembolso anterior al registro no concede acceso y no bloquea una renovación posterior', async () => {

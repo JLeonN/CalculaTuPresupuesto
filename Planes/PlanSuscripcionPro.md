@@ -114,7 +114,8 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
   - [x] Admitir una recompra sin enlace cuando la compra anterior ya finalizó, con control transaccional y prueba sintética de avisos tardíos.
   - [x] Distinguir en la compra y recuperación las respuestas pendientes de las verificadas, y rechazar respuestas contradictorias.
   - [x] Preparar la recuperación del token pendiente del plugin, asociarlo sin dar acceso y comprobar con simulaciones el aviso posterior.
-  - [ ] Revisar la recuperación automática de compras pendientes cuando el aviso se pierde y comprobar el comportamiento real del plugin en Android.
+  - [x] Preparar la recuperación programada de compras pendientes sin aviso, con pruebas simuladas de errores, concurrencia y cancelación.
+  - [ ] Comprobar la recuperación programada y el comportamiento real del plugin en Android, incluidos avisos perdidos.
   - [ ] Integrar y verificar el flujo completo, incluidos la confirmación, el almacenamiento seguro y las compras pendientes.
 - [ ] Procesar RTDN mediante Pub/Sub de forma idempotente: consultar el estado completo a Google, manejar renovaciones, cancelación con acceso hasta vencimiento, reembolsos, revocación y recuperación de pagos. Atender duplicados, orden no garantizado y errores con reintentos; no confiar exclusivamente en el evento ni en datos enviados por el cliente.
   - [x] Preparar el consumidor, reconsulta y registro de reembolsos por orden; probar un aviso anterior al registro y una renovación posterior con datos sintéticos.
@@ -220,6 +221,8 @@ Prueba web con sesión iniciada en producción: se comprobó una vista previa si
 Continuación local: se corrigió la prioridad de una exención sobre un estado Pro anterior y se evitó presentar como confirmada una compra pendiente. El emulador Firestore aprobó 20 pruebas, incluidas la exención y el ciclo simulado de cancelación, suspensión y recuperación; 10 pruebas de suscripción también pasaron. La interfaz de suscripción y las integraciones reales siguen pendientes de comprobación.
 
 Panel web y compra pendiente: se agregó una prueba de renderizado aislado con Firebase deshabilitado que cubre los textos de visitante, Gratis, prueba, Pro y exento, y una prueba del cliente con el plugin Android y el servidor simulados. Firestore aprobó 21 pruebas, incluida la asociación de una compra pendiente y su aviso posterior. No se han comprobado interacción visual, diseño responsive, publicidad ni compras reales; sigue pendiente la recuperación automática cuando se pierde un aviso de compra pendiente.
+
+Recuperación posterior: se preparó un reintento programado para compras registradas cuyo aviso se pierda o cuya verificación falle. Conserva la compra anterior, reintenta errores de consulta o confirmación y detiene la revisión de compras pendientes canceladas. Pasaron 24 pruebas en el emulador, incluidas concurrencia y fallos simulados. La programación sigue sin desplegar y falta verificarla con Play y la interfaz reales; su frecuencia, capacidad y costos deben revisarse antes de activarla.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba

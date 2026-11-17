@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { FieldValue, type Firestore } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { cifrarToken } from './cifradoToken';
 
 function identificarToken(token: string): string {
@@ -57,7 +57,13 @@ export async function asociarCompraVerificada(
         uid,
         tokenCifrado,
         ordenesReembolsadas: ordenes,
+        proximaRevisionPendiente: Timestamp.fromMillis(Date.now() + 60 * 60 * 1000),
         creadoEn: FieldValue.serverTimestamp(),
+      });
+    } else if (documentoActual.get('proximaRevisionPendiente') === undefined) {
+      // Si falla una consulta posterior, la compra conserva un reintento independiente.
+      transaccion.update(actual, {
+        proximaRevisionPendiente: Timestamp.fromMillis(Date.now() + 60 * 60 * 1000),
       });
     }
   });
