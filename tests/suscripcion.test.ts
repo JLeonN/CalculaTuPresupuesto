@@ -259,6 +259,34 @@ test('el margen adicional corresponde a Pro pagado, no prolonga la prueba', () =
     false,
   );
   assert.equal(
+    resolverAccesoAndroidSinConexion(
+      'pro',
+      referencia,
+      'a',
+      'pruebas',
+      {
+        ...reloj,
+        milisegundosTranscurridos: reloj.milisegundosTranscurridos + MARGEN_SIN_CONEXION_MS - 1,
+      },
+      true,
+    ).acceso.puedeGenerarSalida,
+    true,
+  );
+  assert.equal(
+    resolverAccesoAndroidSinConexion(
+      'pro',
+      referencia,
+      'a',
+      'pruebas',
+      {
+        ...reloj,
+        milisegundosTranscurridos: reloj.milisegundosTranscurridos + MARGEN_SIN_CONEXION_MS,
+      },
+      true,
+    ).acceso.puedeGenerarSalida,
+    false,
+  );
+  assert.equal(
     resolverAccesoAndroidSinConexion('pro', referencia, 'a', 'pruebas', { ...reloj, arranques: 4 })
       .necesitaConexion,
     true,

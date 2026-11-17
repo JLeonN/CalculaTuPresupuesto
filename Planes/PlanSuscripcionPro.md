@@ -203,6 +203,10 @@ Continuación actual: se prepararon el consumidor RTDN, registro de reembolsos, 
 
 Última revisión: se probó el margen sin conexión para cancelación y renovación, y la recompra sin token enlazado después de finalizar la compra anterior. Pasaron 9 pruebas de suscripción y 18 en Firestore; la ejecución mostró una advertencia de búsqueda de metadatos, pero terminó correctamente. La recompra y el ciclo completo aún deben comprobarse con Google Play real.
 
+Decisión posterior de Leo: mantener los proyectos en Spark y priorizar el costo cero mientras se evalúa el crecimiento. Continuar con preparación y pruebas locales gratuitas; el despliegue de Cloud Functions y la activación de la suscripción requieren revisar con Leo el paso a Blaze y sus costos antes de realizarlos.
+
+Prueba web como visitante: se comprobó el cálculo de mano de obra y su vista previa con marca de prueba, la solicitud de acceso al descargar el presupuesto o una copia de seguridad, y la validación de campos obligatorios de cliente y material. La instancia abierta estaba conectada a producción; no se guardaron registros de prueba. Dos intentos con cuentas de prueba no iniciaron sesión en ese entorno, por lo que siguen pendientes los flujos autenticados, las copias efectivas y las pruebas de suscripción habilitada.
+
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba
 - [ ] Fase 3: Compras y estados de Google Play
