@@ -52,7 +52,18 @@ Para integrar compras Android se utilizará `@capgo/native-purchases` 8.9.6, nec
 
 La conexión de suscripción está controlada por `SUSCRIPCION_HABILITADA` y permanece desactivada. Antes de cualquier activación hay que revisar y probar por separado cada entorno: configurar desde servidor la fecha de activación y los identificadores de producto y plan, asignar las exenciones por UID, definir el secreto, permisos de Play y el tema Pub/Sub de ese proyecto. Las notificaciones de Play no cambian de entorno automáticamente con Firebase; verificar expresamente su destino y que las compras de prueba no entren en producción. La revisión programada propuesta procesa hasta 100 cuentas cada seis horas y usa Cloud Scheduler: comprobar capacidad, cuotas y costos antes de desplegarla. Una alerta de presupuesto ordinaria no detiene el gasto automáticamente.
 
+Para preparar una futura integración, cada proyecto requiere los siguientes recursos y verificaciones, todavía pendientes de configuración y comprobación real:
+
+- `configuracionSuscripcion/activacion`: campo `fecha` de tipo Timestamp, establecido por el servidor cuando se acuerde activar la prueba.
+- `configuracionSuscripcion/play`: campos `producto` y `plan`, coincidentes con la suscripción y el plan base configurados en Play.
+- El secreto `CLAVE_CIFRADO_PLAY`, generado por separado para cada entorno y accesible solo a las funciones que lo necesitan. Nunca guardar su valor en el repositorio ni en registros.
+- Una identidad de servicio con los permisos necesarios para consultar Google Play y el tema Pub/Sub `avisos-play` con los permisos adecuados para recibir los avisos.
+- Definir y comprobar el destino de los avisos para compras de prueba y producción; seleccionar otro proyecto Firebase no cambia automáticamente el destino configurado en Play.
+- Desplegar reglas y funciones en el proyecto correcto solo después de revisar la facturación, los permisos y las pruebas; comprobar las notificaciones y la reconciliación antes de habilitar el interruptor.
+
 Las pruebas sintéticas de suscripción se ejecutan con `npm run test:suscripcion`. Para las reglas y transacciones del servidor se necesitan las dependencias de la raíz y de `functions/`, y se usa `npm run test:firebase`; este comando inicia Firestore en el emulador con el proyecto ficticio `demo-calcula-pruebas` y puertos propios. No utiliza los datos de los proyectos reales.
+
+`npm run test:panel-suscripcion` renderiza el componente web con estados ficticios y reemplaza la configuración Firebase por un adaptador que rechaza cualquier intento de conexión. También simula el resultado pendiente del plugin Android y su registro. Comprueba los textos y el flujo aislado sin habilitar la suscripción; no sustituye una prueba visual, interactiva o en un teléfono.
 
 Leo decidió mantener ambos proyectos en el plan gratuito Spark mientras se evalúa el crecimiento de la aplicación. Las pruebas locales anteriores no requieren activar facturación; desplegar Cloud Functions para la suscripción requiere Blaze y una revisión previa de sus costos. La cantidad de clientes por sí sola no garantiza mantenerse dentro de las cuotas gratuitas.
 

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { resolverAccesoSuscripcion } from '../src/dominio/suscripcion';
+import { interpretarResultadoCompra } from '../src/dominio/resultadoCompra';
 import {
   evaluarReferenciaSinConexion,
   MARGEN_SIN_CONEXION_MS,
@@ -12,6 +13,14 @@ import { verificarCompraPlay } from '../functions/src/verificacionCompra';
 import { interpretarNotificacionPlay } from '../functions/src/notificacionPlay';
 import { interpretarReferenciaPersistida } from '../src/servicios/suscripcion/referenciaPersistente';
 import { resolverAccesoAndroidSinConexion } from '../src/servicios/suscripcion/accesoSinConexion';
+
+test('solo una respuesta confirmada presenta la compra como verificada', () => {
+  assert.equal(interpretarResultadoCompra({ actualizada: true, pendiente: false }), 'verificada');
+  assert.equal(interpretarResultadoCompra({ actualizada: false, pendiente: true }), 'pendiente');
+  assert.throws(() => interpretarResultadoCompra({ actualizada: false, pendiente: false }));
+  assert.throws(() => interpretarResultadoCompra({ actualizada: true, pendiente: true }));
+  assert.throws(() => interpretarResultadoCompra(null));
+});
 
 test('el acceso distingue prueba vigente, vencida, exención y verificación pendiente', () => {
   assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'pendiente' }, 10), {

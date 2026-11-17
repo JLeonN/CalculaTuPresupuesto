@@ -89,12 +89,16 @@ async function recuperar(): Promise<void> {
   mensaje.value = null;
   try {
     const { producto: idProducto } = await consultarConfiguracionCompra();
-    const cantidad = await recuperarComprasAndroid(uid, idProducto);
+    const resultado = await recuperarComprasAndroid(uid, idProducto);
     if (autenticacion.usuario?.id !== uid) return;
-    mensaje.value = cantidad
-      ? 'Se verificó la compra de esta cuenta.'
-      : 'No se encontraron compras para recuperar.';
-    if (cantidad) await suscripcion.cargar(uid);
+    mensaje.value = resultado.verificadas
+      ? resultado.pendientes
+        ? 'Se verificó una compra. Otra compra sigue pendiente de confirmación.'
+        : 'Se verificó la compra de esta cuenta.'
+      : resultado.pendientes
+        ? 'La compra está pendiente de confirmación de Google Play.'
+        : 'No se encontraron compras para recuperar.';
+    if (resultado.verificadas) await suscripcion.cargar(uid);
   } catch {
     if (autenticacion.usuario?.id === uid)
       mensaje.value = 'No se pudieron recuperar las compras. Intentá nuevamente.';

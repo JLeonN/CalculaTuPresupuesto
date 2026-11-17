@@ -96,6 +96,22 @@ test('una verificación de correo demorada no prolonga la prueba', async () => {
   assert.equal(resultado.mostrarAvisoPrueba, false);
 });
 
+test('una exención prevalece sobre un estado Pro anterior', async () => {
+  const ahora = Date.now();
+  const uid = `exencion-${ahora}-${Math.random()}`;
+  await base
+    .doc('configuracionSuscripcion/activacion')
+    .set({ fecha: Timestamp.fromMillis(ahora - 86400000) });
+  await base.doc(`suscripcionesPrivadas/${uid}`).set({ exento: true });
+  await base
+    .doc(`usuarios/${uid}/suscripcion/estado`)
+    .set({ tipo: 'pro', vencimiento: ahora + 86400000, permiteMargen: true });
+  const resultado = await iniciarPruebaUnica(base, uid, ahora - 86400000);
+  assert.equal(resultado.tipo, 'exento');
+  assert.equal(resultado.mostrarAvisoPrueba, false);
+  assert.equal((await base.doc(`usuarios/${uid}/suscripcion/estado`).get()).get('tipo'), 'exento');
+});
+
 test('una respuesta vieja no sobrescribe una más reciente ni una compra pendiente', async () => {
   const token = `revision-${Date.now()}-${Math.random()}`;
   const uid = `titular-${Date.now()}`;
@@ -274,6 +290,88 @@ test('el procesamiento verifica, concede y solo después confirma la compra', as
     .set({ fecha: Timestamp.fromMillis(Date.now() - 86400000) });
   assert.equal((await iniciarPruebaUnica(base, uid, Date.now() - 172800000)).tipo, 'pro');
   await assert.rejects(procesarCompra(base, 'otra-cuenta', token, ajustes, servicios));
+  assert.equal(confirmaciones, 1);
+});
+
+test('Play simulado aplica cancelación, suspensión y recuperación a la misma cuenta', async () => {
+  const uid = `ciclo-${Date.now()}-${Math.random()}`;
+  const token = `token-${uid}`;
+  const proyecto = 'calculatupresupuesto-pru-b2e9a';
+  const ajustes = { proyecto, producto: 'pro', claveBase64: configuracion.claveBase64 };
+  let estadoPlay = 'SUBSCRIPTION_STATE_ACTIVE';
+  const vencimiento = Date.now() + 86400000;
+  const servicios = {
+    consultar: async () => ({
+      subscriptionState: estadoPlay,
+      acknowledgementState: 'ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED',
+      externalAccountIdentifiers: {
+        obfuscatedExternalAccountId: obtenerIdentificadorCuenta(uid, proyecto),
+      },
+      lineItems: [{ productId: 'pro', expiryTime: new Date(vencimiento).toISOString() }],
+      testPurchase: {},
+    }),
+    confirmar: async () => {
+      throw new Error('La compra ya estaba confirmada.');
+    },
+  };
+  const estado = base.doc(`usuarios/${uid}/suscripcion/estado`);
+  await procesarCompra(base, uid, token, ajustes, servicios);
+  assert.equal((await estado.get()).get('permiteMargen'), true);
+  estadoPlay = 'SUBSCRIPTION_STATE_CANCELED';
+  await procesarCompra(base, uid, token, ajustes, servicios);
+  let actual = await estado.get();
+  assert.equal(actual.get('tipo'), 'pro');
+  assert.equal(actual.get('vencimiento'), vencimiento);
+  assert.equal(actual.get('permiteMargen'), false);
+  estadoPlay = 'SUBSCRIPTION_STATE_ON_HOLD';
+  await procesarCompra(base, uid, token, ajustes, servicios);
+  assert.equal((await estado.get()).get('tipo'), 'gratis');
+  estadoPlay = 'SUBSCRIPTION_STATE_ACTIVE';
+  await procesarCompra(base, uid, token, ajustes, servicios);
+  actual = await estado.get();
+  assert.equal(actual.get('tipo'), 'pro');
+  assert.equal(actual.get('permiteMargen'), true);
+});
+
+test('una compra pendiente queda asociada y un aviso posterior concede acceso tras su confirmación', async () => {
+  const uid = `compra-pendiente-${Date.now()}-${Math.random()}`;
+  const token = `token-${uid}`;
+  const proyecto = 'calculatupresupuesto-pru-b2e9a';
+  const ajustes = { proyecto, producto: 'pro', claveBase64: configuracion.claveBase64 };
+  let estadoPlay = 'SUBSCRIPTION_STATE_PENDING';
+  let confirmaciones = 0;
+  const consultar = async () => ({
+    subscriptionState: estadoPlay,
+    acknowledgementState: 'ACKNOWLEDGEMENT_STATE_PENDING',
+    externalAccountIdentifiers: {
+      obfuscatedExternalAccountId: obtenerIdentificadorCuenta(uid, proyecto),
+    },
+    lineItems: [{ productId: 'pro', expiryTime: new Date(Date.now() + 86400000).toISOString() }],
+    testPurchase: {},
+  });
+  const confirmar = async () => {
+    confirmaciones += 1;
+  };
+  const primera = await procesarCompra(base, uid, token, ajustes, { consultar, confirmar });
+  assert.deepEqual(primera, { actualizada: false, pendiente: true });
+  assert.equal(confirmaciones, 0);
+  assert.equal((await base.doc(`usuarios/${uid}/suscripcion/estado`).get()).exists, false);
+  estadoPlay = 'SUBSCRIPTION_STATE_ACTIVE';
+  const resultado = await procesarNotificacionPlay(
+    base,
+    {
+      packageName: 'com.calculatupresupuesto.app',
+      subscriptionNotification: { purchaseToken: token },
+    },
+    ajustes,
+    {
+      consultar,
+      procesar: async (bd, cuenta, compra, config) =>
+        procesarCompra(bd, cuenta, compra, config, { consultar, confirmar }),
+    },
+  );
+  assert.equal(resultado, 'procesada');
+  assert.equal((await base.doc(`usuarios/${uid}/suscripcion/estado`).get()).get('tipo'), 'pro');
   assert.equal(confirmaciones, 1);
 });
 

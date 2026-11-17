@@ -112,6 +112,9 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
   - [x] Preparar la comprobación de producto, identidad y entorno, el cifrado autenticado del token y la llamada de confirmación a Play; probar cifrado, aislamiento y reserva con datos sintéticos.
   - [x] Preparar una función autenticada que coordina verificación, asignación y confirmación, y probar el procesamiento simulado y la protección ante respuestas antiguas.
   - [x] Admitir una recompra sin enlace cuando la compra anterior ya finalizó, con control transaccional y prueba sintética de avisos tardíos.
+  - [x] Distinguir en la compra y recuperación las respuestas pendientes de las verificadas, y rechazar respuestas contradictorias.
+  - [x] Preparar la recuperación del token pendiente del plugin, asociarlo sin dar acceso y comprobar con simulaciones el aviso posterior.
+  - [ ] Revisar la recuperación automática de compras pendientes cuando el aviso se pierde y comprobar el comportamiento real del plugin en Android.
   - [ ] Integrar y verificar el flujo completo, incluidos la confirmación, el almacenamiento seguro y las compras pendientes.
 - [ ] Procesar RTDN mediante Pub/Sub de forma idempotente: consultar el estado completo a Google, manejar renovaciones, cancelación con acceso hasta vencimiento, reembolsos, revocación y recuperación de pagos. Atender duplicados, orden no garantizado y errores con reintentos; no confiar exclusivamente en el evento ni en datos enviados por el cliente.
   - [x] Preparar el consumidor, reconsulta y registro de reembolsos por orden; probar un aviso anterior al registro y una renovación posterior con datos sintéticos.
@@ -122,6 +125,8 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
 - [ ] Mantener Pro durante el período de gracia de Google y quitarlo cuando Google confirme suspensión o vencimiento, salvo el margen sin conexión acordado cuando el dispositivo no puede consultar el estado. Gestionar tokens enlazados y restauración para la misma cuenta sin transferir compras.
   - [x] Diferenciar una renovación esperada de una cancelación confirmada para que esta última termine al vencimiento, incluso sin conexión; comprobarlo con datos sintéticos.
 - [ ] Documentar en `README.md` la configuración de productos, identidad de entorno, notificaciones y verificación de recepción. La web lee el permiso de la cuenta y dirige a Android para contratar; no implementa cobro propio.
+  - [x] Documentar los documentos, el secreto y el tema previstos para cada entorno, sin crear recursos ni publicar cambios.
+  - [ ] Comprobar y documentar la configuración real y la recepción de avisos una vez preparados los servicios.
 
 ## FASE 4: Interfaz, documentos y publicidad
 
@@ -136,6 +141,7 @@ Aplicar los beneficios de cada plan de forma coherente en todos los puntos de la
 - [ ] Mantener en Gratis las funciones básicas, sincronización y descarga e importación de copias JSON de `PanelCopiasSeguridad.vue`; bloquear solo salida de presupuestos y mantener su marca. No imponer límites de cantidad ni borrar datos.
 - [ ] Crear componentes pequeños en `src/components/suscripcion/` para mostrar estado, fecha, prueba, compra y gestión; indicar el precio devuelto por Google, renovación automática, cancelación y ausencia de tarjeta durante la prueba. En web explicar cómo contratar desde Android. Mostrar aviso de 10 días a cuentas existentes al activarse.
   - [x] Preparar el panel y el aviso de prueba, y conectarlos detrás del interruptor de suscripción desactivado.
+  - [x] Comprobar los textos del panel web para visitante, Gratis, prueba, Pro y exento mediante renderizado aislado, sin conectar Firebase.
   - [ ] Verificar presentación, textos, compra y aviso en Android y web antes de activar el interruptor.
 - [ ] Reutilizar componentes Quasar y tokens de `src/css/Variables.css`, con diseño apto para teléfono y escritorio. Evitar que pantallas, modales o banners tapen acciones y asegurar estados de carga, error y reintento.
 
@@ -206,6 +212,14 @@ Continuación actual: se prepararon el consumidor RTDN, registro de reembolsos, 
 Decisión posterior de Leo: mantener los proyectos en Spark y priorizar el costo cero mientras se evalúa el crecimiento. Continuar con preparación y pruebas locales gratuitas; el despliegue de Cloud Functions y la activación de la suscripción requieren revisar con Leo el paso a Blaze y sus costos antes de realizarlos.
 
 Prueba web como visitante: se comprobó el cálculo de mano de obra y su vista previa con marca de prueba, la solicitud de acceso al descargar el presupuesto o una copia de seguridad, y la validación de campos obligatorios de cliente y material. La instancia abierta estaba conectada a producción; no se guardaron registros de prueba. Dos intentos con cuentas de prueba no iniciaron sesión en ese entorno, por lo que siguen pendientes los flujos autenticados, las copias efectivas y las pruebas de suscripción habilitada.
+
+Leo prefiere posponer las pruebas en teléfono y continuar con lo demás. El comportamiento web comprobado sirve de referencia, pero no verifica la integración Android ni las compras, los anuncios y el reloj nativo; esas pruebas siguen pendientes.
+
+Prueba web con sesión iniciada en producción: se comprobó una vista previa sin guardar datos, el cálculo de mano de obra, la vista resumida y la confirmación de descarga del PDF. La copia de seguridad informó que inició la descarga, pero no se comprobó el archivo ni su importación. La suscripción permanecía deshabilitada, por lo que estas pruebas no verifican los permisos de los planes. Para probar escrituras sin afectar producción, seleccionar el entorno de pruebas y reiniciar Quasar antes de continuar.
+
+Continuación local: se corrigió la prioridad de una exención sobre un estado Pro anterior y se evitó presentar como confirmada una compra pendiente. El emulador Firestore aprobó 20 pruebas, incluidas la exención y el ciclo simulado de cancelación, suspensión y recuperación; 10 pruebas de suscripción también pasaron. La interfaz de suscripción y las integraciones reales siguen pendientes de comprobación.
+
+Panel web y compra pendiente: se agregó una prueba de renderizado aislado con Firebase deshabilitado que cubre los textos de visitante, Gratis, prueba, Pro y exento, y una prueba del cliente con el plugin Android y el servidor simulados. Firestore aprobó 21 pruebas, incluida la asociación de una compra pendiente y su aviso posterior. No se han comprobado interacción visual, diseño responsive, publicidad ni compras reales; sigue pendiente la recuperación automática cuando se pierde un aviso de compra pendiente.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba

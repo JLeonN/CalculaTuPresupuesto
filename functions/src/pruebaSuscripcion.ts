@@ -42,7 +42,8 @@ export async function iniciarPruebaUnica(base: Firestore, uid: string, registro:
     } else if (!(inicio instanceof Timestamp) || !(vencimiento instanceof Timestamp)) {
       throw new HttpsError('failed-precondition', 'No se pudo verificar la prueba.');
     }
-    if (documentoPublico.get('tipo') === 'pro') {
+    const exento = datosPrivados?.exento === true;
+    if (!exento && documentoPublico.get('tipo') === 'pro') {
       const vencimientoPro: unknown = documentoPublico.get('vencimiento');
       if (!Number.isSafeInteger(vencimientoPro) || (vencimientoPro as number) < 0) {
         throw new HttpsError('failed-precondition', 'No se pudo verificar la compra.');
@@ -57,7 +58,6 @@ export async function iniciarPruebaUnica(base: Firestore, uid: string, registro:
         mostrarAvisoPrueba: false,
       };
     }
-    const exento = datosPrivados?.exento === true;
     const tipo = exento
       ? 'exento'
       : vencimiento.toMillis() > ahora.toMillis()
