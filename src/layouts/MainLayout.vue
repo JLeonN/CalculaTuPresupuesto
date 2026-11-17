@@ -13,10 +13,13 @@ import { useIdentidadAplicacion } from '@/composables/useIdentidadAplicacion';
 import { usePublicidad } from '@/composables/usePublicidad';
 import { useAutenticacionStore } from '@/stores/autenticacion';
 import { useConfiguracionStore } from '@/stores/configuracion';
+import { SUSCRIPCION_HABILITADA } from '@/configuracion/configuracionSuscripcion';
+import { useSuscripcionStore } from '@/stores/suscripcion';
 
 const ruta = useRoute();
 const autenticacionStore = useAutenticacionStore();
 const configuracionStore = useConfiguracionStore();
+const suscripcionStore = useSuscripcionStore();
 const { nombreEmpresaVisible, logoVisible, textoAlternativoLogo, sincronizarFavicon } =
   useIdentidadAplicacion();
 const { altoBanner, iniciarPublicidad, detenerPublicidad } = usePublicidad();
@@ -28,7 +31,7 @@ const rutaActual = computed(() => ruta.path);
 const etiquetaEnlaceInicio = computed(() => `Ir al inicio de ${nombreEmpresaVisible.value}`);
 
 function actualizarPublicidad(): void {
-  if (autenticacionStore.estaAutenticado || window.innerWidth < 320) {
+  if (!autenticacionStore.mostrarPublicidad || window.innerWidth < 320) {
     void detenerPublicidad();
   } else {
     void iniciarPublicidad();
@@ -36,14 +39,25 @@ function actualizarPublicidad(): void {
 }
 
 function revisarPublicidadAlVolver(): void {
-  if (document.visibilityState === 'visible') actualizarPublicidad();
+  if (document.visibilityState === 'visible') {
+    actualizarPublicidad();
+    actualizarSuscripcion();
+  }
 }
 
-watch(() => autenticacionStore.estaAutenticado, actualizarPublicidad, { immediate: true });
+function actualizarSuscripcion(): void {
+  const uid = autenticacionStore.usuario?.id;
+  if (SUSCRIPCION_HABILITADA && uid && navigator.onLine && !suscripcionStore.cargando) {
+    void suscripcionStore.cargar(uid);
+  }
+}
+
+watch(() => autenticacionStore.mostrarPublicidad, actualizarPublicidad, { immediate: true });
 
 onMounted(() => {
   window.addEventListener('resize', actualizarPublicidad);
   document.addEventListener('visibilitychange', revisarPublicidadAlVolver);
+  window.addEventListener('online', actualizarSuscripcion);
   detenerSincronizacionFavicon = sincronizarFavicon();
   void configuracionStore.asegurarConfiguracionCargada();
 });
@@ -51,6 +65,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', actualizarPublicidad);
   document.removeEventListener('visibilitychange', revisarPublicidadAlVolver);
+  window.removeEventListener('online', actualizarSuscripcion);
   void detenerPublicidad();
   detenerSincronizacionFavicon?.();
 });
@@ -65,7 +80,7 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
     view="hHh LpR fFf"
     class="aplicacion-presupuestos"
     :class="{
-      'aplicacion-presupuestos--modo-prueba': !autenticacionStore.estaAutenticado,
+      'aplicacion-presupuestos--modo-prueba': autenticacionStore.mostrarMarcaPresupuesto,
     }"
     :style="{
       '--alto-banner-publicidad': `${altoBanner}px`,
@@ -133,6 +148,29 @@ function estaActivo(elemento: ElementoNavegacion): boolean {
     <q-page-container>
       <router-view :key="autenticacionStore.usuario?.id ?? 'visitante'" />
     </q-page-container>
+
+    <q-dialog
+      :model-value="SUSCRIPCION_HABILITADA && suscripcionStore.avisoPruebaVisible"
+      @update:model-value="
+        (visible) => {
+          if (!visible) void suscripcionStore.cerrarAvisoPrueba();
+        }
+      "
+    >
+      <q-card>
+        <q-card-section>
+          <h2 class="titulo-seccion">Tu prueba Pro comenzó</h2>
+          <p>
+            Tenés 10 días para usar Pro sin ingresar una tarjeta. Al terminar, pasarás al plan
+            Gratis si no te suscribís. Tus datos se conservarán.
+          </p>
+          <p v-if="suscripcionStore.error" role="alert">{{ suscripcionStore.error }}</p>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat no-caps label="Entendido" @click="suscripcionStore.cerrarAvisoPrueba" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <q-footer v-if="$q.screen.lt.md || altoBanner > 0" class="navegacion-movil">
       <nav

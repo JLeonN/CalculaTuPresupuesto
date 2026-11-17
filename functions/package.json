@@ -2,12 +2,18 @@
   "name": "calculatupresupuesto-functions",
   "private": true,
   "main": "lib/index.js",
-  "engines": { "node": "22" },
-  "scripts": { "build": "tsc" },
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "firebase-admin": "14.5.1",
     "firebase-functions": "7.4.0",
     "google-auth-library": "11.3.4"
   },
-  "devDependencies": { "typescript": "6.0.3" }
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
 }

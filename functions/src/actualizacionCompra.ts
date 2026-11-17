@@ -8,7 +8,10 @@ function referenciaCompra(base: Firestore, identificador: string) {
 }
 
 /** Reservar antes de consultar Play impide que una consulta anterior sobrescriba otra más reciente. */
-export async function reservarRevisionCompra(base: Firestore, identificador: string): Promise<number> {
+export async function reservarRevisionCompra(
+  base: Firestore,
+  identificador: string,
+): Promise<number> {
   const compra = referenciaCompra(base, identificador);
   return base.runTransaction(async (transaccion) => {
     const documento = await transaccion.get(compra);
@@ -31,7 +34,8 @@ export async function aplicarRevisionCompra(
   uid: string,
   compraVerificada: CompraVerificada,
 ): Promise<boolean> {
-  if (!uid || !Number.isSafeInteger(revision) || revision < 1) throw new Error('Revisión inválida.');
+  if (!uid || !Number.isSafeInteger(revision) || revision < 1)
+    throw new Error('Revisión inválida.');
   const compra = referenciaCompra(base, identificador);
   const identificadorAnterior = compraVerificada.tokenAnterior
     ? createHash('sha256').update(compraVerificada.tokenAnterior, 'utf8').digest('hex')
@@ -39,14 +43,25 @@ export async function aplicarRevisionCompra(
   const privada = base.doc(`suscripcionesPrivadas/${uid}`);
   const publica = base.doc(`usuarios/${uid}/suscripcion/estado`);
   return base.runTransaction(async (transaccion) => {
-    const [documentoCompra, documentoPrivado] = await Promise.all([
-      transaccion.get(compra), transaccion.get(privada),
+    const [documentoCompra, documentoPrivado, documentoPublico] = await Promise.all([
+      transaccion.get(compra),
+      transaccion.get(privada),
+      transaccion.get(publica),
     ]);
-    if (!documentoCompra.exists || documentoCompra.get('uid') !== uid) throw new Error('Titular de compra inválido.');
+    if (!documentoCompra.exists || documentoCompra.get('uid') !== uid)
+      throw new Error('Titular de compra inválido.');
     if (documentoCompra.get('revisionSolicitada') !== revision) return false;
     const datos = documentoPrivado.data();
-    const actual = datos?.compraActual;
-    if (actual && actual !== identificador && actual !== identificadorAnterior) return false;
+    const reembolsos: unknown = documentoCompra.get('ordenesReembolsadas') ?? [];
+    if (
+      !Array.isArray(reembolsos) ||
+      reembolsos.some((orden) => typeof orden !== 'string' || !/^[0-9a-f]{64}$/.test(orden))
+    ) {
+      throw new Error('No se pudo comprobar el historial de reembolsos.');
+    }
+    if (compraVerificada.vigente && reembolsos.length && !compraVerificada.ordenHash) {
+      throw new Error('No se pudo comprobar la orden vigente.');
+    }
     // Una operación pendiente no reemplaza una suscripción activa ni inicia una nueva.
     if (compraVerificada.pendiente) return false;
     const ahora = Timestamp.now();
@@ -54,15 +69,45 @@ export async function aplicarRevisionCompra(
     if (compraVerificada.vigente && (!Number.isSafeInteger(vencimiento) || vencimiento === null)) {
       throw new Error('Vencimiento de compra inválido.');
     }
-    const pro = compraVerificada.vigente && vencimiento !== null && vencimiento > ahora.toMillis();
+    const pro =
+      compraVerificada.vigente &&
+      vencimiento !== null &&
+      vencimiento > ahora.toMillis() &&
+      (!compraVerificada.ordenHash || !reembolsos.includes(compraVerificada.ordenHash));
+    const actual = datos?.compraActual;
+    if (actual && actual !== identificador && actual !== identificadorAnterior) {
+      // Una compra nueva sin enlace solo sustituye otra cuyo acceso ya terminó.
+      const tipoAnterior: unknown = documentoPublico.get('tipo');
+      const vencimientoAnterior: unknown = documentoPublico.get('vencimiento');
+      const anteriorFinalizada =
+        tipoAnterior === 'gratis' ||
+        tipoAnterior === 'prueba' ||
+        (tipoAnterior === 'pro' &&
+          Number.isSafeInteger(vencimientoAnterior) &&
+          (vencimientoAnterior as number) <= ahora.toMillis());
+      if (!pro || !anteriorFinalizada) return false;
+    }
     const exento = datos?.exento === true;
     const finPrueba = datos?.vencimientoPrueba;
     const prueba = finPrueba instanceof Timestamp && finPrueba.toMillis() > ahora.toMillis();
     const estado = exento
       ? { tipo: 'exento' }
-      : pro ? { tipo: 'pro', vencimiento }
-        : prueba ? { tipo: 'prueba', vencimiento: finPrueba.toMillis() } : { tipo: 'gratis' };
-    transaccion.set(privada, { compraActual: identificador, verificadaEn: ahora }, { merge: true });
+      : pro
+        ? { tipo: 'pro', vencimiento, permiteMargen: compraVerificada.renovacionEsperada === true }
+        : prueba
+          ? { tipo: 'prueba', vencimiento: finPrueba.toMillis() }
+          : { tipo: 'gratis' };
+    const proximaRevision = Timestamp.fromMillis(
+      Math.min(
+        ahora.toMillis() + 24 * 60 * 60 * 1000,
+        pro && vencimiento !== null ? vencimiento : Number.MAX_SAFE_INTEGER,
+      ),
+    );
+    transaccion.set(
+      privada,
+      { compraActual: identificador, verificadaEn: ahora, proximaRevision },
+      { merge: true },
+    );
     transaccion.set(publica, estado);
     transaccion.update(compra, { revisionAplicada: revision });
     return true;

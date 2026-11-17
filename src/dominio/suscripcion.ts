@@ -3,7 +3,7 @@ export type EstadoSuscripcion =
   | { tipo: 'gratis' }
   | { tipo: 'pendiente' }
   | { tipo: 'prueba'; vencimiento: number }
-  | { tipo: 'pro'; vencimiento: number }
+  | { tipo: 'pro'; vencimiento: number; permiteMargen?: boolean }
   | { tipo: 'exento' };
 
 export interface AccesoSuscripcion {

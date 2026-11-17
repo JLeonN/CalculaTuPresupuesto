@@ -39,6 +39,7 @@ export function calcularTiempoTranscurrido(
     !Number.isSafeInteger(actual.milisegundosTranscurridos) ||
     anterior.milisegundosTranscurridos < 0 ||
     actual.milisegundosTranscurridos < anterior.milisegundosTranscurridos
-  ) return null;
+  )
+    return null;
   return actual.milisegundosTranscurridos - anterior.milisegundosTranscurridos;
 }

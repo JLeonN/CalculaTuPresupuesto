@@ -3,6 +3,7 @@ import { computed, nextTick, onMounted, ref } from 'vue';
 import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
 import { Capacitor } from '@capacitor/core';
 import { useQuasar } from 'quasar';
+import { useAccesoSalida } from '@/composables/useAccesoSalida';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import DocumentoPresupuesto from '@/components/presupuestos/DocumentoPresupuesto.vue';
 import SelectorFormatoDocumento from '@/components/presupuestos/SelectorFormatoDocumento.vue';
@@ -28,6 +29,7 @@ type DocumentoPresupuestoExpuesto = {
 const ruta = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const { solicitarAccesoSalida } = useAccesoSalida();
 const mostrarImpresion = Capacitor.getPlatform() === 'web' && $q.platform.is.desktop;
 const autenticacionStore = useAutenticacionStore();
 const configuracionStore = useConfiguracionStore();
@@ -129,7 +131,7 @@ async function cambiarFormatoDocumento(formato: FormatoDocumentoPresupuesto): Pr
 
 function imprimir(): void {
   if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
-    autenticacionStore.solicitarInicioSesion();
+    solicitarAccesoSalida();
     return;
   }
 
@@ -138,7 +140,7 @@ function imprimir(): void {
 
 async function descargar(): Promise<void> {
   if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
-    autenticacionStore.solicitarInicioSesion();
+    solicitarAccesoSalida();
     return;
   }
 
@@ -181,7 +183,7 @@ async function descargar(): Promise<void> {
 
 async function enviarPorWhatsapp(): Promise<void> {
   if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
-    autenticacionStore.solicitarInicioSesion();
+    solicitarAccesoSalida();
     return;
   }
 
@@ -292,7 +294,9 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             :aria-label="
               autenticacionStore.puedeGenerarSalidaPresupuesto
                 ? 'Descargar presupuesto'
-                : 'Descargar presupuesto, requiere iniciar sesión'
+                : autenticacionStore.estaAutenticado
+                  ? 'Descargar presupuesto, requiere Pro'
+                  : 'Descargar presupuesto, requiere iniciar sesión'
             "
             :disable="datosPresupuesto === null || accionDocumento !== null"
             :loading="accionDocumento === 'descargar'"
@@ -309,7 +313,9 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             :aria-label="
               autenticacionStore.puedeGenerarSalidaPresupuesto
                 ? 'Imprimir presupuesto'
-                : 'Imprimir presupuesto, requiere iniciar sesión'
+                : autenticacionStore.estaAutenticado
+                  ? 'Imprimir presupuesto, requiere Pro'
+                  : 'Imprimir presupuesto, requiere iniciar sesión'
             "
             :disable="datosPresupuesto === null || accionDocumento !== null"
             @click="imprimir"
@@ -324,7 +330,9 @@ function obtenerMensajeError(errorCapturado: unknown): string {
             :aria-label="
               autenticacionStore.puedeGenerarSalidaPresupuesto
                 ? 'Enviar presupuesto'
-                : 'Enviar presupuesto, requiere iniciar sesión'
+                : autenticacionStore.estaAutenticado
+                  ? 'Enviar presupuesto, requiere Pro'
+                  : 'Enviar presupuesto, requiere iniciar sesión'
             "
             :disable="
               numeroWhatsapp === '' ||
@@ -352,7 +360,11 @@ function obtenerMensajeError(errorCapturado: unknown): string {
       </q-banner>
 
       <aside class="aviso-impresion-restringida">
-        Iniciá sesión para imprimir este presupuesto.
+        {{
+          autenticacionStore.estaAutenticado
+            ? 'Necesitás Pro para imprimir este presupuesto.'
+            : 'Iniciá sesión para imprimir este presupuesto.'
+        }}
       </aside>
 
       <div v-if="cargando" class="estado-presupuestos">
@@ -372,7 +384,7 @@ function obtenerMensajeError(errorCapturado: unknown): string {
           ref="documentoPresupuesto"
           :datos="datosPresupuesto"
           :configuracion="configuracionDocumento"
-          :modo-prueba="!autenticacionStore.estaAutenticado"
+          :modo-prueba="autenticacionStore.mostrarMarcaPresupuesto"
         />
       </div>
     </main>

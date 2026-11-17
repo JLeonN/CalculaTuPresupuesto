@@ -19,11 +19,16 @@ export function evaluarReferenciaSinConexion(
   relojActual: ReferenciaRelojAndroid,
 ): { fechaEstimada: number; dentroDelMargen: boolean } | null {
   if (
-    !uid || !proyectoFirebase || referencia.uid !== uid ||
+    !uid ||
+    !proyectoFirebase ||
+    referencia.uid !== uid ||
     referencia.proyectoFirebase !== proyectoFirebase ||
-    !Number.isSafeInteger(referencia.horaServidor) || referencia.horaServidor < 0 ||
-    !Number.isSafeInteger(referencia.vencimiento) || referencia.vencimiento < 0
-  ) return null;
+    !Number.isSafeInteger(referencia.horaServidor) ||
+    referencia.horaServidor < 0 ||
+    !Number.isSafeInteger(referencia.vencimiento) ||
+    referencia.vencimiento < 0
+  )
+    return null;
 
   const transcurrido = calcularTiempoTranscurrido(referencia.reloj, relojActual);
   if (transcurrido === null) return null;

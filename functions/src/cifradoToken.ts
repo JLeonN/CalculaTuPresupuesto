@@ -16,7 +16,8 @@ function obtenerClave(claveBase64: string): Buffer {
 }
 
 function contexto(proyecto: string, identificador: string): Buffer {
-  if (!proyecto || !/^[0-9a-f]{64}$/.test(identificador)) throw new Error('Contexto de compra inválido.');
+  if (!proyecto || !/^[0-9a-f]{64}$/.test(identificador))
+    throw new Error('Contexto de compra inválido.');
   return Buffer.from(JSON.stringify(['compra-play-v1', proyecto, identificador]), 'utf8');
 }
 

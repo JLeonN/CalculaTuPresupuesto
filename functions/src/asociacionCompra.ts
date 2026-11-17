@@ -20,15 +20,24 @@ export async function asociarCompraVerificada(
 ): Promise<void> {
   if (!uid) throw new Error('Falta la identidad de la cuenta.');
   const identificador = identificarToken(tokenCompra);
-  const tokenCifrado = cifrarToken(tokenCompra, configuracion.claveBase64, configuracion.proyecto, identificador);
+  const tokenCifrado = cifrarToken(
+    tokenCompra,
+    configuracion.claveBase64,
+    configuracion.proyecto,
+    identificador,
+  );
   const identificadorAnterior = tokenAnterior ? identificarToken(tokenAnterior) : null;
   if (identificadorAnterior === identificador) throw new Error('La compra enlazada es inválida.');
   const actual = base.doc(`titularesCompras/${identificador}`);
-  const anterior = identificadorAnterior ? base.doc(`titularesCompras/${identificadorAnterior}`) : null;
+  const anterior = identificadorAnterior
+    ? base.doc(`titularesCompras/${identificadorAnterior}`)
+    : null;
+  const avisos = base.doc(`reembolsosPendientes/${identificador}`);
 
   await base.runTransaction(async (transaccion) => {
     const documentoActual = await transaccion.get(actual);
     const documentoAnterior = anterior ? await transaccion.get(anterior) : null;
+    const documentoAvisos = await transaccion.get(avisos);
     if (documentoActual.exists && documentoActual.get('uid') !== uid) {
       throw new Error('La compra pertenece a otra cuenta.');
     }
@@ -37,7 +46,19 @@ export async function asociarCompraVerificada(
       throw new Error('No se pudo verificar la cuenta de la compra anterior.');
     }
     if (!documentoActual.exists) {
-      transaccion.create(actual, { uid, tokenCifrado, creadoEn: FieldValue.serverTimestamp() });
+      const ordenes: unknown = documentoAvisos.get('ordenes') ?? [];
+      if (
+        !Array.isArray(ordenes) ||
+        ordenes.some((orden) => typeof orden !== 'string' || !/^[0-9a-f]{64}$/.test(orden))
+      ) {
+        throw new Error('No se pudo comprobar el historial de reembolsos.');
+      }
+      transaccion.create(actual, {
+        uid,
+        tokenCifrado,
+        ordenesReembolsadas: ordenes,
+        creadoEn: FieldValue.serverTimestamp(),
+      });
     }
   });
 }

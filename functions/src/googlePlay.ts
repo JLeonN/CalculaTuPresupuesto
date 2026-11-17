@@ -17,7 +17,7 @@ export interface CompraPlay {
   linkedPurchaseToken?: string;
   testPurchase?: object;
   externalAccountIdentifiers?: { obfuscatedExternalAccountId?: string };
-  lineItems?: Array<{ productId?: string; expiryTime?: string }>;
+  lineItems?: Array<{ productId?: string; expiryTime?: string; latestSuccessfulOrderId?: string }>;
 }
 
 /** Solo consulta Play. El resultado no concede acceso ni vincula una cuenta. */
@@ -37,7 +37,10 @@ export async function consultarSuscripcionPlay(tokenCompra: string): Promise<Com
 }
 
 /** Debe llamarse solo después de verificar y entregar el permiso correspondiente. */
-export async function confirmarSuscripcionPlay(tokenCompra: string, producto: string): Promise<void> {
+export async function confirmarSuscripcionPlay(
+  tokenCompra: string,
+  producto: string,
+): Promise<void> {
   if (!tokenCompra || tokenCompra.length > 4096 || !producto || producto.length > 256) {
     throw new Error('La compra no tiene datos válidos para su confirmación.');
   }
@@ -57,7 +60,11 @@ export async function confirmarSuscripcionPlay(tokenCompra: string, producto: st
 }
 
 /** No reemplaza la validación de titularidad, producto, entorno ni la transacción. */
-export function interpretarCompraPlay(compra: CompraPlay, producto: string, ahora: number): {
+export function interpretarCompraPlay(
+  compra: CompraPlay,
+  producto: string,
+  ahora: number,
+): {
   vigente: boolean;
   vencimiento: number | null;
   esPrueba: boolean;
@@ -73,7 +80,10 @@ export function interpretarCompraPlay(compra: CompraPlay, producto: string, ahor
     .filter(Number.isFinite);
   const vencimiento = vencimientos.length ? Math.max(...vencimientos) : null;
   return {
-    vigente: Number.isFinite(ahora) && vencimiento !== null && vencimiento > ahora &&
+    vigente:
+      Number.isFinite(ahora) &&
+      vencimiento !== null &&
+      vencimiento > ahora &&
       estadosVigentes.has(compra.subscriptionState ?? ''),
     vencimiento,
     esPrueba: compra.testPurchase !== undefined,

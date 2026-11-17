@@ -35,20 +35,20 @@ Incorporar una suscripción mensual mediante Google Play Billing, con acceso com
 
 ## Mapa de cambios
 
-| Archivo o recurso | Acción | Símbolos principales | Propósito |
-| --- | --- | --- | --- |
-| `firestore.rules`, `firebase.json` | Modificar | reglas de permisos, funciones | Aislar estado de suscripción y servidor |
-| `functions/` | Crear | servicios y funciones de suscripción | Verificar compras y mantener permisos |
-| `src/dominio/suscripcion.ts` | Crear | tipos y reglas de acceso | Centralizar estados y decisiones |
-| `src/stores/suscripcion.ts` | Crear | `useSuscripcionStore` | Exponer estado reactivo por cuenta |
-| `src/servicios/suscripcion/` | Crear | compra, lectura y tiempo confiable | Integrar plataformas y servidor |
-| `src/stores/autenticacion.ts` | Modificar | `actualizarUsuario`, `puedeGenerarSalidaPresupuesto` | Coordinar sesión y permisos |
-| `src/layouts/MainLayout.vue`, `src/pages/ConfiguracionPage.vue` | Modificar | publicidad y privacidad | Mostrar anuncios solo cuando corresponda |
-| `src/pages/NuevoPresupuestoPage.vue`, `src/pages/VistaPreviaPresupuestoPage.vue` | Modificar | acciones y `modo-prueba` | Aplicar límites y marca coherentes |
-| `src/servicios/documentos/accionesPresupuesto.ts` | Modificar | `permitirSalida` | Mantener defensa común en acciones de salida |
-| `src/components/` y `src/css/Variables.css` | Modificar o crear | interfaz de suscripción | Mostrar estado, compra y condiciones |
-| `src-capacitor/` | Modificar | integración Billing y reloj Android | Comprar y medir tiempo transcurrido |
-| `README.md`, pruebas existentes y nuevas | Modificar | operación y verificaciones | Documentar entornos y validación |
+| Archivo o recurso                                                                | Acción            | Símbolos principales                                 | Propósito                                    |
+| -------------------------------------------------------------------------------- | ----------------- | ---------------------------------------------------- | -------------------------------------------- |
+| `firestore.rules`, `firebase.json`                                               | Modificar         | reglas de permisos, funciones                        | Aislar estado de suscripción y servidor      |
+| `functions/`                                                                     | Crear             | servicios y funciones de suscripción                 | Verificar compras y mantener permisos        |
+| `src/dominio/suscripcion.ts`                                                     | Crear             | tipos y reglas de acceso                             | Centralizar estados y decisiones             |
+| `src/stores/suscripcion.ts`                                                      | Crear             | `useSuscripcionStore`                                | Exponer estado reactivo por cuenta           |
+| `src/servicios/suscripcion/`                                                     | Crear             | compra, lectura y tiempo confiable                   | Integrar plataformas y servidor              |
+| `src/stores/autenticacion.ts`                                                    | Modificar         | `actualizarUsuario`, `puedeGenerarSalidaPresupuesto` | Coordinar sesión y permisos                  |
+| `src/layouts/MainLayout.vue`, `src/pages/ConfiguracionPage.vue`                  | Modificar         | publicidad y privacidad                              | Mostrar anuncios solo cuando corresponda     |
+| `src/pages/NuevoPresupuestoPage.vue`, `src/pages/VistaPreviaPresupuestoPage.vue` | Modificar         | acciones y `modo-prueba`                             | Aplicar límites y marca coherentes           |
+| `src/servicios/documentos/accionesPresupuesto.ts`                                | Modificar         | `permitirSalida`                                     | Mantener defensa común en acciones de salida |
+| `src/components/` y `src/css/Variables.css`                                      | Modificar o crear | interfaz de suscripción                              | Mostrar estado, compra y condiciones         |
+| `src-capacitor/`                                                                 | Modificar         | integración Billing y reloj Android                  | Comprar y medir tiempo transcurrido          |
+| `README.md`, pruebas existentes y nuevas                                         | Modificar         | operación y verificaciones                           | Documentar entornos y validación             |
 
 ## FASE 1: Preparar infraestructura y pagos
 
@@ -60,7 +60,8 @@ Definir la integración verificada y preparar entornos separados sin afectar a u
 
 - [ ] Comprobar el MCP de Firebase, la cuenta activa, ambos proyectos, la ubicación de Firestore y el estado de facturación. Usar el MCP si está disponible; registrar solo resultados no sensibles. No activar Blaze ni crear recursos de pago hasta revisar alcance, costos y autorización necesaria.
   - [x] Comprobar la cuenta de desarrollo y confirmar en las consolas que pruebas y producción están en Spark.
-  - [ ] Verificar la ubicación de Firestore en ambos proyectos y completar la revisión de facturación.
+  - [x] Verificar que Firestore de ambos proyectos está en `southamerica-east1`.
+  - [ ] Completar la revisión de facturación antes de activar servicios pagos.
 - [ ] Comprobar el perfil de pagos de Play Console, la información requerida para recibir ingresos, la declaración de comerciante y los impuestos aplicables. Leo completa datos bancarios, verificaciones, PIN y consentimientos; no registrar datos sensibles en el repositorio.
 - [ ] Identificar una integración de Play Billing compatible con las versiones del proyecto y las exigencias vigentes de Google; comparar documentación y mantenimiento, validar la necesidad antes de instalar cualquier dependencia y fijar su versión. No inventar APIs de un plugin aún no seleccionado.
 - [ ] Diseñar `functions/` con TypeScript estricto y la configuración de `firebase.json`, scripts y despliegue por entorno explícito. Definir cuentas de servicio con permisos mínimos, API de Google Play, Pub/Sub y notificaciones RTDN; no incluir claves privadas ni secretos en código o logs.
@@ -85,6 +86,8 @@ Establecer una única fuente de verdad para los permisos de cada cuenta.
   - [ ] Integrar el estado de compra verificado y configurar la activación y las exenciones por entorno.
 - [ ] Mantener el inicio de los 10 días desde el registro incluso si el usuario demora en verificar su correo; no ampliar la prueba por esa demora. Leo decidió dejar cualquier cambio de esta política para el futuro.
 - [ ] Identificar las cuentas de Pablo y Leo mediante UID y verificación segura obtenidos en el entorno correspondiente; no dar Pro por un correo editable desde el cliente ni guardar datos personales nuevos en archivos versionados. Registrar asignaciones únicamente desde servidor administrativo y mantenerlas separadas por entorno.
+  - [x] Registrar y comprobar las exenciones de Pablo y de la cuenta designada de Leo en producción, y la cuenta designada de Leo en pruebas, usando sus UID de cada proyecto.
+  - [ ] Si Pablo participa en el entorno de pruebas, identificar allí su cuenta y registrar su exención de forma separada.
 - [ ] En `firestore.rules`, permitir leer el propio estado al dueño autenticado y prohibir toda escritura cliente de prueba, exención, compra y vencimiento. Mantener acceso existente a datos y respaldos; probar aislamiento y falsificación cuando Leo autorice pruebas.
   - [x] Agregar las reglas locales y comprobar en el emulador la lectura propia, el aislamiento y el rechazo de escrituras cliente.
   - [ ] Desplegar las reglas cuando corresponda y verificar la integración completa con los respaldos y permisos.
@@ -108,10 +111,16 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
   - [x] Preparar la consulta a Play, la comparación de identidad y la reserva transaccional de titularidad; probar la exclusividad con datos sintéticos.
   - [x] Preparar la comprobación de producto, identidad y entorno, el cifrado autenticado del token y la llamada de confirmación a Play; probar cifrado, aislamiento y reserva con datos sintéticos.
   - [x] Preparar una función autenticada que coordina verificación, asignación y confirmación, y probar el procesamiento simulado y la protección ante respuestas antiguas.
+  - [x] Admitir una recompra sin enlace cuando la compra anterior ya finalizó, con control transaccional y prueba sintética de avisos tardíos.
   - [ ] Integrar y verificar el flujo completo, incluidos la confirmación, el almacenamiento seguro y las compras pendientes.
 - [ ] Procesar RTDN mediante Pub/Sub de forma idempotente: consultar el estado completo a Google, manejar renovaciones, cancelación con acceso hasta vencimiento, reembolsos, revocación y recuperación de pagos. Atender duplicados, orden no garantizado y errores con reintentos; no confiar exclusivamente en el evento ni en datos enviados por el cliente.
+  - [x] Preparar el consumidor, reconsulta y registro de reembolsos por orden; probar un aviso anterior al registro y una renovación posterior con datos sintéticos.
+  - [ ] Comprobar entrega real, permisos, reintentos, duplicados y enrutamiento por entorno antes de activarlo.
 - [ ] Al iniciar sesión, volver al primer plano y recuperar conexión, solicitar al servidor una reconciliación limitada por tiempo para evitar consultas repetidas. El servidor vuelve a consultar Google para compras asociadas cuando corresponda; también reintenta errores y revisa estados próximos a vencimiento para recuperarse de avisos demorados o perdidos. Guardar el último estado confirmado y la fecha de verificación; no interpretar un error de red como cancelación. Si no se puede verificar, mostrar un aviso con opción de reintento y aplicar la política sin conexión acordada. Las notificaciones visuales no sustituyen la actualización segura del permiso.
+  - [x] Preparar la reconciliación limitada, la revisión programada y las llamadas al iniciar, reconectar y volver al primer plano; probar el límite y un error de red con datos sintéticos.
+  - [ ] Comprobar la programación, los costos y el ciclo completo en los entornos reales.
 - [ ] Mantener Pro durante el período de gracia de Google y quitarlo cuando Google confirme suspensión o vencimiento, salvo el margen sin conexión acordado cuando el dispositivo no puede consultar el estado. Gestionar tokens enlazados y restauración para la misma cuenta sin transferir compras.
+  - [x] Diferenciar una renovación esperada de una cancelación confirmada para que esta última termine al vencimiento, incluso sin conexión; comprobarlo con datos sintéticos.
 - [ ] Documentar en `README.md` la configuración de productos, identidad de entorno, notificaciones y verificación de recepción. La web lee el permiso de la cuenta y dirige a Android para contratar; no implementa cobro propio.
 
 ## FASE 4: Interfaz, documentos y publicidad
@@ -126,6 +135,8 @@ Aplicar los beneficios de cada plan de forma coherente en todos los puntos de la
 - [ ] Actualizar `src/pages/NuevoPresupuestoPage.vue` y `src/pages/VistaPreviaPresupuestoPage.vue` para usar el permiso central en botones, acciones, impresión y `modo-prueba`. Revisar todos los consumidores de `puedeGenerarSalidaPresupuesto`, incluida `src/servicios/documentos/accionesPresupuesto.ts`, y evitar rutas alternativas que habiliten una salida Gratis por error.
 - [ ] Mantener en Gratis las funciones básicas, sincronización y descarga e importación de copias JSON de `PanelCopiasSeguridad.vue`; bloquear solo salida de presupuestos y mantener su marca. No imponer límites de cantidad ni borrar datos.
 - [ ] Crear componentes pequeños en `src/components/suscripcion/` para mostrar estado, fecha, prueba, compra y gestión; indicar el precio devuelto por Google, renovación automática, cancelación y ausencia de tarjeta durante la prueba. En web explicar cómo contratar desde Android. Mostrar aviso de 10 días a cuentas existentes al activarse.
+  - [x] Preparar el panel y el aviso de prueba, y conectarlos detrás del interruptor de suscripción desactivado.
+  - [ ] Verificar presentación, textos, compra y aviso en Android y web antes de activar el interruptor.
 - [ ] Reutilizar componentes Quasar y tokens de `src/css/Variables.css`, con diseño apto para teléfono y escritorio. Evitar que pantallas, modales o banners tapen acciones y asegurar estados de carga, error y reintento.
 
 ## FASE 5: Uso sin conexión
@@ -138,10 +149,12 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
 
 - [ ] Crear en `src/servicios/suscripcion/` un contrato para registrar hora confiable del servidor, vencimiento y estado del UID, protegidos contra modificación accidental y asociados al entorno y cuenta. No afirmar que el cliente puede impedir toda manipulación.
   - [x] Preparar lectura y escritura local de la referencia temporal con validación y asociación a cuenta y entorno.
-  - [ ] Guardar también el estado verificado y conectar la referencia al ciclo real de la aplicación.
+  - [x] Guardar el estado verificado y conectar la referencia al ciclo de la aplicación detrás del interruptor desactivado.
+  - [ ] Comprobar la referencia y el ciclo en Android.
 - [ ] Implementar un adaptador Android compatible con Capacitor que use `SystemClock.elapsedRealtime()` desde la última referencia confiable; incluye reposo y no cambia al ajustar la fecha. Calcular el plazo hasta vencimiento más cinco días cuando no pueda verificarse la renovación.
   - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
   - [ ] Conectarlo al estado real y comprobarlo en Android, incluidos cambios de hora y reinicios.
+  - [x] Conectar la lectura de la referencia y el cálculo al store detrás del interruptor desactivado.
 - [ ] Detectar reinicio o referencia temporal no verificable y pedir conexión para comprobar Pro, con aviso claro y datos intactos. No asumir que el contador conserva el tiempo apagado; una reinstalación o almacenamiento borrado también requiere nueva verificación.
 - [ ] Guardar junto con la hora del servidor el valor de `SystemClock.elapsedRealtime()` y `Settings.Global.BOOT_COUNT`; al reabrir la app comparar el contador de arranques y calcular el tiempo transcurrido solo si ambos valores son coherentes. `BOOT_COUNT` existe desde API 24: verificar compatibilidad y comportamiento en los Android admitidos. Si cambió, falta, es incoherente o no resulta confiable, pedir conexión. [Contador de arranques de Android](https://developer.android.com/reference/android/provider/Settings.Global#BOOT_COUNT).
 - [ ] En la web no crear un sistema especial para abrir la app sin conexión ni persistencia adicional. Si ya estaba abierta al cortarse la conexión, permitir lo que esté disponible; cuando una acción no pueda completarse, mostrar un aviso claro de falta de conexión. Al reconectar, verificar nuevamente Pro. Mantener los datos y la caché en memoria existente. Los cinco días de confianza y la protección del reloj se aplican en Android.
@@ -156,8 +169,9 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 ### Pruebas automatizadas
 
 - [ ] Con solicitud explícita, ejecutar `npm run typecheck`, `npm run lint:check`, `npm run test:firebase` y `npm run test:respaldo`, además de los comandos nuevos realmente incorporados; informar fallos sin ocultarlos.
-  - [x] Ejecutar las pruebas de Firestore, respaldo y suscripción con datos sintéticos: 17 pruebas aprobadas.
-  - [ ] Ejecutar typecheck y lint cuando Leo los autorice, y repetir las pruebas después de completar la integración.
+  - [x] Ejecutar las pruebas de Firestore, respaldo y suscripción con datos sintéticos: 18 de Firestore, 9 de suscripción y 2 de respaldo aprobadas.
+  - [x] Ejecutar typecheck del cliente y servidor, y lint del proyecto, con autorización de Leo.
+  - [ ] Repetir las verificaciones después de los cambios posteriores y completar las pruebas de integración reales.
 - [ ] Cubrir reglas Firestore contra escritura de permisos y acceso entre cuentas; probar concurrencia, inicio único de prueba, eventos duplicados y asociación exclusiva de compras con datos sintéticos.
 - [ ] Cubrir con reloj simulado vencimiento, cinco días, reinicio, cambio de hora, cambio de cuenta y cambios de estado de Play; comprobar que los respaldos siguen disponibles en Gratis.
 
@@ -184,6 +198,10 @@ Pruebas autorizadas por Leo: pasaron 4 pruebas sintéticas de acceso, reloj e in
 Continuación: se prepararon la validación de compra por producto, cuenta y entorno, el cifrado autenticado de tokens y la llamada de confirmación a Play. La reserva transaccional guarda el token cifrado sin duplicarlo en texto claro. Pasaron 6 pruebas sintéticas de suscripción y 11 de reglas y transacciones; falta integrar estas piezas, gestionar la clave en Secret Manager por entorno y probar con Play. No se crearon secretos ni servicios pagos.
 
 Continuación posterior: se incorporó una operación autenticada de compra, control de revisiones para descartar respuestas antiguas, un adaptador Android con Billing 9.1.0, lectura de notificaciones y persistencia temporal local. Pasaron 9 pruebas sintéticas de suscripción y 14 de Firestore con Play simulado. Aún no están conectadas la interfaz, las notificaciones RTDN, los reembolsos y la reconciliación; tampoco se comprobaron compras ni el adaptador en un dispositivo. La operación no está desplegada y requiere configuración y pruebas antes de usarse.
+
+Continuación actual: se prepararon el consumidor RTDN, registro de reembolsos, reconciliación limitada y revisión programada. El permiso central, la referencia Android y el panel están conectados localmente mediante `SUSCRIPCION_HABILITADA = false`; no cambian el comportamiento vigente. Pasaron 9 pruebas sintéticas de suscripción y 17 en el emulador Firestore. Una ejecución anterior falló y una repetición pasó; no se identificó la causa de esa intermitencia. Quedan pendientes verificación real, revisión de costos, despliegue, comprobaciones nativas y pruebas del ciclo de interfaz completo. No activar el interruptor antes de completarlas.
+
+Última revisión: se probó el margen sin conexión para cancelación y renovación, y la recompra sin token enlazado después de finalizar la compra anterior. Pasaron 9 pruebas de suscripción y 18 en Firestore; la ejecución mostró una advertencia de búsqueda de metadatos, pero terminó correctamente. La recompra y el ciclo completo aún deben comprobarse con Google Play real.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba

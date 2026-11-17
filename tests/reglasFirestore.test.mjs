@@ -127,5 +127,7 @@ test('solo el dueño verificado lee el estado y ningún cliente modifica permiso
   await assertFails(getDoc(doc(dueno, 'suscripcionesPrivadas/cuenta-a')));
   await assertFails(setDoc(doc(dueno, 'suscripcionesPrivadas/cuenta-a'), { exento: true }));
   await assertFails(setDoc(doc(dueno, 'titularesCompras/token-sintetico'), { uid: 'cuenta-a' }));
+  await assertFails(getDoc(doc(dueno, 'reembolsosPendientes/token-sintetico')));
+  await assertFails(setDoc(doc(dueno, 'reembolsosPendientes/token-sintetico'), { ordenes: [] }));
   await assertFails(setDoc(doc(dueno, 'configuracionSuscripcion/activacion'), { fecha: 0 }));
 });

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
+import { useRoute } from 'vue-router';
 import { Capacitor } from '@capacitor/core';
 import FormularioConfiguracion from '@/components/configuracion/FormularioConfiguracion.vue';
 import PanelCopiasSeguridad from '@/components/configuracion/PanelCopiasSeguridad.vue';
@@ -11,8 +12,11 @@ import { useClientesStore } from '@/stores/clientes';
 import { useMaterialesStore } from '@/stores/materiales';
 import { usePresupuestosStore } from '@/stores/presupuestos';
 import { useAutenticacionStore } from '@/stores/autenticacion';
+import { SUSCRIPCION_HABILITADA } from '@/configuracion/configuracionSuscripcion';
+import PanelSuscripcion from '@/components/suscripcion/PanelSuscripcion.vue';
 
 const $q = useQuasar();
+const ruta = useRoute();
 const autenticacionStore = useAutenticacionStore();
 const { mostrarOpcionesPrivacidad, abrirOpcionesPrivacidad, iniciarPublicidad } = usePublicidad();
 const esAndroid = Capacitor.getPlatform() === 'android';
@@ -21,8 +25,15 @@ const clientesStore = useClientesStore();
 const materialesStore = useMaterialesStore();
 const presupuestosStore = usePresupuestosStore();
 const cambiosPendientes = ref(false);
-type CategoriaConfiguracion = 'empresa' | 'valores' | 'cobros' | 'comunicacion' | 'copias';
+type CategoriaFormulario = 'empresa' | 'valores' | 'cobros' | 'comunicacion' | 'copias';
+type CategoriaConfiguracion = CategoriaFormulario | 'suscripcion';
 const categoriaActiva = ref<CategoriaConfiguracion>('empresa');
+const categoriaFormulario = computed<CategoriaFormulario>({
+  get: () => (categoriaActiva.value === 'suscripcion' ? 'empresa' : categoriaActiva.value),
+  set: (valor) => {
+    categoriaActiva.value = valor;
+  },
+});
 const CATEGORIAS_CONFIGURACION: {
   id: CategoriaConfiguracion;
   nombre: string;
@@ -49,9 +60,21 @@ const CATEGORIAS_CONFIGURACION: {
     descripcion: 'Exportar e importar',
     icono: 'backup',
   },
+  ...(SUSCRIPCION_HABILITADA
+    ? [
+        {
+          id: 'suscripcion' as const,
+          nombre: 'Suscripción',
+          descripcion: 'Plan y beneficios',
+          icono: 'workspace_premium',
+        },
+      ]
+    : []),
 ];
 
 onMounted(() => {
+  if (SUSCRIPCION_HABILITADA && ruta.query.seccion === 'suscripcion')
+    categoriaActiva.value = 'suscripcion';
   void configuracionStore.asegurarConfiguracionCargada();
 });
 
@@ -89,7 +112,7 @@ async function actualizarDatosImportados(recargarConfiguracion: boolean): Promis
 
 async function revisarOpcionesPrivacidad(): Promise<void> {
   await abrirOpcionesPrivacidad();
-  if (!autenticacionStore.estaAutenticado) await iniciarPublicidad();
+  if (autenticacionStore.mostrarPublicidad) await iniciarPublicidad();
 }
 </script>
 
@@ -135,8 +158,8 @@ async function revisarOpcionesPrivacidad(): Promise<void> {
 
         <div class="espacio-configuracion__contenido">
           <FormularioConfiguracion
-            v-show="categoriaActiva !== 'copias'"
-            v-model:categoria-activa="categoriaActiva"
+            v-show="categoriaActiva !== 'copias' && categoriaActiva !== 'suscripcion'"
+            v-model:categoria-activa="categoriaFormulario"
             :configuracion="configuracionStore.configuracion"
             :guardando="configuracionStore.guardando"
             @guardar="guardarConfiguracion"
@@ -148,11 +171,12 @@ async function revisarOpcionesPrivacidad(): Promise<void> {
               :actualizar-datos="actualizarDatosImportados"
             />
           </div>
+          <PanelSuscripcion v-if="SUSCRIPCION_HABILITADA && categoriaActiva === 'suscripcion'" />
         </div>
       </div>
 
       <section
-        v-if="esAndroid && !autenticacionStore.estaAutenticado && mostrarOpcionesPrivacidad"
+        v-if="esAndroid && autenticacionStore.mostrarPublicidad && mostrarOpcionesPrivacidad"
         class="opciones-privacidad-publicidad"
         aria-label="Privacidad de anuncios"
       >

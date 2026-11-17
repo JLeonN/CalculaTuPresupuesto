@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue';
 import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
 import { useQuasar } from 'quasar';
+import { useAccesoSalida } from '@/composables/useAccesoSalida';
 import { useRoute, useRouter } from 'vue-router';
 import AgregadorMaterialPresupuesto from '@/components/presupuestos/AgregadorMaterialPresupuesto.vue';
 import ControlEstadoPresupuesto from '@/components/presupuestos/ControlEstadoPresupuesto.vue';
@@ -51,6 +52,7 @@ type DocumentoPresupuestoExpuesto = {
 const ruta = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const { solicitarAccesoSalida } = useAccesoSalida();
 const autenticacionStore = useAutenticacionStore();
 const clientesStore = useClientesStore();
 const configuracionStore = useConfiguracionStore();
@@ -529,7 +531,7 @@ function obtenerMensajeErrorGuardado(errorCapturado: unknown): string {
 
 function descargarPresupuesto(): void {
   if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
-    autenticacionStore.solicitarInicioSesion();
+    solicitarAccesoSalida();
     return;
   }
 
@@ -538,7 +540,7 @@ function descargarPresupuesto(): void {
 
 function enviarPresupuesto(): void {
   if (!autenticacionStore.puedeGenerarSalidaPresupuesto) {
-    autenticacionStore.solicitarInicioSesion();
+    solicitarAccesoSalida();
     return;
   }
 
@@ -881,7 +883,9 @@ function restablecerFechaPresupuesto(): void {
               :aria-label="
                 autenticacionStore.puedeGenerarSalidaPresupuesto
                   ? 'Descargar PDF'
-                  : 'Descargar PDF, requiere iniciar sesión'
+                  : autenticacionStore.estaAutenticado
+                    ? 'Descargar PDF, requiere Pro'
+                    : 'Descargar PDF, requiere iniciar sesión'
               "
               :loading="accionDocumento === 'descargar'"
               :disable="presupuestosStore.guardando || accionDocumento !== null"
@@ -898,7 +902,9 @@ function restablecerFechaPresupuesto(): void {
               :aria-label="
                 autenticacionStore.puedeGenerarSalidaPresupuesto
                   ? 'Enviar presupuesto'
-                  : 'Enviar presupuesto, requiere iniciar sesión'
+                  : autenticacionStore.estaAutenticado
+                    ? 'Enviar presupuesto, requiere Pro'
+                    : 'Enviar presupuesto, requiere iniciar sesión'
               "
               :loading="accionDocumento === 'enviar'"
               :disable="
@@ -927,7 +933,7 @@ function restablecerFechaPresupuesto(): void {
           ref="documentoPresupuesto"
           :datos="datosDocumento"
           :configuracion="configuracionDocumentoEfectiva"
-          :modo-prueba="!autenticacionStore.estaAutenticado"
+          :modo-prueba="autenticacionStore.mostrarMarcaPresupuesto"
           oculto
         />
       </div>

@@ -8,6 +8,9 @@ import { useMaterialesStore } from './materiales';
 import { usePresupuestosStore } from './presupuestos';
 import { useConfiguracionStore } from './configuracion';
 import { defineStore } from 'pinia';
+import { SUSCRIPCION_HABILITADA } from '@/configuracion/configuracionSuscripcion';
+import { useSuscripcionStore } from './suscripcion';
+import { observarEstadoSuscripcion } from '@/servicios/suscripcion/servicioSuscripcion';
 
 const servicioAutenticacion = crearServicioAutenticacion();
 
@@ -18,15 +21,34 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   const error = ref<string | null>(null);
   const modalInicioSesionVisible = ref(false);
   const estaAutenticado = computed(() => usuario.value !== null);
-  const puedeGenerarSalidaPresupuesto = computed(() => estaAutenticado.value);
+  const suscripcionStore = useSuscripcionStore();
+  const puedeGenerarSalidaPresupuesto = computed(() =>
+    SUSCRIPCION_HABILITADA
+      ? estaAutenticado.value && suscripcionStore.acceso.puedeGenerarSalida
+      : estaAutenticado.value,
+  );
+  const mostrarMarcaPresupuesto = computed(() =>
+    SUSCRIPCION_HABILITADA
+      ? !estaAutenticado.value || suscripcionStore.acceso.mostrarMarca
+      : !estaAutenticado.value,
+  );
+  const mostrarPublicidad = computed(() =>
+    SUSCRIPCION_HABILITADA
+      ? inicializada.value && (!estaAutenticado.value || suscripcionStore.acceso.mostrarPublicidad)
+      : !estaAutenticado.value,
+  );
   const firebaseActivo = estaFirebaseConfigurado();
   let promesaInicializacion: Promise<void> | null = null;
   let dejarDeObservar: (() => void) | null = null;
+  let dejarDeObservarSuscripcion: (() => void) | null = null;
 
   function actualizarUsuario(usuarioNuevo: UsuarioAutenticado | null): void {
     const idAnterior = usuario.value?.id ?? null;
     const idNuevo = usuarioNuevo?.id ?? null;
     if (idAnterior !== idNuevo) {
+      dejarDeObservarSuscripcion?.();
+      dejarDeObservarSuscripcion = null;
+      suscripcionStore.limpiar();
       usuario.value = null;
       useClientesStore().invalidarDatos();
       useMaterialesStore().invalidarDatos();
@@ -35,6 +57,16 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     }
     usuario.value = usuarioNuevo;
     if (idAnterior !== idNuevo) {
+      if (SUSCRIPCION_HABILITADA && idNuevo) {
+        void suscripcionStore.cargar(idNuevo);
+        dejarDeObservarSuscripcion = observarEstadoSuscripcion(
+          idNuevo,
+          (tipo, vencimiento, permiteMargen) => {
+            if (usuario.value?.id === idNuevo)
+              suscripcionStore.notificarCambio(tipo, vencimiento, permiteMargen);
+          },
+        );
+      }
       void Promise.all([
         useClientesStore().cargarClientes(),
         useMaterialesStore().cargarMateriales(),
@@ -171,6 +203,8 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     modalInicioSesionVisible,
     estaAutenticado,
     puedeGenerarSalidaPresupuesto,
+    mostrarMarcaPresupuesto,
+    mostrarPublicidad,
     firebaseActivo,
     inicializarSesion,
     iniciarSesion,

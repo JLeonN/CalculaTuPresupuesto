@@ -10,11 +10,7 @@ export function obtenerIdentificadorCuenta(uid: string, proyecto: string): strin
 }
 
 /** La igualdad del identificador no reemplaza la asociación exclusiva del token. */
-export function correspondeACuenta(
-  compra: CompraPlay,
-  uid: string,
-  proyecto: string,
-): boolean {
+export function correspondeACuenta(compra: CompraPlay, uid: string, proyecto: string): boolean {
   const recibido = compra.externalAccountIdentifiers?.obfuscatedExternalAccountId;
   if (typeof recibido !== 'string' || !/^[0-9a-f]{64}$/.test(recibido)) return false;
   const esperado = obtenerIdentificadorCuenta(uid, proyecto);
