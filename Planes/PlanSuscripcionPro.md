@@ -107,7 +107,11 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
 - [ ] Crear `src/servicios/suscripcion/servicioComprasAndroid.ts` como adaptador del plugin validado: consultar producto y precio mostrado por Play, iniciar compra con identificador de cuenta ofuscado, consultar compras recuperables y entregar el token al servidor. No enviar correos en texto claro como identificadores.
   - [x] Preparar el adaptador con `@capgo/native-purchases` 8.9.6 y desactivar la confirmación automática; consulta precio y compras, y envía el token al servidor.
   - [x] Sincronizar el plugin en el proyecto nativo y compilar una APK de depuración.
-  - [ ] Probar compras y recuperación reales con Play y revisar la licencia antes de publicar.
+  - [x] Revisar la licencia MPL-2.0 del paquete, identificar la revisión declarada de su código fuente y documentar los pasos de distribución pendientes.
+  - [x] Comprobar en el código del plugin y en la configuración Android generada que `autoFinishTransactions` está desactivado globalmente; la compra también desactiva su confirmación automática individual.
+  - [x] Preparar en «Más» un aviso con enlaces a la licencia y al código fuente identificado del plugin.
+  - [ ] Comprobar la presentación y apertura de los enlaces del aviso en la compilación definitiva y revisar cualquier modificación al plugin antes de distribuir.
+  - [ ] Probar compras, recuperación y eventos reales con Play, incluida la confirmación a cargo del servidor.
 - [ ] En `functions/`, verificar tokens y producto mediante Google Play Developer API, asociarlos transaccionalmente a un UID y rechazar asociaciones con otra cuenta. Atender compras pendientes sin conceder acceso prematuro; confirmar la compra válida dentro del plazo exigido por Google.
   - [x] Preparar la consulta a Play, la comparación de identidad y la reserva transaccional de titularidad; probar la exclusividad con datos sintéticos.
   - [x] Preparar la comprobación de producto, identidad y entorno, el cifrado autenticado del token y la llamada de confirmación a Play; probar cifrado, aislamiento y reserva con datos sintéticos.
@@ -189,8 +193,9 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 - [ ] Con solicitud explícita, ejecutar `npm run typecheck`, `npm run lint:check`, `npm run test:firebase` y `npm run test:respaldo`, además de los comandos nuevos realmente incorporados; informar fallos sin ocultarlos.
   - [x] Ejecutar las pruebas de Firestore, respaldo y suscripción con datos sintéticos: 18 de Firestore, 9 de suscripción y 2 de respaldo aprobadas.
   - [x] Ejecutar typecheck del cliente y servidor, y lint del proyecto, con autorización de Leo.
-  - [ ] Repetir las verificaciones después de los cambios posteriores y completar las pruebas de integración reales.
-- [ ] Cubrir reglas Firestore contra escritura de permisos y acceso entre cuentas; probar concurrencia, inicio único de prueba, eventos duplicados y asociación exclusiva de compras con datos sintéticos.
+  - [x] Repetir las pruebas locales de Firestore, respaldo, suscripción y panel tras los cambios posteriores; comprobar typecheck y lint del cliente.
+  - [ ] Completar las pruebas de integración reales y repetir las verificaciones cuando haya nuevos cambios que lo requieran.
+- [x] Cubrir reglas Firestore contra escritura de permisos y acceso entre cuentas; probar concurrencia, inicio único de prueba, eventos duplicados y asociación exclusiva de compras con datos sintéticos.
 - [ ] Cubrir con reloj simulado vencimiento, cinco días, reinicio, cambio de hora, cambio de cuenta y cambios de estado de Play; comprobar que los respaldos siguen disponibles en Gratis.
 
 ### Pruebas manuales de Leo
@@ -254,6 +259,10 @@ Continuación de copias Android: se verificó en memoria que el JSON generado ti
 Sincronización Android: con la cuenta y el proyecto Firebase de pruebas se creó un cliente ficticio, se comprobó que seguía visible al reabrir la app y se verificó su llegada a Firestore. Después se eliminó únicamente ese cliente de prueba y se confirmó que ya no estaba en el servidor. La suscripción estaba desactivada; esta comprobación no valida los permisos de Gratis ni la sincronización entre dos dispositivos.
 
 Importación Android: una copia completamente ficticia presentó un cliente faltante; se confirmó la importación y se verificó el cliente en Firestore de pruebas. Al volver a seleccionar la copia, la app informó que el registro ya existía y no había faltantes. Se eliminó el cliente ficticio del servidor con una precondición de versión y se retiró la copia temporal del teléfono. Siguen pendientes la comprobación con la suscripción habilitada y el guardado externo mediante un destino elegido en Android.
+
+Revisión del plugin Android: el paquete instalado y el registro npm declaran MPL-2.0 y una revisión concreta del repositorio; se documentaron en el README la fuente y las condiciones de distribución que deben atenderse. Se preparó en «Más» un aviso para usuarios; su presentación y enlaces siguen pendientes de comprobación en la compilación definitiva. El código del plugin confirma que la opción individual de compra no cubre por sí sola todos los eventos; la configuración global ya existente la desactiva y también figura en los recursos Android generados. Es una revisión estática: aún falta probar compras y eventos reales.
+
+Nueva ejecución local: aprobaron 24 pruebas de Firestore en el emulador, 11 de suscripción, 5 del panel y permisos y 2 de respaldos. El emulador mostró una advertencia de consulta de metadatos; terminó correctamente. También pasaron typecheck y lint del cliente. Las simulaciones no sustituyen las pruebas reales de Play, de los servicios desplegados ni del reloj nativo.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba

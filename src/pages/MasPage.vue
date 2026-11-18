@@ -29,6 +29,32 @@ const opcionesAdicionales = obtenerElementosNavegacion('pagina-mas');
           <q-icon name="chevron_right" aria-hidden="true" />
         </router-link>
       </nav>
+
+      <q-expansion-item label="Licencias de código abierto" icon="description">
+        <div class="texto-secundario">
+          <p>
+            La aplicación incluye @capgo/native-purchases 8.9.6, distribuido bajo la licencia
+            Mozilla Public License 2.0.
+          </p>
+          <p>
+            <a
+              href="https://www.mozilla.org/en-US/MPL/2.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Consultar licencia MPL 2.0
+            </a>
+            ·
+            <a
+              href="https://github.com/Cap-go/capacitor-native-purchases/tree/085c482dc0b8be0c407e56b909b801164a9ba5ed"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Consultar código fuente del plugin
+            </a>
+          </p>
+        </div>
+      </q-expansion-item>
     </main>
   </q-page>
 </template>
