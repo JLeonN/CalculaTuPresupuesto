@@ -106,7 +106,8 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
 
 - [ ] Crear `src/servicios/suscripcion/servicioComprasAndroid.ts` como adaptador del plugin validado: consultar producto y precio mostrado por Play, iniciar compra con identificador de cuenta ofuscado, consultar compras recuperables y entregar el token al servidor. No enviar correos en texto claro como identificadores.
   - [x] Preparar el adaptador con `@capgo/native-purchases` 8.9.6 y desactivar la confirmación automática; consulta precio y compras, y envía el token al servidor.
-  - [ ] Integrar la interfaz y probar compras y recuperación reales con Play; revisar la licencia y sincronizar el proyecto nativo antes de compilar.
+  - [x] Sincronizar el plugin en el proyecto nativo y compilar una APK de depuración.
+  - [ ] Probar compras y recuperación reales con Play y revisar la licencia antes de publicar.
 - [ ] En `functions/`, verificar tokens y producto mediante Google Play Developer API, asociarlos transaccionalmente a un UID y rechazar asociaciones con otra cuenta. Atender compras pendientes sin conceder acceso prematuro; confirmar la compra válida dentro del plazo exigido por Google.
   - [x] Preparar la consulta a Play, la comparación de identidad y la reserva transaccional de titularidad; probar la exclusividad con datos sintéticos.
   - [x] Preparar la comprobación de producto, identidad y entorno, el cifrado autenticado del token y la llamada de confirmación a Play; probar cifrado, aislamiento y reserva con datos sintéticos.
@@ -138,11 +139,16 @@ Aplicar los beneficios de cada plan de forma coherente en todos los puntos de la
 ### Pasos de ejecución
 
 - [ ] Sustituir en `src/layouts/MainLayout.vue` y `src/pages/ConfiguracionPage.vue` los criterios basados solo en `estaAutenticado` por el estado central: Gratis muestra anuncios en Android sujeto al consentimiento; prueba, Pro y exenciones no los muestran. Conservar limpieza del banner y opciones de privacidad.
+  - [x] Comprobar con servicios simulados los permisos centrales de salida, marca y publicidad para Gratis, prueba, Pro, exención y estado pendiente.
 - [ ] Actualizar `src/pages/NuevoPresupuestoPage.vue` y `src/pages/VistaPreviaPresupuestoPage.vue` para usar el permiso central en botones, acciones, impresión y `modo-prueba`. Revisar todos los consumidores de `puedeGenerarSalidaPresupuesto`, incluida `src/servicios/documentos/accionesPresupuesto.ts`, y evitar rutas alternativas que habiliten una salida Gratis por error.
+  - [x] Comprobar que las acciones comunes de descarga y envío rechazan la salida restringida antes de preparar el documento.
 - [ ] Mantener en Gratis las funciones básicas, sincronización y descarga e importación de copias JSON de `PanelCopiasSeguridad.vue`; bloquear solo salida de presupuestos y mantener su marca. No imponer límites de cantidad ni borrar datos.
+  - [x] Comprobar en la web aislada con Gratis simulado la descarga, la importación de una copia ficticia y la protección frente a duplicados.
+  - [ ] Comprobar las copias y sincronización con una cuenta real del entorno de pruebas.
 - [ ] Crear componentes pequeños en `src/components/suscripcion/` para mostrar estado, fecha, prueba, compra y gestión; indicar el precio devuelto por Google, renovación automática, cancelación y ausencia de tarjeta durante la prueba. En web explicar cómo contratar desde Android. Mostrar aviso de 10 días a cuentas existentes al activarse.
   - [x] Preparar el panel y el aviso de prueba, y conectarlos detrás del interruptor de suscripción desactivado.
   - [x] Comprobar los textos del panel web para visitante, Gratis, prueba, Pro y exento mediante renderizado aislado, sin conectar Firebase.
+  - [x] Revisar en navegador el panel aislado con estados simulados, en tamaño de escritorio y móvil, incluido el aviso de conexión y la opción de reintentar.
   - [ ] Verificar presentación, textos, compra y aviso en Android y web antes de activar el interruptor.
 - [ ] Reutilizar componentes Quasar y tokens de `src/css/Variables.css`, con diseño apto para teléfono y escritorio. Evitar que pantallas, modales o banners tapen acciones y asegurar estados de carga, error y reintento.
 
@@ -165,6 +171,8 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
 - [ ] Detectar reinicio o referencia temporal no verificable y pedir conexión para comprobar Pro, con aviso claro y datos intactos. No asumir que el contador conserva el tiempo apagado; una reinstalación o almacenamiento borrado también requiere nueva verificación.
 - [ ] Guardar junto con la hora del servidor el valor de `SystemClock.elapsedRealtime()` y `Settings.Global.BOOT_COUNT`; al reabrir la app comparar el contador de arranques y calcular el tiempo transcurrido solo si ambos valores son coherentes. `BOOT_COUNT` existe desde API 24: verificar compatibilidad y comportamiento en los Android admitidos. Si cambió, falta, es incoherente o no resulta confiable, pedir conexión. [Contador de arranques de Android](https://developer.android.com/reference/android/provider/Settings.Global#BOOT_COUNT).
 - [ ] En la web no crear un sistema especial para abrir la app sin conexión ni persistencia adicional. Si ya estaba abierta al cortarse la conexión, permitir lo que esté disponible; cuando una acción no pueda completarse, mostrar un aviso claro de falta de conexión. Al reconectar, verificar nuevamente Pro. Mantener los datos y la caché en memoria existente. Los cinco días de confianza y la protección del reloj se aplican en Android.
+  - [x] Conservar en memoria el último estado confirmado de la misma cuenta si falla una nueva consulta, respetando su vencimiento; comprobarlo con servicios simulados.
+  - [ ] Probar la desconexión y reconexión reales de la aplicación web abierta.
 - [ ] Al recuperar conexión, consultar el estado más reciente, aplicar suspensión o acceso confirmado y sustituir la referencia temporal. Evitar que un cambio de cuenta herede el permiso anterior.
 
 ## FASE TESTING
@@ -214,7 +222,7 @@ Decisión posterior de Leo: mantener los proyectos en Spark y priorizar el costo
 
 Prueba web como visitante: se comprobó el cálculo de mano de obra y su vista previa con marca de prueba, la solicitud de acceso al descargar el presupuesto o una copia de seguridad, y la validación de campos obligatorios de cliente y material. La instancia abierta estaba conectada a producción; no se guardaron registros de prueba. Dos intentos con cuentas de prueba no iniciaron sesión en ese entorno, por lo que siguen pendientes los flujos autenticados, las copias efectivas y las pruebas de suscripción habilitada.
 
-Leo prefiere posponer las pruebas en teléfono y continuar con lo demás. El comportamiento web comprobado sirve de referencia, pero no verifica la integración Android ni las compras, los anuncios y el reloj nativo; esas pruebas siguen pendientes.
+En una etapa anterior se pospusieron las pruebas en teléfono; posteriormente Leo autorizó instalar y probar la app en el POCO. El comportamiento web no verifica por sí solo la integración Android, las compras ni el reloj nativo.
 
 Prueba web con sesión iniciada en producción: se comprobó una vista previa sin guardar datos, el cálculo de mano de obra, la vista resumida y la confirmación de descarga del PDF. La copia de seguridad informó que inició la descarga, pero no se comprobó el archivo ni su importación. La suscripción permanecía deshabilitada, por lo que estas pruebas no verifican los permisos de los planes. Para probar escrituras sin afectar producción, seleccionar el entorno de pruebas y reiniciar Quasar antes de continuar.
 
@@ -223,6 +231,18 @@ Continuación local: se corrigió la prioridad de una exención sobre un estado 
 Panel web y compra pendiente: se agregó una prueba de renderizado aislado con Firebase deshabilitado que cubre los textos de visitante, Gratis, prueba, Pro y exento, y una prueba del cliente con el plugin Android y el servidor simulados. Firestore aprobó 21 pruebas, incluida la asociación de una compra pendiente y su aviso posterior. No se han comprobado interacción visual, diseño responsive, publicidad ni compras reales; sigue pendiente la recuperación automática cuando se pierde un aviso de compra pendiente.
 
 Recuperación posterior: se preparó un reintento programado para compras registradas cuyo aviso se pierda o cuya verificación falle. Conserva la compra anterior, reintenta errores de consulta o confirmación y detiene la revisión de compras pendientes canceladas. Pasaron 24 pruebas en el emulador, incluidas concurrencia y fallos simulados. La programación sigue sin desplegar y falta verificarla con Play y la interfaz reales; su frecuencia, capacidad y costos deben revisarse antes de activarla.
+
+Revisión visual web aislada: se comprobaron los estados de visitante, Gratis, prueba, Pro, exento, pendiente y error de conexión con datos ficticios, sin conectar Firebase. Se corrigió el panel para no ofrecer contratar Pro a cuentas Pro o exentas. Se revisó el componente en escritorio y ancho móvil; siguen pendientes la pantalla completa, el funcionamiento real de compra y las comprobaciones Android.
+
+Permisos centrales: con la suscripción simulada como habilitada y servicios aislados se comprobaron salida, marca y publicidad para los distintos estados, incluidos vencimiento y visitante. También se verificó que descarga y envío rechazan la salida restringida antes de generar el documento. Siguen pendientes las pruebas reales de impresión, anuncios y copias en cada plan.
+
+Continuación sin conexión: se corrigió la recuperación de la web abierta para conservar el último estado confirmado ante una consulta fallida, sin compartirlo entre cuentas ni extender el vencimiento. Se verificó con servicios simulados; queda pendiente comprobar el corte y regreso de la red en la interfaz completa.
+
+Copias en Gratis: en la vista web aislada, sin Firebase, se importó una copia ficticia, se comprobó que repetirla no duplica el cliente y se verificó que la descarga contiene el cliente de prueba. Esta comprobación no se realizó en el POCO con la suscripción habilitada.
+
+Prueba Android posterior: se compiló e instaló en el POCO dedicado una APK de depuración 0.0.8, con Firebase y publicidad de prueba, conservando los datos existentes. La app abrió y mostró un anuncio de prueba como visitante. La suscripción permanecía desactivada: aún no se comprobaron sus permisos, el reloj nativo ni compras reales. Antes de reutilizar los archivos generados para otra compilación hay que reconstruirlos para el entorno y la publicidad correspondientes.
+
+Continuación en el POCO: se inició sesión con una cuenta de prueba y se abrió Configuración, donde se cargaron los datos de la cuenta. También abrieron Clientes y Presupuestos sin un mensaje visible de error y mostraron la opción de crear registros; no se guardaron datos nuevos. Se preparó una prueba instrumentada de la referencia nativa del reloj, pero no se ejecutó: Android rechazó dos intentos de instalación de su APK auxiliar. La guía de USB documenta el control de pantalla mediante `uinput` y la instalación mediante ADB; no documenta una alternativa para esa restricción. No se comprobó el puente JavaScript ni el comportamiento ante reinicios o cambios de hora.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba

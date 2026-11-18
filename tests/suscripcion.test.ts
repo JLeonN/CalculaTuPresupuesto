@@ -13,6 +13,12 @@ import { verificarCompraPlay } from '../functions/src/verificacionCompra';
 import { interpretarNotificacionPlay } from '../functions/src/notificacionPlay';
 import { interpretarReferenciaPersistida } from '../src/servicios/suscripcion/referenciaPersistente';
 import { resolverAccesoAndroidSinConexion } from '../src/servicios/suscripcion/accesoSinConexion';
+import {
+  descargarDocumentoPresupuesto,
+  enviarDocumentoPresupuesto,
+  type OpcionesAccionDocumentoPresupuesto,
+} from '../src/servicios/documentos/accionesPresupuesto';
+import { ErrorSalidaPresupuestoRestringida } from '../src/dominio/autenticacion';
 
 test('solo una respuesta confirmada presenta la compra como verificada', () => {
   assert.equal(interpretarResultadoCompra({ actualizada: true, pendiente: false }), 'verificada');
@@ -22,7 +28,45 @@ test('solo una respuesta confirmada presenta la compra como verificada', () => {
   assert.throws(() => interpretarResultadoCompra(null));
 });
 
+test('las acciones de documento rechazan Gratis antes de preparar o enviar datos', async () => {
+  let preparaciones = 0;
+  const opciones: OpcionesAccionDocumentoPresupuesto = {
+    datos: {} as OpcionesAccionDocumentoPresupuesto['datos'],
+    configuracion: {} as OpcionesAccionDocumentoPresupuesto['configuracion'],
+    obtenerElemento: () => {
+      preparaciones += 1;
+      return null;
+    },
+    permitirSalida: false,
+    antesDeGenerar: async () => {
+      preparaciones += 1;
+    },
+  };
+  await assert.rejects(descargarDocumentoPresupuesto(opciones), ErrorSalidaPresupuestoRestringida);
+  await assert.rejects(enviarDocumentoPresupuesto(opciones), ErrorSalidaPresupuestoRestringida);
+  assert.equal(preparaciones, 0);
+});
+
 test('el acceso distingue prueba vigente, vencida, exención y verificación pendiente', () => {
+  const accesoGratis = {
+    puedeGenerarSalida: false,
+    mostrarMarca: true,
+    mostrarPublicidad: true,
+  };
+  const accesoPro = {
+    puedeGenerarSalida: true,
+    mostrarMarca: false,
+    mostrarPublicidad: false,
+  };
+  assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'gratis' }, 10), accesoGratis);
+  assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'prueba', vencimiento: 100 }, 99), accesoPro);
+  assert.deepEqual(
+    resolverAccesoSuscripcion({ tipo: 'prueba', vencimiento: 100 }, 100),
+    accesoGratis,
+  );
+  assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'pro', vencimiento: 100 }, 99), accesoPro);
+  assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'pro', vencimiento: 100 }, 100), accesoGratis);
+  assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'exento' }, 10), accesoPro);
   assert.deepEqual(resolverAccesoSuscripcion({ tipo: 'pendiente' }, 10), {
     puedeGenerarSalida: false,
     mostrarMarca: true,

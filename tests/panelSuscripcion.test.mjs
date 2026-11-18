@@ -17,6 +17,7 @@ before(async () => {
   servidor = await createServer({
     configFile: false,
     envFile: false,
+    optimizeDeps: { noDiscovery: true },
     plugins: [
       {
         name: 'firebase-aislado-para-prueba',
@@ -54,7 +55,7 @@ after(async () => {
   await servidor?.close();
 });
 
-async function renderizarPanel(estado, autenticado = true) {
+async function renderizarPanel(estado, autenticado = true, error = null) {
   const pinia = createPinia();
   setActivePinia(pinia);
   const autenticacion = useAutenticacionStore(pinia);
@@ -70,6 +71,7 @@ async function renderizarPanel(estado, autenticado = true) {
     };
   }
   suscripcion.estado = estado;
+  suscripcion.error = error;
   const app = createSSRApp(PanelSuscripcion);
   app.use(pinia);
   app.component(
@@ -97,9 +99,20 @@ test('el panel web explica los planes sin consultar servicios externos', async (
   const pro = await renderizarPanel({ tipo: 'pro', vencimiento: Date.UTC(2030, 0, 2) });
   assert.match(pro, /Plan Pro/);
   assert.match(pro, /Hasta el/);
+  assert.match(pro, /gestionar tu suscripción desde Google Play/);
+  assert.doesNotMatch(pro, /Para contratar Pro/);
   const exento = await renderizarPanel({ tipo: 'exento' });
   assert.match(exento, /<strong>Pro<\/strong>/);
   assert.doesNotMatch(exento, /Hasta el/);
+  assert.doesNotMatch(exento, /Para contratar Pro/);
   const visitante = await renderizarPanel({ tipo: 'pendiente' }, false);
   assert.match(visitante, /Iniciá sesión para comenzar tu prueba Pro de 10 días/);
+  const sinConexion = await renderizarPanel(
+    { tipo: 'pendiente' },
+    true,
+    'No se pudo verificar la suscripción.',
+  );
+  assert.match(sinConexion, /No se pudo verificar la suscripción/);
+  assert.match(sinConexion, /Reintentar/);
+  assert.doesNotMatch(sinConexion, /Para contratar Pro/);
 });

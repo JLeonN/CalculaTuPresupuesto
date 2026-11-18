@@ -12,6 +12,7 @@ before(async () => {
   servidor = await createServer({
     configFile: false,
     envFile: false,
+    optimizeDeps: { noDiscovery: true },
     resolve: {
       alias: [
         { find: '@/configuracion/firebase', replacement: moduloSimulado },

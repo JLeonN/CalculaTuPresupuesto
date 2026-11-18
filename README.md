@@ -63,7 +63,9 @@ Para preparar una futura integración, cada proyecto requiere los siguientes rec
 
 Las pruebas sintéticas de suscripción se ejecutan con `npm run test:suscripcion`. Para las reglas y transacciones del servidor se necesitan las dependencias de la raíz y de `functions/`, y se usa `npm run test:firebase`; este comando inicia Firestore en el emulador con el proyecto ficticio `demo-calcula-pruebas` y puertos propios. No utiliza los datos de los proyectos reales.
 
-`npm run test:panel-suscripcion` renderiza el componente web con estados ficticios y reemplaza la configuración Firebase por un adaptador que rechaza cualquier intento de conexión. También simula el resultado pendiente del plugin Android y su registro. Comprueba los textos y el flujo aislado sin habilitar la suscripción; no sustituye una prueba visual, interactiva o en un teléfono.
+`npm run test:panel-suscripcion` renderiza el componente web con estados ficticios y reemplaza la configuración Firebase por un adaptador que rechaza cualquier intento de conexión. También comprueba los permisos centrales por estado y simula el resultado pendiente del plugin Android y su registro. Estas pruebas aisladas no habilitan la suscripción ni sustituyen las comprobaciones reales en navegador y teléfono.
+
+Para revisar visualmente el panel web y las copias con estados ficticios, ejecutar `npm run test:panel-visual` y abrir `http://127.0.0.1:4179/tests/fixtures/panel-suscripcion.html`. El servidor escucha solo en esta computadora y sustituye Firebase por un adaptador que rechaza las conexiones. Los datos de esta vista se guardan localmente en su propio origen de prueba. Detenerlo con Ctrl+C al terminar. Es una vista aislada, no una prueba de las pantallas completas, publicidad o compras reales.
 
 Leo decidió mantener ambos proyectos en el plan gratuito Spark mientras se evalúa el crecimiento de la aplicación. Las pruebas locales anteriores no requieren activar facturación; desplegar Cloud Functions para la suscripción requiere Blaze y una revisión previa de sus costos. La cantidad de clientes por sí sola no garantiza mantenerse dentro de las cuotas gratuitas.
 
@@ -77,6 +79,8 @@ npm run firebase:produccion
 ```
 
 Elegí el entorno antes de cada compilación y reiniciá Quasar si estaba abierto. No alternes mientras se está compilando ni cambies manualmente uno solo de los dos archivos activos. Si el selector informa que no pudo restaurarlos, revisá ambos antes de compilar. Las huellas de Play actuales y anteriores están registradas en producción y el JSON Android se volvió a descargar; si cambian las firmas, hay que actualizar las huellas y descargarlo otra vez. El acceso con Google de la versión distribuida por Play sigue pendiente de comprobación.
+
+Los recursos Android generados pueden conservar la configuración y la publicidad de la última compilación de prueba aunque los archivos de configuración ya estén restaurados. Antes de compilar para otro entorno, volver a generar la app con Quasar y sincronizar Capacitor; no asumir que ejecutar Gradle directamente actualiza esos recursos.
 
 El proyecto Firebase de desarrollo es `calculatupresupuesto-pru-b2e9a` (plan Spark). Firestore está en `southamerica-east1`. Authentication admite correo/contraseña y Google; el registro por correo exige verificarlo antes de usar la cuenta. Los dominios autorizados por ahora son `localhost` y los propios de Firebase. En Android solo se registraron las huellas SHA de depuración; antes de publicar una versión nueva hay que registrar la huella de la firma de Play. La configuración web y Android se obtienen siempre desde la cuenta de desarrollo indicada en `Memory.md`.
 

@@ -17,6 +17,9 @@ const esAndroid = Capacitor.getPlatform() === 'android';
 const ocupado = ref(false);
 const mensaje = ref<string | null>(null);
 const producto = ref<Awaited<ReturnType<typeof consultarProductoAndroid>> | null>(null);
+const puedeContratar = computed(
+  () => suscripcion.estado.tipo === 'gratis' || suscripcion.estado.tipo === 'prueba',
+);
 const estadoVisible = computed(
   () =>
     ({
@@ -131,16 +134,25 @@ async function gestionar(): Promise<void> {
         Tu prueba no requiere tarjeta. Al terminar, pasarás al plan Gratis si no te suscribís.
       </p>
       <p>Pro permite descargar, enviar e imprimir presupuestos sin marca y elimina los anuncios.</p>
-      <p v-if="!esAndroid">
+      <p v-if="!esAndroid && puedeContratar">
         Para contratar Pro, abrí la aplicación Android e iniciá sesión con esta misma cuenta.
       </p>
-      <template v-else>
-        <p v-if="producto">
+      <p v-else-if="!esAndroid && suscripcion.estado.tipo === 'pro'">
+        Podés gestionar tu suscripción desde Google Play en tu dispositivo Android.
+      </p>
+      <template
+        v-if="
+          esAndroid &&
+          suscripcion.estado.tipo !== 'pendiente' &&
+          suscripcion.estado.tipo !== 'exento'
+        "
+      >
+        <p v-if="puedeContratar && producto">
           {{ producto.precio }} al mes. La suscripción se renueva automáticamente; podés cancelarla
           en Google Play.
         </p>
         <q-btn
-          v-if="!producto"
+          v-if="puedeContratar && !producto"
           flat
           no-caps
           label="Consultar precio"
@@ -148,7 +160,7 @@ async function gestionar(): Promise<void> {
           @click="cargarPrecio"
         />
         <q-btn
-          v-else
+          v-else-if="puedeContratar && producto"
           unelevated
           no-caps
           label="Suscribirme con Google Play"

@@ -129,6 +129,18 @@ export const useSuscripcionStore = defineStore('suscripcion', () => {
   }
 
   async function cargar(idUsuario: string): Promise<void> {
+    const referenciaWebAnterior =
+      Capacitor.getPlatform() === 'web' &&
+      uid.value === idUsuario &&
+      estado.value.tipo !== 'pendiente' &&
+      horaServidor.value !== null &&
+      referenciaMonotona !== null
+        ? {
+            estado: estado.value,
+            horaServidor: horaServidor.value,
+            referenciaMonotona,
+          }
+        : null;
     limpiar();
     if (!idUsuario) return;
     uid.value = idUsuario;
@@ -242,6 +254,14 @@ export const useSuscripcionStore = defineStore('suscripcion', () => {
         } catch {
           /* Sin referencia válida se mantiene el estado pendiente. */
         }
+      } else if (referenciaWebAnterior) {
+        // La web abierta conserva solo el último estado de esta cuenta y su reloj monotónico.
+        estado.value = referenciaWebAnterior.estado;
+        horaServidor.value = referenciaWebAnterior.horaServidor;
+        referenciaMonotona = referenciaWebAnterior.referenciaMonotona;
+        intervalo = setInterval(() => {
+          pulso.value += 1;
+        }, 1000);
       }
       if (!error.value)
         error.value =

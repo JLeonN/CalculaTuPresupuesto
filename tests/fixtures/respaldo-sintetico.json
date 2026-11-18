@@ -1,0 +1,22 @@
+{
+  "tipo": "calcula-tu-presupuesto-respaldo",
+  "versionFormato": 1,
+  "fechaExportacion": "2030-01-01T12:00:00.000Z",
+  "datos": {
+    "configuracion": null,
+    "clientes": [
+      {
+        "id": "cliente-sintetico-copias",
+        "nombre": "Cliente ficticio de prueba",
+        "telefonos": [],
+        "locales": [],
+        "correo": "",
+        "notas": "",
+        "fechaCreacion": "2030-01-01T12:00:00.000Z",
+        "fechaActualizacion": "2030-01-01T12:00:00.000Z"
+      }
+    ],
+    "materiales": [],
+    "presupuestos": []
+  }
+}
