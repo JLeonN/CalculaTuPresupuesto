@@ -110,6 +110,7 @@ Vincular una compra válida con una sola cuenta y reflejarla en Android y web.
   - [x] Revisar la licencia MPL-2.0 del paquete, identificar la revisión declarada de su código fuente y documentar los pasos de distribución pendientes.
   - [x] Comprobar en el código del plugin y en la configuración Android generada que `autoFinishTransactions` está desactivado globalmente; la compra también desactiva su confirmación automática individual.
   - [x] Preparar en «Más» un aviso con enlaces a la licencia y al código fuente identificado del plugin.
+  - [x] Comprobar en la web local que el aviso se despliega y presenta ambos enlaces.
   - [ ] Comprobar la presentación y apertura de los enlaces del aviso en la compilación definitiva y revisar cualquier modificación al plugin antes de distribuir.
   - [ ] Probar compras, recuperación y eventos reales con Play, incluida la confirmación a cargo del servidor.
 - [ ] En `functions/`, verificar tokens y producto mediante Google Play Developer API, asociarlos transaccionalmente a un UID y rechazar asociaciones con otra cuenta. Atender compras pendientes sin conceder acceso prematuro; confirmar la compra válida dentro del plazo exigido por Google.
@@ -150,6 +151,7 @@ Aplicar los beneficios de cada plan de forma coherente en todos los puntos de la
   - [x] Comprobar en la web aislada con Gratis simulado la descarga, la importación de una copia ficticia y la protección frente a duplicados.
   - [x] Comprobar en Android con una cuenta del entorno de pruebas la generación de un JSON válido y la previsualización de la misma copia sin duplicados, con la suscripción desactivada.
   - [x] Comprobar que un cliente ficticio creado desde Android con sesión iniciada llega a Firestore del entorno de pruebas; verificar también su eliminación posterior.
+  - [x] Guardar un cliente ficticio sin conexión en Android y comprobar que llega a Firestore de pruebas al recuperar el Wi-Fi; retirar el registro de prueba.
   - [x] Importar en Android una copia ficticia con un cliente faltante, verificar su llegada a Firestore y comprobar que una segunda importación no propone duplicarlo; retirar el registro ficticio.
   - [ ] Comprobar las copias y sincronización con una cuenta real del entorno de pruebas.
 - [ ] Crear componentes pequeños en `src/components/suscripcion/` para mostrar estado, fecha, prueba, compra y gestión; indicar el precio devuelto por Google, renovación automática, cancelación y ausencia de tarjeta durante la prueba. En web explicar cómo contratar desde Android. Mostrar aviso de 10 días a cuentas existentes al activarse.
@@ -173,6 +175,7 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
   - [ ] Comprobar la referencia y el ciclo en Android.
 - [ ] Implementar un adaptador Android compatible con Capacitor que use `SystemClock.elapsedRealtime()` desde la última referencia confiable; incluye reposo y no cambia al ajustar la fecha. Calcular el plazo hasta vencimiento más cinco días cuando no pueda verificarse la renovación.
   - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
+  - [x] Ejecutar en el POCO una comprobación de depuración del método nativo: sus dos lecturas coinciden con el reloj monotónico y el contador de arranques de Android.
   - [ ] Conectarlo al estado real y comprobarlo en Android, incluidos cambios de hora y reinicios.
   - [x] Conectar la lectura de la referencia y el cálculo al store detrás del interruptor desactivado.
 - [ ] Detectar reinicio o referencia temporal no verificable y pedir conexión para comprobar Pro, con aviso claro y datos intactos. No asumir que el contador conserva el tiempo apagado; una reinstalación o almacenamiento borrado también requiere nueva verificación.
@@ -197,6 +200,7 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
   - [ ] Completar las pruebas de integración reales y repetir las verificaciones cuando haya nuevos cambios que lo requieran.
 - [x] Cubrir reglas Firestore contra escritura de permisos y acceso entre cuentas; probar concurrencia, inicio único de prueba, eventos duplicados y asociación exclusiva de compras con datos sintéticos.
 - [ ] Cubrir con reloj simulado vencimiento, cinco días, reinicio, cambio de hora, cambio de cuenta y cambios de estado de Play; comprobar que los respaldos siguen disponibles en Gratis.
+  - [x] Comprobar con un reloj simulado que adelantar o atrasar la hora editable no extiende el margen de acceso una vez vencido.
 
 ### Pruebas manuales de Leo
 
@@ -263,6 +267,12 @@ Importación Android: una copia completamente ficticia presentó un cliente falt
 Revisión del plugin Android: el paquete instalado y el registro npm declaran MPL-2.0 y una revisión concreta del repositorio; se documentaron en el README la fuente y las condiciones de distribución que deben atenderse. Se preparó en «Más» un aviso para usuarios; su presentación y enlaces siguen pendientes de comprobación en la compilación definitiva. El código del plugin confirma que la opción individual de compra no cubre por sí sola todos los eventos; la configuración global ya existente la desactiva y también figura en los recursos Android generados. Es una revisión estática: aún falta probar compras y eventos reales.
 
 Nueva ejecución local: aprobaron 24 pruebas de Firestore en el emulador, 11 de suscripción, 5 del panel y permisos y 2 de respaldos. El emulador mostró una advertencia de consulta de metadatos; terminó correctamente. También pasaron typecheck y lint del cliente. Las simulaciones no sustituyen las pruebas reales de Play, de los servicios desplegados ni del reloj nativo.
+
+Comprobaciones posteriores: en la web local se abrió el aviso de licencias de «Más» y se comprobó que muestra ambos enlaces; no se verificó su apertura ni la compilación definitiva. En el POCO se volvió a intentar la APK auxiliar del reloj y Android la rechazó. Con la cuenta de pruebas y la suscripción desactivada, se apagó temporalmente el Wi-Fi, se guardó un cliente ficticio y se observó el aviso de sincronización pendiente. Después de reactivar el Wi-Fi, se confirmó su llegada a Firestore de pruebas y se retiró ese registro. Esta prueba no verifica el acceso Pro sin conexión.
+
+Reloj Android sin APK auxiliar: se añadió una instrumentación incluida únicamente en la APK de depuración del paquete principal. En el POCO se instaló esa APK con Firebase y publicidad de prueba y se ejecutó la comprobación: el método nativo devolvió dos valores monotónicos dentro del intervalo medido y el contador de arranques esperado. La configuración Android activa se restauró después de compilar. Un intento separado de iniciar la interfaz desde la instrumentación para comprobar el puente quedó bloqueado; se retiró esa ampliación y se reinstaló la versión que sí pasa. La comprobación exitosa llama al método Java directamente: no verifica el puente JavaScript, cambios de hora, reinicios ni el ciclo de acceso sin conexión.
+
+Cambio de hora simulado: se añadieron casos que alteran la hora editable manteniendo el reloj monotónico y el vencimiento; el margen vencido no se prolongó. Pasaron las 12 pruebas locales de suscripción. Sigue pendiente repetir el escenario con un cambio de hora real en Android.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba

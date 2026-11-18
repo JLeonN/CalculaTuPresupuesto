@@ -114,6 +114,35 @@ test('el margen Android no sobrevive a reinicios ni se comparte entre cuentas o 
   assert.equal(evaluarReferenciaSinConexion(referencia, 'a', 'produccion', reloj(1100)), null);
 });
 
+test('cambiar la hora del dispositivo no prolonga el acceso sin conexión', () => {
+  const referencia = {
+    uid: 'a',
+    proyectoFirebase: 'pruebas',
+    horaServidor: 1000,
+    vencimiento: 2000,
+    reloj: { arranques: 3, milisegundosTranscurridos: 100 },
+  };
+  const reloj = { arranques: 3, milisegundosTranscurridos: 1100 + MARGEN_SIN_CONEXION_MS };
+  const horaOriginal = Date.now;
+  try {
+    for (const horaEditable of [0, 1000, 9999999999999]) {
+      Date.now = () => horaEditable;
+      const resultado = resolverAccesoAndroidSinConexion(
+        'pro',
+        referencia,
+        'a',
+        'pruebas',
+        reloj,
+        true,
+      );
+      assert.equal(resultado.acceso.puedeGenerarSalida, false);
+      assert.equal(resultado.necesitaConexion, true);
+    }
+  } finally {
+    Date.now = horaOriginal;
+  }
+});
+
 test('la identidad de Play está vinculada a cuenta y entorno', () => {
   const identificador = obtenerIdentificadorCuenta('a', 'pruebas');
   const compra = { externalAccountIdentifiers: { obfuscatedExternalAccountId: identificador } };
