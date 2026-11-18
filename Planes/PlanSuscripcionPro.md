@@ -176,6 +176,7 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
 - [ ] Implementar un adaptador Android compatible con Capacitor que use `SystemClock.elapsedRealtime()` desde la última referencia confiable; incluye reposo y no cambia al ajustar la fecha. Calcular el plazo hasta vencimiento más cinco días cuando no pueda verificarse la renovación.
   - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
   - [x] Ejecutar en el POCO una comprobación de depuración del método nativo: sus dos lecturas coinciden con el reloj monotónico y el contador de arranques de Android.
+  - [x] Comprobar en el POCO que JavaScript puede llamar al plugin mediante el puente de Capacitor y recibe valores coherentes con Android.
   - [ ] Conectarlo al estado real y comprobarlo en Android, incluidos cambios de hora y reinicios.
   - [x] Conectar la lectura de la referencia y el cálculo al store detrás del interruptor desactivado.
 - [ ] Detectar reinicio o referencia temporal no verificable y pedir conexión para comprobar Pro, con aviso claro y datos intactos. No asumir que el contador conserva el tiempo apagado; una reinstalación o almacenamiento borrado también requiere nueva verificación.
@@ -201,6 +202,7 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 - [x] Cubrir reglas Firestore contra escritura de permisos y acceso entre cuentas; probar concurrencia, inicio único de prueba, eventos duplicados y asociación exclusiva de compras con datos sintéticos.
 - [ ] Cubrir con reloj simulado vencimiento, cinco días, reinicio, cambio de hora, cambio de cuenta y cambios de estado de Play; comprobar que los respaldos siguen disponibles en Gratis.
   - [x] Comprobar con un reloj simulado que adelantar o atrasar la hora editable no extiende el margen de acceso una vez vencido.
+  - [x] Comprobar con el plugin simulado que el adaptador TypeScript acepta referencias válidas, rechaza valores inválidos y evita la llamada nativa en la web.
 
 ### Pruebas manuales de Leo
 
@@ -273,6 +275,10 @@ Comprobaciones posteriores: en la web local se abrió el aviso de licencias de �
 Reloj Android sin APK auxiliar: se añadió una instrumentación incluida únicamente en la APK de depuración del paquete principal. En el POCO se instaló esa APK con Firebase y publicidad de prueba y se ejecutó la comprobación: el método nativo devolvió dos valores monotónicos dentro del intervalo medido y el contador de arranques esperado. La configuración Android activa se restauró después de compilar. Un intento separado de iniciar la interfaz desde la instrumentación para comprobar el puente quedó bloqueado; se retiró esa ampliación y se reinstaló la versión que sí pasa. La comprobación exitosa llama al método Java directamente: no verifica el puente JavaScript, cambios de hora, reinicios ni el ciclo de acceso sin conexión.
 
 Cambio de hora simulado: se añadieron casos que alteran la hora editable manteniendo el reloj monotónico y el vencimiento; el margen vencido no se prolongó. Pasaron las 12 pruebas locales de suscripción. Sigue pendiente repetir el escenario con un cambio de hora real en Android.
+
+Puente Android: se creó una actividad exclusiva de depuración para abrir la app normalmente y llamar al plugin del reloj desde JavaScript. En el POCO, la llamada por Capacitor devolvió una lectura monotónica y un contador de arranques coherentes con Android. La prueba llama al plugin desde JavaScript, pero no recorre el adaptador TypeScript ni el ciclo completo de acceso, cambios de hora o reinicios.
+
+Adaptador de reloj: pasaron dos pruebas locales con el plugin simulado para valores válidos e inválidos y uso desde la web. Estas pruebas no ejecutan el adaptador en el teléfono ni verifican el ciclo de acceso completo.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba

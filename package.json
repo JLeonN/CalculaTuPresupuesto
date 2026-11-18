@@ -19,6 +19,7 @@
     "test:firebase": "npx --yes firebase-tools@14.22.0 emulators:exec --config firebase.emulador.suscripcion.json --only firestore --project demo-calcula-pruebas \"tsx --test tests/reglasFirestore.test.mjs tests/asociacionCompra.test.ts\"",
     "test:respaldo": "tsx --test tests/importacionRespaldo.test.ts tests/escriturasFirestore.test.ts",
     "test:suscripcion": "tsx --test tests/suscripcion.test.ts",
+    "test:reloj": "node --test tests/relojAndroid.test.mjs",
     "test:panel-suscripcion": "node --test tests/panelSuscripcion.test.mjs tests/compraAndroid.test.mjs tests/permisosSuscripcion.test.mjs",
     "test:panel-visual": "node tests/servidor-panel-suscripcion.mjs",
     "postinstall": "quasar prepare --silent"
