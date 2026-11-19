@@ -5,6 +5,9 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.webkit.WebView;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -15,11 +18,23 @@ public class PruebaPuenteRelojActivity extends MainActivity {
     private long inicio;
     private boolean iniciada;
     private boolean terminada;
+    private String adaptador;
 
     @Override
     public void onCreate(Bundle estado) {
         super.onCreate(estado);
         inicio = SystemClock.elapsedRealtime();
+        try (BufferedReader lector = new BufferedReader(new InputStreamReader(
+            getAssets().open("reloj-adaptador.debug.js"), StandardCharsets.UTF_8
+        ))) {
+            StringBuilder codigo = new StringBuilder();
+            String linea;
+            while ((linea = lector.readLine()) != null) codigo.append(linea).append('\n');
+            adaptador = codigo.toString();
+        } catch (Exception error) {
+            terminar(false, "Falta preparar el adaptador de prueba");
+            return;
+        }
         getBridge().getWebView().postDelayed(() -> {
             if (!terminada) terminar(false, "El puente no respondió a tiempo");
         }, LIMITE_MS);
@@ -37,7 +52,9 @@ public class PruebaPuenteRelojActivity extends MainActivity {
             ? "window.__chPruebaReloj || null"
             : "(function(){if(!window.Capacitor || !window.Capacitor.Plugins || " +
               "!window.Capacitor.Plugins.RelojConfiable)return false;" +
-              "window.__chPruebaReloj=null;window.Capacitor.Plugins.RelojConfiable.obtenerReferencia()" +
+              adaptador + "\n" +
+              "if(!window.chObtenerReferenciaReloj)return false;" +
+              "window.__chPruebaReloj=null;window.chObtenerReferenciaReloj()" +
               ".then(x=>window.__chPruebaReloj=JSON.stringify(x))" +
               ".catch(()=>window.__chPruebaReloj='error');return true})()";
         web.evaluateJavascript(codigo, valor -> {
@@ -57,7 +74,7 @@ public class PruebaPuenteRelojActivity extends MainActivity {
                         tiempo > SystemClock.elapsedRealtime()) {
                         throw new IllegalStateException("La referencia del puente es incoherente");
                     }
-                    terminar(true, "JavaScript recibió una referencia coherente de Android");
+                    terminar(true, "El adaptador TypeScript recibió una referencia coherente de Android");
                     return;
                 } catch (Exception error) {
                     terminar(false, error.getClass().getSimpleName() + ": " + error.getMessage());

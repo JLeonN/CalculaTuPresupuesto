@@ -36,6 +36,7 @@ ui-debug.log
 # Capacitor related directories and files
 /src-capacitor/www
 /src-capacitor/node_modules
+/src-capacitor/android/app/src/debug/assets/reloj-adaptador.debug.js
 
 # Log files
 npm-debug.log*

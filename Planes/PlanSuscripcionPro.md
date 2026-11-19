@@ -177,6 +177,8 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
   - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
   - [x] Ejecutar en el POCO una comprobación de depuración del método nativo: sus dos lecturas coinciden con el reloj monotónico y el contador de arranques de Android.
   - [x] Comprobar en el POCO que JavaScript puede llamar al plugin mediante el puente de Capacitor y recibe valores coherentes con Android.
+  - [x] Ejecutar en el POCO el adaptador TypeScript real mediante una actividad de depuración y comprobar su respuesta frente al reloj Android.
+  - [x] Comprobar que el manifiesto generado para release no incluye la actividad ni la instrumentación del reloj usadas para depuración.
   - [ ] Conectarlo al estado real y comprobarlo en Android, incluidos cambios de hora y reinicios.
   - [x] Conectar la lectura de la referencia y el cálculo al store detrás del interruptor desactivado.
 - [ ] Detectar reinicio o referencia temporal no verificable y pedir conexión para comprobar Pro, con aviso claro y datos intactos. No asumir que el contador conserva el tiempo apagado; una reinstalación o almacenamiento borrado también requiere nueva verificación.
@@ -279,6 +281,10 @@ Cambio de hora simulado: se añadieron casos que alteran la hora editable manten
 Puente Android: se creó una actividad exclusiva de depuración para abrir la app normalmente y llamar al plugin del reloj desde JavaScript. En el POCO, la llamada por Capacitor devolvió una lectura monotónica y un contador de arranques coherentes con Android. La prueba llama al plugin desde JavaScript, pero no recorre el adaptador TypeScript ni el ciclo completo de acceso, cambios de hora o reinicios.
 
 Adaptador de reloj: pasaron dos pruebas locales con el plugin simulado para valores válidos e inválidos y uso desde la web. Estas pruebas no ejecutan el adaptador en el teléfono ni verifican el ciclo de acceso completo.
+
+Adaptador real en Android: se generó un módulo de prueba desde el archivo TypeScript de la aplicación y se incorporó solo a la APK de depuración. En el POCO, el adaptador llamó al plugin por Capacitor y devolvió un contador de arranques y un tiempo coherentes con Android. El módulo generado no se versiona y debe regenerarse antes de repetir la comprobación. Siguen pendientes los cambios de hora y reinicios reales y el ciclo de acceso completo.
+
+Separación de pruebas: se generó el manifiesto de release y se comprobó que no declara la actividad ni la instrumentación de depuración del reloj. No se compiló ni publicó una versión release completa.
 
 - [ ] Fase 1: Preparar infraestructura y pagos
 - [ ] Fase 2: Modelo de acceso y prueba
