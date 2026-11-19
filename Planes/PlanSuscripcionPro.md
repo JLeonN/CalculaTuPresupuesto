@@ -172,6 +172,7 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
 - [ ] Crear en `src/servicios/suscripcion/` un contrato para registrar hora confiable del servidor, vencimiento y estado del UID, protegidos contra modificación accidental y asociados al entorno y cuenta. No afirmar que el cliente puede impedir toda manipulación.
   - [x] Preparar lectura y escritura local de la referencia temporal con validación y asociación a cuenta y entorno.
   - [x] Guardar el estado verificado y conectar la referencia al ciclo de la aplicación detrás del interruptor desactivado.
+  - [x] Comprobar con Android simulado que una escritura local demorada no reemplaza la referencia de otra cuenta.
   - [ ] Comprobar la referencia y el ciclo en Android.
 - [ ] Implementar un adaptador Android compatible con Capacitor que use `SystemClock.elapsedRealtime()` desde la última referencia confiable; incluye reposo y no cambia al ajustar la fecha. Calcular el plazo hasta vencimiento más cinco días cuando no pueda verificarse la renovación.
   - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
@@ -215,6 +216,8 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 - [ ] Revisar mensajes, precios mostrados por Play, condiciones y acceso para revisión de Google. Registrar resultados y pendientes; no publicar hasta que Leo lo indique.
 
 ## Progreso del plan
+
+Continuación del 19 de noviembre de 2026: se ordenaron las escrituras, eliminaciones y lecturas de la referencia Android ante cargas concurrentes, para evitar que una operación anterior sustituya la referencia de la cuenta actual. Se comprobó con servicios y reloj simulados una escritura demorada durante el cambio de cuenta. Falta verificar el ciclo completo en Android real, incluidos cambios de hora, reinicio y reconexión.
 
 Avance parcial del 16 de noviembre de 2026: se prepararon el modelo puro de acceso, la regla local de lectura del estado propio sin escritura cliente y el puente Android para `elapsedRealtime` y `BOOT_COUNT`, junto con el cálculo de referencia y margen. No están conectados al permiso actual ni desplegados; falta probarlos. El mínimo Android configurado es API 24. Las casillas que incluyen integración o comprobaciones permanecen abiertas.
 

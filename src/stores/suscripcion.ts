@@ -30,10 +30,21 @@ export const useSuscripcionStore = defineStore('suscripcion', () => {
   let intervalo: ReturnType<typeof setInterval> | null = null;
   let referenciaOffline: ReferenciaPersistida | null = null;
   let revisandoReloj = false;
+  let operacionesReferencia: Promise<void> = Promise.resolve();
   let cambioPendiente: { tipo: string; vencimiento: number | null; permiteMargen: boolean } | null =
     null;
   const accesoOffline = ref<ReturnType<typeof resolverAccesoSuscripcion> | null>(null);
   const pulso = ref(0);
+  function actualizarReferenciaPersistida(
+    solicitud: number,
+    operacion: () => Promise<void>,
+  ): Promise<void> {
+    const pendiente = operacionesReferencia.then(async () => {
+      if (solicitud === generacion) await operacion();
+    });
+    operacionesReferencia = pendiente.catch(() => {});
+    return pendiente;
+  }
   const acceso = computed(() => {
     void pulso.value;
     if (referenciaOffline)
@@ -194,11 +205,13 @@ export const useSuscripcionStore = defineStore('suscripcion', () => {
                   : 0,
               reloj: relojInicial,
             };
-            await guardarReferenciaSuscripcion(referenciaActual);
-          } else await eliminarReferenciaSuscripcion();
+            await actualizarReferenciaPersistida(solicitud, () =>
+              guardarReferenciaSuscripcion(referenciaActual!),
+            );
+          } else await actualizarReferenciaPersistida(solicitud, eliminarReferenciaSuscripcion);
         } catch {
           try {
-            await eliminarReferenciaSuscripcion();
+            await actualizarReferenciaPersistida(solicitud, eliminarReferenciaSuscripcion);
           } catch {
             /* No se confía en la referencia local. */
           }
@@ -231,6 +244,8 @@ export const useSuscripcionStore = defineStore('suscripcion', () => {
       if (solicitud !== generacion || uid.value !== idUsuario) return;
       if (android) {
         try {
+          await operacionesReferencia;
+          if (solicitud !== generacion || uid.value !== idUsuario) return;
           const guardada = await leerReferenciaSuscripcion(idUsuario, proyecto);
           if (solicitud !== generacion || uid.value !== idUsuario) return;
           if (guardada) {
