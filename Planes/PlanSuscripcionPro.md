@@ -173,6 +173,7 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
   - [x] Preparar lectura y escritura local de la referencia temporal con validación y asociación a cuenta y entorno.
   - [x] Guardar el estado verificado y conectar la referencia al ciclo de la aplicación detrás del interruptor desactivado.
   - [x] Comprobar con Android simulado que una escritura local demorada no reemplaza la referencia de otra cuenta.
+  - [x] Comprobar en el POCO el store real y una referencia ficticia con Preferences y reloj nativos, usando un servidor simulado y almacenamiento aislado.
   - [ ] Comprobar la referencia y el ciclo en Android.
 - [ ] Implementar un adaptador Android compatible con Capacitor que use `SystemClock.elapsedRealtime()` desde la última referencia confiable; incluye reposo y no cambia al ajustar la fecha. Calcular el plazo hasta vencimiento más cinco días cuando no pueda verificarse la renovación.
   - [x] Preparar el puente Android para leer el reloj monotónico y el contador de arranques, y el cálculo aislado del margen.
@@ -180,6 +181,9 @@ Aplicar el vencimiento confirmado y cinco días adicionales sin confiar solo en 
   - [x] Comprobar en el POCO que JavaScript puede llamar al plugin mediante el puente de Capacitor y recibe valores coherentes con Android.
   - [x] Ejecutar en el POCO el adaptador TypeScript real mediante una actividad de depuración y comprobar su respuesta frente al reloj Android.
   - [x] Comprobar que el manifiesto generado para release no incluye la actividad ni la instrumentación del reloj usadas para depuración.
+  - [x] Comprobar en el POCO que adelantar o atrasar un año la fecha con Wi-Fi apagado no modifica el acceso vigente de una referencia ficticia.
+  - [x] Comprobar tras reiniciar el POCO que el store rechaza la referencia anterior y pide conexión cuando falla la consulta simulada; verificar luego respuestas ficticias Gratis y Pro.
+  - [x] Comprobar en el POCO, con vencimientos ficticios y reloj nativo, acceso dentro del margen de cinco días y denegación después del margen.
   - [ ] Conectarlo al estado real y comprobarlo en Android, incluidos cambios de hora y reinicios.
   - [x] Conectar la lectura de la referencia y el cálculo al store detrás del interruptor desactivado.
 - [ ] Detectar reinicio o referencia temporal no verificable y pedir conexión para comprobar Pro, con aviso claro y datos intactos. No asumir que el contador conserva el tiempo apagado; una reinstalación o almacenamiento borrado también requiere nueva verificación.
@@ -216,6 +220,8 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 - [ ] Revisar mensajes, precios mostrados por Play, condiciones y acceso para revisión de Google. Registrar resultados y pendientes; no publicar hasta que Leo lo indique.
 
 ## Progreso del plan
+
+Continuación del 19 de noviembre de 2026: se añadió una actividad exclusiva de depuración para ejecutar el store real con reloj y Preferences nativos, servidor ficticio y clave de almacenamiento separada. En el POCO se confirmó Pro ficticio, se apagó el Wi-Fi y se mantuvo el acceso al recargar y al adelantar o atrasar un año la fecha. Tras restaurar la hora automática y reiniciar, el contador cambió y, ante una consulta simulada fallida, el store pidió conexión y negó el acceso. El Wi-Fi apareció activado después del reinicio: esa parte verifica la falla simulada, no una desconexión física sostenida. Las respuestas ficticias posteriores Gratis y Pro se aplicaron correctamente. Con vencimientos ficticios de cuatro y seis días y Wi-Fi apagado se comprobó, respectivamente, el acceso dentro del margen y su denegación después de cinco días; no transcurrieron cinco días reales. El manifiesto release generado no declara la nueva actividad de prueba. Falta probar el ciclo con servidor real y la interfaz completa; el resultado no verifica compras. Se restauraron la hora automática y el Wi-Fi.
 
 Continuación del 19 de noviembre de 2026: se ordenaron las escrituras, eliminaciones y lecturas de la referencia Android ante cargas concurrentes, para evitar que una operación anterior sustituya la referencia de la cuenta actual. Se comprobó con servicios y reloj simulados una escritura demorada durante el cambio de cuenta. Falta verificar el ciclo completo en Android real, incluidos cambios de hora, reinicio y reconexión.
 

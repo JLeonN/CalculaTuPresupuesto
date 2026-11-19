@@ -37,6 +37,7 @@ ui-debug.log
 /src-capacitor/www
 /src-capacitor/node_modules
 /src-capacitor/android/app/src/debug/assets/reloj-adaptador.debug.js
+/src-capacitor/android/app/src/debug/assets/ciclo-suscripcion.debug.js
 
 # Log files
 npm-debug.log*
