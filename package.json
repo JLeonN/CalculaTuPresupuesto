@@ -22,7 +22,7 @@
     "test:reloj": "node --test tests/relojAndroid.test.mjs",
     "test:reloj-android:preparar": "node scripts/preparar-reloj-android.mjs",
     "test:ciclo-android:preparar": "node scripts/preparar-ciclo-android.mjs",
-    "test:panel-suscripcion": "node --test tests/panelSuscripcion.test.mjs tests/compraAndroid.test.mjs tests/permisosSuscripcion.test.mjs tests/referenciaCuentaAndroid.test.mjs",
+    "test:panel-suscripcion": "node --test tests/panelSuscripcion.test.mjs tests/compraAndroid.test.mjs tests/permisosSuscripcion.test.mjs tests/referenciaCuentaAndroid.test.mjs tests/avisoAccesoSuscripcion.test.mjs",
     "test:panel-visual": "node tests/servidor-panel-suscripcion.mjs",
     "postinstall": "quasar prepare --silent"
   },

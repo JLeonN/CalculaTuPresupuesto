@@ -207,7 +207,7 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
   - [x] Repetir las pruebas locales de Firestore, respaldo, suscripción y panel tras los cambios posteriores; comprobar typecheck y lint del cliente.
   - [ ] Completar las pruebas de integración reales y repetir las verificaciones cuando haya nuevos cambios que lo requieran.
 - [x] Cubrir reglas Firestore contra escritura de permisos y acceso entre cuentas; probar concurrencia, inicio único de prueba, eventos duplicados y asociación exclusiva de compras con datos sintéticos.
-- [ ] Cubrir con reloj simulado vencimiento, cinco días, reinicio, cambio de hora, cambio de cuenta y cambios de estado de Play; comprobar que los respaldos siguen disponibles en Gratis.
+- [x] Cubrir con reloj simulado vencimiento, cinco días, reinicio, cambio de hora, cambio de cuenta y cambios de estado de Play; comprobar que los respaldos siguen disponibles en Gratis.
   - [x] Comprobar con un reloj simulado que adelantar o atrasar la hora editable no extiende el margen de acceso una vez vencido.
   - [x] Comprobar con el plugin simulado que el adaptador TypeScript acepta referencias válidas, rechaza valores inválidos y evita la llamada nativa en la web.
 
@@ -220,6 +220,12 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 - [ ] Revisar mensajes, precios mostrados por Play, condiciones y acceso para revisión de Google. Registrar resultados y pendientes; no publicar hasta que Leo lo indique.
 
 ## Progreso del plan
+
+Interfaz completa aislada: se preparó una vista de la aplicación con Firebase y compras reales deshabilitados y estados ficticios. En la pantalla de presupuesto, Gratis mostró la marca y el aviso de acceso al intentar descargar; prueba, Pro y exento no mostraron la marca y el botón de descarga dejó de indicar la restricción. En Gratis se abrió Configuración y se generó un JSON de copia. A 390 píxeles no se observó desbordamiento horizontal en esa pantalla. Estas comprobaciones no ejecutan compras ni verifican anuncios nativos, impresión o envío reales.
+
+En el POCO, la actividad de depuración comprobó que una referencia ficticia ausente o corrupta y una referencia válida perteneciente a otra cuenta no conceden salida cuando falla la consulta simulada. La prueba empleó Preferences y reloj nativos, con almacenamiento aislado y sin servidor real; no representa una reinstalación ni una compra real.
+
+Pruebas locales: se corrigió el aviso de salida para que una referencia Pro no verificable pida conexión; una prueba aislada distingue ese caso de Gratis. En Chrome del POCO se revisó la vista web aislada de Gratis y las opciones de copias, sin Firebase ni compras; los iconos del visor de prueba se corrigieron para coincidir con la aplicación. Pasaron 13 pruebas de suscripción, 7 del panel y permisos, 2 de respaldo, 2 del reloj y 24 de Firestore en el emulador, además de typecheck y lint. El puerto habitual del emulador estaba ocupado y se usaron puertos temporales. No se comprobó en esta revisión la interfaz nativa completa ni Play real.
 
 Reconexión: se corrigió la pérdida de una solicitud de actualización cuando la red vuelve durante una consulta en curso; el reintento queda pendiente hasta que finalice, siempre que la cuenta y la conexión sigan disponibles. Las pruebas simuladas comprobaron ese caso, la transición de Pro a Gratis y la recuperación de Pro, además del aislamiento entre cuentas. La integración real continúa pendiente.
 

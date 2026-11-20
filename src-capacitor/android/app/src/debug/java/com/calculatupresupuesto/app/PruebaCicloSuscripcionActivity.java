@@ -26,7 +26,8 @@ public class PruebaCicloSuscripcionActivity extends MainActivity {
         if (!"iniciar".equals(accion) && !"sin-conexion".equals(accion) &&
             !"reinicio".equals(accion) && !"reconectar".equals(accion) &&
             !"iniciar-margen".equals(accion) && !"iniciar-vencido".equals(accion) &&
-            !"sin-conexion-vencido".equals(accion)) {
+            !"sin-conexion-vencido".equals(accion) && !"referencia-ausente".equals(accion) &&
+            !"referencia-corrupta".equals(accion) && !"otra-cuenta".equals(accion)) {
             terminar(false, "Acción inválida");
             return;
         }

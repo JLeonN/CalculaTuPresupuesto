@@ -13,7 +13,10 @@ export function useAccesoSalida() {
       autenticacion.solicitarInicioSesion();
       return;
     }
-    if (suscripcion.estado.tipo === 'pendiente') {
+    if (
+      suscripcion.estado.tipo === 'pendiente' ||
+      (suscripcion.error && !suscripcion.acceso.puedeGenerarSalida)
+    ) {
       $q.notify({
         message: 'Conectate para verificar tu suscripción e intentá nuevamente.',
         position: 'top',

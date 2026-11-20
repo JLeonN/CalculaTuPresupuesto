@@ -12,6 +12,7 @@ import {
   Quasar,
 } from 'quasar';
 import 'quasar/dist/quasar.css';
+import '@quasar/extras/material-icons/material-icons.css';
 import '../../src/css/Variables.css';
 import '../../src/css/app.css';
 import PanelSuscripcion from '../../src/components/suscripcion/PanelSuscripcion.vue';
