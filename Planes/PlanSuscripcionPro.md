@@ -94,7 +94,7 @@ Establecer una única fuente de verdad para los permisos de cada cuenta.
 - [ ] Crear `src/stores/suscripcion.ts` con `useSuscripcionStore`, inicialización, carga, error, estado por UID y limpieza al cerrar sesión o cambiar de cuenta. El estado inicial desconocido no concede Pro y no debe mostrar anuncios prematuramente mientras se verifica una cuenta potencialmente Pro.
   - [x] Preparar el store y el cliente de consulta, con limpieza y descarte de respuestas tardías.
   - [ ] Conectar y comprobar el store con la sesión y los permisos de la aplicación.
-- [ ] Integrar la inicialización y limpieza con `actualizarUsuario` de `src/stores/autenticacion.ts`; descartar respuestas tardías de otra cuenta. Mantener autenticación separada de suscripción y exponer un permiso único a todos los consumidores.
+- [x] Integrar la inicialización y limpieza con `actualizarUsuario` de `src/stores/autenticacion.ts`; descartar respuestas tardías de otra cuenta. Mantener autenticación separada de suscripción y exponer un permiso único a todos los consumidores.
 
 ## FASE 3: Compras y estados de Google Play
 
@@ -143,9 +143,9 @@ Aplicar los beneficios de cada plan de forma coherente en todos los puntos de la
 
 ### Pasos de ejecución
 
-- [ ] Sustituir en `src/layouts/MainLayout.vue` y `src/pages/ConfiguracionPage.vue` los criterios basados solo en `estaAutenticado` por el estado central: Gratis muestra anuncios en Android sujeto al consentimiento; prueba, Pro y exenciones no los muestran. Conservar limpieza del banner y opciones de privacidad.
+- [x] Sustituir en `src/layouts/MainLayout.vue` y `src/pages/ConfiguracionPage.vue` los criterios basados solo en `estaAutenticado` por el estado central: Gratis muestra anuncios en Android sujeto al consentimiento; prueba, Pro y exenciones no los muestran. Conservar limpieza del banner y opciones de privacidad.
   - [x] Comprobar con servicios simulados los permisos centrales de salida, marca y publicidad para Gratis, prueba, Pro, exención y estado pendiente.
-- [ ] Actualizar `src/pages/NuevoPresupuestoPage.vue` y `src/pages/VistaPreviaPresupuestoPage.vue` para usar el permiso central en botones, acciones, impresión y `modo-prueba`. Revisar todos los consumidores de `puedeGenerarSalidaPresupuesto`, incluida `src/servicios/documentos/accionesPresupuesto.ts`, y evitar rutas alternativas que habiliten una salida Gratis por error.
+- [x] Actualizar `src/pages/NuevoPresupuestoPage.vue` y `src/pages/VistaPreviaPresupuestoPage.vue` para usar el permiso central en botones, acciones, impresión y `modo-prueba`. Revisar todos los consumidores de `puedeGenerarSalidaPresupuesto`, incluida `src/servicios/documentos/accionesPresupuesto.ts`, y evitar rutas alternativas que habiliten una salida Gratis por error.
   - [x] Comprobar que las acciones comunes de descarga y envío rechazan la salida restringida antes de preparar el documento.
 - [ ] Mantener en Gratis las funciones básicas, sincronización y descarga e importación de copias JSON de `PanelCopiasSeguridad.vue`; bloquear solo salida de presupuestos y mantener su marca. No imponer límites de cantidad ni borrar datos.
   - [x] Comprobar en la web aislada con Gratis simulado la descarga, la importación de una copia ficticia y la protección frente a duplicados.
@@ -220,6 +220,10 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 - [ ] Revisar mensajes, precios mostrados por Play, condiciones y acceso para revisión de Google. Registrar resultados y pendientes; no publicar hasta que Leo lo indique.
 
 ## Progreso del plan
+
+Prueba web de desarrollo con Firebase de pruebas y sesión de visitante: una sección ya cargada pudo abrirse sin conexión. Al abrir por primera vez otra sección sin red fallaba la carga del módulo sin aviso; se agregó un mensaje y se comprobó que la sección se abre tras recuperar conexión. La prueba anterior de `PlanCierrePruebasFirebase.md` ya cubría una edición y reconexión con cuenta, pero no el aviso ni el estado Pro. Sigue pendiente verificar la interfaz completa con sesión y suscripción activada en un entorno aislado.
+
+Revisión de implementación: la sesión inicializa y limpia el store de suscripción, los permisos centrales gobiernan publicidad y salidas, y la impresión comprueba el permiso antes de invocarse. Se revisaron los consumidores y pasaron nuevamente 12 pruebas de suscripción, 6 de panel y permisos, y 2 de respaldo con datos simulados. La presentación y las acciones reales de cada plan siguen pendientes en las pruebas de la fase 4 y Testing.
 
 Revisión del 19 de noviembre de 2026: se confirmó que `@capgo/native-purchases` 8.9.6 está fijado, declara compatibilidad con Capacitor 8 y utiliza Billing 9.1.0. La versión 9 admite actualizaciones hasta el 31 de agosto de 2028 según [Google](https://developer.android.com/google/play/billing/deprecation-faq?hl=es); la [versión seleccionada de Capgo](https://github.com/Cap-go/capacitor-native-purchases/releases/tag/8.9.6) figura publicada y la alternativa [Capawesome Purchases](https://capawesome.io/docs/sdks/capacitor/purchases/) requiere licencia. La elección queda documentada; las pruebas de compra reales y la revisión de distribución siguen pendientes en sus casillas existentes.
 

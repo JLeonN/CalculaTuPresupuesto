@@ -7,6 +7,7 @@ import {
 } from 'vue-router';
 
 import routes from './routes';
+import { Notify } from 'quasar';
 
 /*
  * If not building with SSR mode, you can
@@ -32,6 +33,16 @@ export default defineRouter((/* { store, ssrContext } */) => {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
+  });
+
+  Router.onError(() => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      Notify.create({
+        message: 'No se pudo abrir esta sección sin conexión. Conectate e intentá nuevamente.',
+        position: 'top',
+        classes: 'notificacion-error',
+      });
+    }
   });
 
   return Router;
