@@ -15,6 +15,7 @@ import { useAutenticacionStore } from '@/stores/autenticacion';
 import { useConfiguracionStore } from '@/stores/configuracion';
 import { SUSCRIPCION_HABILITADA } from '@/configuracion/configuracionSuscripcion';
 import { useSuscripcionStore } from '@/stores/suscripcion';
+import { crearReintentoConexion } from '@/servicios/suscripcion/reintentoConexion';
 
 const ruta = useRoute();
 const autenticacionStore = useAutenticacionStore();
@@ -45,14 +46,23 @@ function revisarPublicidadAlVolver(): void {
   }
 }
 
-function actualizarSuscripcion(): void {
-  const uid = autenticacionStore.usuario?.id;
-  if (SUSCRIPCION_HABILITADA && uid && navigator.onLine && !suscripcionStore.cargando) {
-    void suscripcionStore.cargar(uid);
-  }
-}
+const reintentoSuscripcion = crearReintentoConexion({
+  disponible: () => SUSCRIPCION_HABILITADA && !!autenticacionStore.usuario?.id && navigator.onLine,
+  cargando: () => suscripcionStore.cargando,
+  consultar: () => {
+    const uid = autenticacionStore.usuario?.id;
+    if (uid) void suscripcionStore.cargar(uid);
+  },
+});
+const actualizarSuscripcion = reintentoSuscripcion.solicitar;
 
 watch(() => autenticacionStore.mostrarPublicidad, actualizarPublicidad, { immediate: true });
+watch(
+  () => suscripcionStore.cargando,
+  (cargando) => {
+    if (!cargando) reintentoSuscripcion.alTerminar();
+  },
+);
 
 onMounted(() => {
   window.addEventListener('resize', actualizarPublicidad);

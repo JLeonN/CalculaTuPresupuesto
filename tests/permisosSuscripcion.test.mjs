@@ -110,6 +110,16 @@ test('la web conserva el estado confirmado sin conexión solo para la misma cuen
     assert.equal(suscripcion.estado.tipo, 'pro');
     assert.equal(suscripcion.acceso.puedeGenerarSalida, true);
     assert.match(suscripcion.error, /No se pudo verificar/);
+    servicio.control.fallar = false;
+    servicio.respuesta.estado = { tipo: 'gratis' };
+    await suscripcion.cargar('cuenta-a');
+    assert.equal(suscripcion.estado.tipo, 'gratis');
+    assert.equal(suscripcion.acceso.puedeGenerarSalida, false);
+    assert.equal(suscripcion.error, null);
+    servicio.respuesta.estado = { tipo: 'pro', vencimiento: ahora + 60000 };
+    await suscripcion.cargar('cuenta-a');
+    assert.equal(suscripcion.acceso.puedeGenerarSalida, true);
+    servicio.control.fallar = true;
     await suscripcion.cargar('cuenta-b');
     assert.equal(suscripcion.estado.tipo, 'pendiente');
     assert.equal(suscripcion.acceso.puedeGenerarSalida, false);

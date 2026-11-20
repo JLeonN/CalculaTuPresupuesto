@@ -19,6 +19,33 @@ import {
   type OpcionesAccionDocumentoPresupuesto,
 } from '../src/servicios/documentos/accionesPresupuesto';
 import { ErrorSalidaPresupuestoRestringida } from '../src/dominio/autenticacion';
+import { crearReintentoConexion } from '../src/servicios/suscripcion/reintentoConexion';
+
+test('la reconexión durante una consulta se reintenta al terminar, solo si sigue disponible', () => {
+  let disponible = true;
+  let cargando = true;
+  let consultas = 0;
+  const reintento = crearReintentoConexion({
+    disponible: () => disponible,
+    cargando: () => cargando,
+    consultar: () => {
+      consultas += 1;
+    },
+  });
+  reintento.solicitar();
+  reintento.solicitar();
+  assert.equal(consultas, 0);
+  cargando = false;
+  reintento.alTerminar();
+  reintento.alTerminar();
+  assert.equal(consultas, 1);
+  cargando = true;
+  reintento.solicitar();
+  disponible = false;
+  cargando = false;
+  reintento.alTerminar();
+  assert.equal(consultas, 1);
+});
 
 test('solo una respuesta confirmada presenta la compra como verificada', () => {
   assert.equal(interpretarResultadoCompra({ actualizada: true, pendiente: false }), 'verificada');

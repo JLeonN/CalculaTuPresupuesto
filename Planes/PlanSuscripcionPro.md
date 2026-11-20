@@ -221,6 +221,8 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 
 ## Progreso del plan
 
+Reconexión: se corrigió la pérdida de una solicitud de actualización cuando la red vuelve durante una consulta en curso; el reintento queda pendiente hasta que finalice, siempre que la cuenta y la conexión sigan disponibles. Las pruebas simuladas comprobaron ese caso, la transición de Pro a Gratis y la recuperación de Pro, además del aislamiento entre cuentas. La integración real continúa pendiente.
+
 Prueba web de desarrollo con Firebase de pruebas y sesión de visitante: una sección ya cargada pudo abrirse sin conexión. Al abrir por primera vez otra sección sin red fallaba la carga del módulo sin aviso; se agregó un mensaje y se comprobó que la sección se abre tras recuperar conexión. La prueba anterior de `PlanCierrePruebasFirebase.md` ya cubría una edición y reconexión con cuenta, pero no el aviso ni el estado Pro. Sigue pendiente verificar la interfaz completa con sesión y suscripción activada en un entorno aislado.
 
 Revisión de implementación: la sesión inicializa y limpia el store de suscripción, los permisos centrales gobiernan publicidad y salidas, y la impresión comprueba el permiso antes de invocarse. Se revisaron los consumidores y pasaron nuevamente 12 pruebas de suscripción, 6 de panel y permisos, y 2 de respaldo con datos simulados. La presentación y las acciones reales de cada plan siguen pendientes en las pruebas de la fase 4 y Testing.
