@@ -3,6 +3,7 @@
     <application>
         <activity android:name=".PruebaPuenteRelojActivity" android:exported="true" />
         <activity android:name=".PruebaCicloSuscripcionActivity" android:exported="true" />
+        <activity android:name=".PruebaInterfazSuscripcionActivity" android:exported="true" />
     </application>
     <instrumentation
         android:name=".RelojConfiableInstrumentacion"

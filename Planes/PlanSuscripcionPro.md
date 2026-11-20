@@ -154,7 +154,7 @@ Aplicar los beneficios de cada plan de forma coherente en todos los puntos de la
   - [x] Guardar un cliente ficticio sin conexión en Android y comprobar que llega a Firestore de pruebas al recuperar el Wi-Fi; retirar el registro de prueba.
   - [x] Importar en Android una copia ficticia con un cliente faltante, verificar su llegada a Firestore y comprobar que una segunda importación no propone duplicarlo; retirar el registro ficticio.
   - [ ] Comprobar las copias y sincronización con una cuenta real del entorno de pruebas.
-- [ ] Crear componentes pequeños en `src/components/suscripcion/` para mostrar estado, fecha, prueba, compra y gestión; indicar el precio devuelto por Google, renovación automática, cancelación y ausencia de tarjeta durante la prueba. En web explicar cómo contratar desde Android. Mostrar aviso de 10 días a cuentas existentes al activarse.
+- [x] Crear componentes pequeños en `src/components/suscripcion/` para mostrar estado, fecha, prueba, compra y gestión; indicar el precio devuelto por Google, renovación automática, cancelación y ausencia de tarjeta durante la prueba. En web explicar cómo contratar desde Android. Mostrar aviso de 10 días a cuentas existentes al activarse.
   - [x] Preparar el panel y el aviso de prueba, y conectarlos detrás del interruptor de suscripción desactivado.
   - [x] Comprobar los textos del panel web para visitante, Gratis, prueba, Pro y exento mediante renderizado aislado, sin conectar Firebase.
   - [x] Revisar en navegador el panel aislado con estados simulados, en tamaño de escritorio y móvil, incluido el aviso de conexión y la opción de reintentar.
@@ -220,6 +220,10 @@ Preparar validaciones para que Leo pruebe antes de publicar. Ejecutar comandos, 
 - [ ] Revisar mensajes, precios mostrados por Play, condiciones y acceso para revisión de Google. Registrar resultados y pendientes; no publicar hasta que Leo lo indique.
 
 ## Progreso del plan
+
+Publicidad Android de prueba: en la actividad aislada del POCO se usó el SDK real de AdMob con la unidad oficial de prueba y estados de suscripción ficticios. Gratis mostró un banner identificado como anuncio de prueba; al cambiar a Pro, prueba y exento la reserva desapareció y se comprobó visualmente que el banner se retiró. La consulta de consentimiento indicó que no era necesario mostrar formulario en ese dispositivo; la actividad de prueba no abre formularios de consentimiento. Falta comprobar los estados y la publicidad con servidor real y la compilación definitiva.
+
+Interfaz Android aislada: se compiló una actividad exclusiva de depuración con estados, almacenamiento, publicidad y compras simulados, sin conexión a Firebase. En el POCO, Gratis mostró marca, bloqueo y publicidad simulada; prueba, Pro y exento ocultaron marca y publicidad. Pro generó un PDF ficticio válido, cuya primera página se revisó sin marca, y abrió la hoja de compartir, que se canceló sin enviar. Gratis generó un JSON válido y permitió importar un cliente ficticio sin duplicarlo al repetir; la selección del archivo se simuló y los datos quedaron en memoria. Se revisó el error simulado al consultar precio. El manifiesto release no declara la actividad. Quedan pendientes el anuncio y las compras reales, la selección nativa completa y el ciclo con servidor; se eliminaron los archivos ficticios creados en el teléfono.
 
 Interfaz completa aislada: se preparó una vista de la aplicación con Firebase y compras reales deshabilitados y estados ficticios. En la pantalla de presupuesto, Gratis mostró la marca y el aviso de acceso al intentar descargar; prueba, Pro y exento no mostraron la marca y el botón de descarga dejó de indicar la restricción. En Gratis se abrió Configuración y se generó un JSON de copia. A 390 píxeles no se observó desbordamiento horizontal en esa pantalla. Estas comprobaciones no ejecutan compras ni verifican anuncios nativos, impresión o envío reales.
 
